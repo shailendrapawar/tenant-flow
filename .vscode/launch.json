@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Node App",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/src/bin/server.ts",
+      "runtimeArgs": ["--nolazy"],
+      "console": "integratedTerminal",
+      "restart": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}
