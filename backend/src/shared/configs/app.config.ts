@@ -8,7 +8,7 @@ let ENV = {
         Environment: process.env.APP_ENV || 'development',
     },
     DB: {
-        URI: process.env.MONGO_URI || 'mongodb://localhost:27017/tenant-flow',
+        URI: process.env.DB_URI || '',
     },
     JWT: {
         Secret: process.env.JWT_SECRET || 'secret',
