@@ -2,6 +2,7 @@ import { Error } from 'mongoose';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
 import { UserValidators } from './user.validators';
+import { formatZodError, throwError } from '../../shared/utils/error';
 
 const LOGIN = async (req: any, res: any) => {
     //1: validations
@@ -14,7 +15,10 @@ const REGISTER = async (req: any, res: any) => {
             UserValidators.RegisterSchema.safeParse(req.body);
 
         if (!success) {
-            return ResponseHandler.error(res, 400, 'Validation error', error);
+            const validationErrors = formatZodError(error);
+            return ResponseHandler.error(res, 400, "Validation Error", {
+                fields: validationErrors,
+            });
         }
 
         //2: business logic
@@ -27,7 +31,7 @@ const REGISTER = async (req: any, res: any) => {
             user,
         );
     } catch (error: any) {
-        ResponseHandler.error(res, 500, 'Internal server error', error);
+        return ResponseHandler.error(res, error?.statusCode, error?.message, error);
     }
 };
 

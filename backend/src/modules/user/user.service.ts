@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import UserModel, { User } from './user.model';
 import { RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
+import { throwError } from '../../shared/utils/error';
 
 const populate: any[] = [];
 
@@ -16,7 +17,8 @@ const create = async (model: RegisterPayload): Promise<User | null> => {
     user = await GET(model.email, { lean: true });
 
     if (user) {
-        throw new Error('User already exists');
+        // throw new Error('User already exists');
+        return throwError("User already exists with this email", 400)
     }
 
     // 2: hash password
@@ -62,8 +64,8 @@ const GET = async (keyword: string, options: any): Promise<User | null> => {
     }
     return entity;
 };
-const SEARCH = () => {};
-const UPDATE = () => {};
+const SEARCH = () => { };
+const UPDATE = () => { };
 
 const REGISTER = async (model: RegisterPayload) => {
     // create user

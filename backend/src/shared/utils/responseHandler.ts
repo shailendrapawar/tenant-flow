@@ -11,12 +11,18 @@ export const success = (
     });
 };
 
-export const error = (res: any, status: number, message: string, err: any) => {
-    const m = message || err.message;
-    return res.status(status).json({
+export const error = (res: any,
+    status: number, message: string,
+    err: any) => {
+
+    const msg = message || err?.message || "Internal server error";
+    const statusCode = status || err?.statusCode || 500
+
+    return res.status(statusCode).json({
         success: false,
-        message: m,
-        error: err instanceof Error ? err.message : err,
+        message: msg,
+        statusCode: statusCode,
+        data:err
     });
 };
 
