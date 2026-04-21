@@ -1,0 +1,91 @@
+import mongoose from 'mongoose';
+import { USER_ROLES, USER_STATUS } from './user.constants';
+
+const defaultUserImage =
+    'https://as2.ftcdn.net/jpg/00/64/67/27/1000_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.webp';
+const userSchema = new mongoose.Schema(
+    {
+        firstName: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 50,
+            lowercase: true,
+        },
+        lastName: {
+            type: String,
+            //   required: true,
+            trim: true,
+            maxlength: 50,
+            lowercase: true,
+        },
+
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            lowercase: true,
+        },
+        password: {
+            type: String,
+            required: true,
+            minlength: 8,
+            select: false,
+        },
+
+        avatar: {
+            type: String,
+            default: defaultUserImage,
+        },
+
+        // Account Management
+        role: {
+            type: String,
+            enum: [USER_ROLES.ADMIN, USER_ROLES.LANDLORD, USER_ROLES.TENANT],
+            default: USER_ROLES.LANDLORD,
+        },
+
+        status: {
+            type: String,
+            enum: [
+                USER_STATUS.ACTIVE,
+                USER_STATUS.INACTIVE,
+                USER_STATUS.SUSPENDED,
+                USER_STATUS.BANNED,
+            ],
+            default: USER_STATUS.ACTIVE,
+        },
+
+        lastLoginAt: {
+            type: Date,
+            default: null,
+            select: false,
+        },
+
+        loginAttempts: {
+            type: Number,
+            default: 0,
+            select: false,
+        },
+
+        lockUntil: {
+            type: Date,
+            default: null,
+            select: false,
+        },
+
+        meta: {
+            default: {},
+        },
+    },
+    {
+        timestamps: true,
+    },
+);
+
+export type User = mongoose.InferSchemaType<typeof userSchema>;
+
+const UserModel = mongoose.model('User', userSchema);
+
+export default UserModel;
