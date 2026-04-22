@@ -13,3 +13,12 @@ export const generateToken = (user: any) => {
     );
     return token;
 };
+
+export const verifyToken = (token: string) => {
+    try {
+        const decoded = jwt.verify(token, ENV.JWT.Secret);
+        return decoded;
+    } catch (error) {
+        return null;
+    }
+};

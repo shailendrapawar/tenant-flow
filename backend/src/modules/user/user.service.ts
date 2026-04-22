@@ -43,7 +43,7 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
 
 // ====================================
 // ============ export methods ============
-const GET = async (keyword: string, options: any): Promise<UserDocument> => {
+const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
     let query = null;
 
     if (mongoose.isValidObjectId(keyword)) {
@@ -57,8 +57,8 @@ const GET = async (keyword: string, options: any): Promise<UserDocument> => {
         throw new Error('Invalid identifier');
     }
 
-    if (options.populate) {
-        query = query.populate(options.populate);
+    if (options?.populate) {
+        query = query.populate(populate);
     }
     return await query;
 };

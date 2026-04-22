@@ -2,7 +2,7 @@ import express from 'express';
 import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
 import { LoginSchema, RegisterSchema } from './user.validators';
-
+import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 const UserRouter = express.Router();
 
 // ====================================
@@ -40,12 +40,29 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    method: 'get',
+    path: '/users/me',
+    tags: ['Auth'],
+    summary: 'Get user profile',
+    request: {
+        // body: {
+        //     content: { 'application/json': { schema: LoginSchema } },
+        //     required: true,
+        // },
+    },
+    responses: {
+        201: { description: 'User profile fetched successfully' },
+        400: { description: 'Validation error' },
+    },
+});
 // =========================================
 // ============ register routes ============
 UserRouter.post('/register', UserController.register);
 UserRouter.post('/login', UserController.login);
 
-// UserRouter.get('/me', UserController.profile);
+UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
+
 // UserRouter.get('/:id', UserController.getById);
 // UserRouter.get('/', UserController.search);
 

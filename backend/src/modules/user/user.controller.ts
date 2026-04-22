@@ -5,8 +5,9 @@ import { formatZodError, throwError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateToken } from '../../shared/utils/jwt';
 import ENV from '../../shared/configs/app.config';
+import logger from '../../shared/utils/logger';
 
-const LOGIN = async (req: any, res: any) => {
+const login = async (req: any, res: any) => {
     try {
         //1: validations
         const { data, success, error } = UserValidators.LoginSchema.safeParse(req.body);
@@ -27,7 +28,7 @@ const LOGIN = async (req: any, res: any) => {
 
         //3: generate token and set cookie
         const token = generateToken(MapUserDTO(user, 'auth'));
-        res.cookie('x-access-token', token, {
+        res.cookie('xat', token, {
             httpOnly: true,
             secure: ENV.App.Environment == 'production',
             sameSite: 'strict',
@@ -47,7 +48,7 @@ const LOGIN = async (req: any, res: any) => {
     }
 };
 
-const REGISTER = async (req: any, res: any) => {
+const register = async (req: any, res: any) => {
     try {
         //1: validation handling
         const { data, success, error } = UserValidators.RegisterSchema.safeParse(req.body);
@@ -69,7 +70,28 @@ const REGISTER = async (req: any, res: any) => {
     }
 };
 
+const getUserProfile = async (req: any, res: any) => {
+    try {
+        const user = req.user;
+
+        const userProfile = await UserService.get(user._id);
+
+        return ResponseHandler.appResponse(res, 200, true, 'User profile fetched successfully', {
+            user: MapUserDTO(userProfile, user.role), // send user data based on role
+        });
+    } catch (error: any) {
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message,
+            null,
+        );
+    }
+};
+
 export const UserController = {
-    login: LOGIN,
-    register: REGISTER,
+    login,
+    register,
+    getUserProfile,
 };
