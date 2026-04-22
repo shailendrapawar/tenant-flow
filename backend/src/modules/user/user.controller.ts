@@ -3,6 +3,8 @@ import { UserService } from './user.service';
 import { UserValidators } from './user.validators';
 import { formatZodError, throwError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
+import { generateToken } from '../../shared/utils/jwt';
+import ENV from '../../shared/configs/app.config';
 
 const LOGIN = async (req: any, res: any) => {
     try {
@@ -23,7 +25,16 @@ const LOGIN = async (req: any, res: any) => {
             return ResponseHandler.appResponse(res, 400, false, 'Invalid email or password', null);
         }
 
-        //3: map response according to role/action-key
+        //3: generate token and set cookie
+        const token = generateToken(MapUserDTO(user, 'auth'));
+        res.cookie('x-access-token', token, {
+            httpOnly: true,
+            secure: ENV.App.Environment == 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        //4: map response according to role/action-key
         return ResponseHandler.appResponse(
             res,
             200,

@@ -8,18 +8,16 @@ const Public_userDTO = (user: User) => {};
 
 const Auth_userDTO = (user: HydratedDocument<User>) => {
     return {
-        id: user._id,
+        _id: user._id.toString(),
         firstName: user.firstName,
-        lastName: user.lastName,
         email: user.email,
-        avatar: user.avatar,
-        status: user.status,
         role: user.role,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+        status: user.status,
     };
 };
 
+// ======================================================================
+// ================== mapping function for response ==================
 export const MapUserDTO = (data: any, key?: string) => {
     const map = {
         [USER_ROLES.ADMIN]: Admin_userDTO,

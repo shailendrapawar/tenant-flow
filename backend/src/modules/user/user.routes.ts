@@ -45,4 +45,8 @@ registry.registerPath({
 UserRouter.post('/register', UserController.register);
 UserRouter.post('/login', UserController.login);
 
+// UserRouter.get('/me', UserController.profile);
+// UserRouter.get('/:id', UserController.getById);
+// UserRouter.get('/', UserController.search);
+
 export default UserRouter;
