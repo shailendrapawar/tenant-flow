@@ -9,8 +9,8 @@ const UserRouter = express.Router();
 // ============ register swagger config ============
 registry.registerPath({
     method: 'post',
-    path: '/users/register',
-    tags: ['Auth'],
+    path: '/users/auth/register',
+    tags: ['User-auth'],
     summary: 'Register a new user',
     request: {
         body: {
@@ -25,8 +25,8 @@ registry.registerPath({
 });
 registry.registerPath({
     method: 'post',
-    path: '/users/login',
-    tags: ['Auth'],
+    path: '/users/auth/login',
+    tags: ['User-auth'],
     summary: 'Login a user',
     request: {
         body: {
@@ -41,8 +41,8 @@ registry.registerPath({
 });
 registry.registerPath({
     method: 'post',
-    path: '/users/logout',
-    tags: ['Auth'],
+    path: '/users/auth/logout',
+    tags: ['User-auth'],
     summary: 'Logout a user',
     request: {},
     responses: {
@@ -54,8 +54,8 @@ registry.registerPath({
 registry.registerPath({
     method: 'get',
     path: '/users/me',
-    tags: ['Auth'],
-    summary: 'Get user profile',
+    tags: ['User'],
+    summary: 'Get Logged in user profile',
     request: {},
     responses: {
         201: { description: 'User profile fetched successfully' },
