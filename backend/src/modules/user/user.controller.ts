@@ -1,4 +1,3 @@
-import { Error } from 'mongoose';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
 import { UserValidators } from './user.validators';
@@ -9,29 +8,43 @@ const LOGIN = async (req: any, res: any) => {
 };
 
 const REGISTER = async (req: any, res: any) => {
-    //1:
     try {
+        //1: validation handling
         const { data, success, error } =
             UserValidators.RegisterSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
-            return ResponseHandler.error(res, 400, "Validation Error", {
-                fields: validationErrors,
-            });
+
+            return ResponseHandler.appResponse(
+                res,
+                400,
+                false,
+                'Validation Error',
+                {
+                    fields: validationErrors,
+                },
+            );
         }
 
-        //2: business logic
+        //2: call service
         const user = await UserService.register(data);
 
-        return ResponseHandler.success(
+        return ResponseHandler.appResponse(
             res,
             201,
+            true,
             'User created successfully',
             user,
         );
     } catch (error: any) {
-        return ResponseHandler.error(res, error?.statusCode, error?.message, error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode,
+            false,
+            error?.message,
+            null,
+        );
     }
 };
 
