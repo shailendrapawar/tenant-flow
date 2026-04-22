@@ -12,6 +12,7 @@ let ENV = {
     },
     JWT: {
         Secret: process.env.JWT_SECRET || 'secret',
+        ExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
     },
 };
 
