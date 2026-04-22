@@ -3,7 +3,7 @@ import { registry } from '../../shared/configs/registry';
 
 export const RegisterSchema = z.object({
     firstName: z.string().min(1).openapi({ example: 'john' }),
-    lastName: z.string().min(1).openapi({ example: 'doe' }),
+    lastName: z.string().openapi({ example: 'doe' }),
     email: z.string().email().openapi({ example: 'john@example.com' }),
     password: z.string().min(1).openapi({ example: 'Test@123' }),
 });

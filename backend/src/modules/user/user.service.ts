@@ -1,8 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose, { Models } from 'mongoose';
 import UserModel, { User } from './user.model';
-import { RegisterPayload } from './user.validators';
+import { LoginPayload, RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwError } from '../../shared/utils/error';
+
+import { HydratedDocument } from 'mongoose';
+
+type UserDocument = HydratedDocument<User> | null;
 
 const populate: any[] = [];
 
@@ -10,7 +14,7 @@ const set = (payload: any) => {
     console.log(payload);
 };
 
-const create = async (model: RegisterPayload): Promise<User | null> => {
+const create = async (model: RegisterPayload): Promise<UserDocument> => {
     let user = null;
 
     // 1: get if existing user
@@ -18,7 +22,7 @@ const create = async (model: RegisterPayload): Promise<User | null> => {
 
     if (user) {
         // throw new Error('User already exists');
-        return throwError("User already exists with this email", 400)
+        return throwError('User already exists with this email', 400);
     }
 
     // 2: hash password
@@ -39,42 +43,65 @@ const create = async (model: RegisterPayload): Promise<User | null> => {
 
 // ====================================
 // ============ export methods ============
-const GET = async (keyword: string, options: any): Promise<User | null> => {
-    let entity = null;
+const GET = async (keyword: string, options: any): Promise<UserDocument> => {
+    let query = null;
 
     if (mongoose.isValidObjectId(keyword)) {
         // find by objectID
-        entity = await UserModel.findOne({ _id: keyword });
+        query = UserModel.findOne({ _id: keyword });
     } else if (keyword.includes('@')) {
         // find by email
-        entity = await UserModel.findOne({ email: keyword?.toLowerCase() });
+        query = UserModel.findOne({ email: keyword?.toLowerCase() });
     } else {
         // error invalid identifier
         throw new Error('Invalid identifier');
     }
 
-    if (entity) {
-        if (options.populate) {
-            //process for options
-            entity = await entity.populate(populate);
-        }
-        if (options.lean) {
-            entity = entity.toObject();
-        }
+    if (options.populate) {
+        query = query.populate(options.populate);
     }
-    return entity;
+    return await query;
 };
-const SEARCH = () => { };
-const UPDATE = () => { };
 
-const REGISTER = async (model: RegisterPayload) => {
+const SEARCH = () => {};
+const UPDATE = () => {};
+
+const REGISTER = async (model: RegisterPayload): Promise<UserDocument> => {
     // create user
     const user = await create(model);
     //perform side effects like mailing of onboard
     return user;
 };
+
+const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
+    // get user
+    let user = await GET(model.email, {});
+
+    if (!user) {
+        return throwError('User does not exist', 400);
+    }
+
+    // check password
+    const isMatch = await bcrypt.compare(model.password, user.password);
+
+    if (!isMatch) {
+        user.lastLoginAt = new Date();
+        user.loginAttempts = (user.loginAttempts || 0) + 1;
+        await user.save();
+        return throwError('Invalid credentials', 400);
+    }
+
+    // update lastLoginAt
+    user.lastLoginAt = new Date();
+    user.loginAttempts = 0; // reset login attempts on successful login
+    await user.save();
+
+    return user;
+};
+
 export const UserService = {
     register: REGISTER,
+    login: LOGIN,
     get: GET,
     search: SEARCH,
     update: UPDATE,

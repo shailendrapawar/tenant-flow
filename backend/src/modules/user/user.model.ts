@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             minlength: 8,
-            select: false,
         },
 
         avatar: {
@@ -60,19 +59,16 @@ const userSchema = new mongoose.Schema(
         lastLoginAt: {
             type: Date,
             default: null,
-            select: false,
         },
 
         loginAttempts: {
             type: Number,
             default: 0,
-            select: false,
         },
 
         lockUntil: {
             type: Date,
             default: null,
-            select: false,
         },
 
         meta: {
