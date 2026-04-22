@@ -39,27 +39,35 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
+registry.registerPath({
+    method: 'post',
+    path: '/users/logout',
+    tags: ['Auth'],
+    summary: 'Logout a user',
+    request: {},
+    responses: {
+        201: { description: 'User logged out successfully' },
+        400: { description: 'Validation error' },
+    },
+});
 
 registry.registerPath({
     method: 'get',
     path: '/users/me',
     tags: ['Auth'],
     summary: 'Get user profile',
-    request: {
-        // body: {
-        //     content: { 'application/json': { schema: LoginSchema } },
-        //     required: true,
-        // },
-    },
+    request: {},
     responses: {
         201: { description: 'User profile fetched successfully' },
         400: { description: 'Validation error' },
     },
 });
+
 // =========================================
 // ============ register routes ============
 UserRouter.post('/register', UserController.register);
 UserRouter.post('/login', UserController.login);
+UserRouter.post('/logout', AuthMiddleware, UserController.logout);
 
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
 

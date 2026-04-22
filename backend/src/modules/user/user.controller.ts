@@ -90,8 +90,29 @@ const getUserProfile = async (req: any, res: any) => {
     }
 };
 
+const logout = async (req: any, res: any) => {
+    try {
+        res.clearCookie('xat', {
+            httpOnly: true,
+            secure: ENV.App.Environment == 'production',
+            sameSite: 'strict',
+        });
+        return ResponseHandler.appResponse(res, 200, true, 'Logout successful', null);
+    } catch (error: any) {
+        logger.error('Logout Error:', error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message || 'Logout failed',
+            null,
+        );
+    }
+};
+
 export const UserController = {
     login,
     register,
+    logout,
     getUserProfile,
 };
