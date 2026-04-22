@@ -1,4 +1,4 @@
-import mongoose, { Models } from 'mongoose';
+import mongoose from 'mongoose';
 import UserModel, { User } from './user.model';
 import { LoginPayload, RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
@@ -63,8 +63,8 @@ const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
     return await query;
 };
 
-const SEARCH = () => {};
-const UPDATE = () => {};
+const SEARCH = () => { };
+const UPDATE = () => { };
 
 const REGISTER = async (model: RegisterPayload): Promise<UserDocument> => {
     // create user
@@ -85,8 +85,10 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
     const isMatch = await bcrypt.compare(model.password, user.password);
 
     if (!isMatch) {
+        //invalid credentials
         user.lastLoginAt = new Date();
         user.loginAttempts = (user.loginAttempts || 0) + 1;
+        // TODO:lock account if attempts crosses 3
         await user.save();
         return throwError('Invalid credentials', 400);
     }

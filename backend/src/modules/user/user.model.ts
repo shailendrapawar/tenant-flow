@@ -34,8 +34,15 @@ const userSchema = new mongoose.Schema(
         },
 
         avatar: {
-            type: String,
-            default: defaultUserImage,
+
+            url: {
+                type: String,
+                default: defaultUserImage,
+            },
+            id: {
+                type: String,
+                default: "",
+            }
         },
 
         // Account Management

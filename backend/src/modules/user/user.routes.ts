@@ -65,9 +65,9 @@ registry.registerPath({
 
 // =========================================
 // ============ register routes ============
-UserRouter.post('/register', UserController.register);
-UserRouter.post('/login', UserController.login);
-UserRouter.post('/logout', AuthMiddleware, UserController.logout);
+UserRouter.post('/auth/register', UserController.register);
+UserRouter.post('/auth/login', UserController.login);
+UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
 

@@ -64,7 +64,7 @@ const register = async (req: any, res: any) => {
         //2: call service
         const user = await UserService.register(data);
 
-        return ResponseHandler.appResponse(res, 201, true, 'User created successfully', user);
+        return ResponseHandler.appResponse(res, 201, true, 'User created successfully', MapUserDTO(user, 'auth'));
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
