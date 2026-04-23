@@ -1,8 +1,8 @@
 // Company Model
 // company.model.ts
 
-import mongoose from "mongoose";
-import { COMPANY_STATUS } from "./company.constants";
+import mongoose from 'mongoose';
+import { COMPANY_STATUS } from './company.constants';
 
 const companySchema = new mongoose.Schema(
     {
@@ -11,51 +11,64 @@ const companySchema = new mongoose.Schema(
             required: true,
         },
 
-        ownerID: {
+        owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User',
             required: true,
         },
         logo: {
             url: {
                 type: String,
-                default: "",
+                default: '',
             },
             id: {
                 type: String,
-                default: "",
-            }
+                default: '',
+            },
         },
         contact: {
             phone: {
                 type: String,
-                default: ""
+                default: '',
             },
             email: {
                 type: String,
-                default: ""
-            }
-        },
-        settings: {
-            type: Object,
-            default: {}
-        },
-        meta: {
-            type: Object,
-            default: {}
+                default: '',
+            },
         },
         status: {
             type: String,
-            enums: [
+            enum: [
                 COMPANY_STATUS.ACTIVE,
                 COMPANY_STATUS.INACTIVE,
                 COMPANY_STATUS.SUSPENDED,
                 COMPANY_STATUS.BANNED,
             ],
             default: COMPANY_STATUS.ACTIVE,
-        }
+        },
+        location: {
+            addressLine1: String,
+            addressLine2: String,
+            city: String,
+            state: String,
+            district: String,
+            country: String,
+            postalCode: String,
+        },
+        settings: {
+            //can contain themes etc's further
+            type: Object,
+            default: {},
+        },
+
+        meta: {
+            //can contain additional metadata like account status messages
+            type: Object,
+            default: {},
+        },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
-export const Company = mongoose.model("Company", companySchema);
+export const CompanyModel = mongoose.model('Company', companySchema);
+export type ICompany = mongoose.InferSchemaType<typeof companySchema>;

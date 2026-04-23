@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
-import UserModel, { User } from './user.model';
+import { IUser, UserModel } from './user.model';
 import { LoginPayload, RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwError } from '../../shared/utils/error';
 
 import { HydratedDocument } from 'mongoose';
+import { CompanyService } from '../company/company.service';
+import { CreateCompanyPayload } from '../company/company.types';
+import { USER_ROLES } from './user.constants';
 
-type UserDocument = HydratedDocument<User> | null;
+type UserDocument = HydratedDocument<IUser> | null;
 
 const populate: any[] = [];
 
@@ -33,10 +36,19 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
     const newUser = new UserModel({
         ...model,
         password: hashedPassword,
-        roles: 'landlord',
+        // roles: 'landlord',
     });
 
     user = await newUser.save();
+
+    // 4: create default company
+    const newCompanyPayload: CreateCompanyPayload = {
+        companyNamePrefix: user.lastName || user.firstName,
+        ownerID: user._id.toString(),
+        ownerEmail: model.email,
+    };
+
+    await CompanyService.create(newCompanyPayload);
 
     return user;
 };
@@ -63,8 +75,8 @@ const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
     return await query;
 };
 
-const SEARCH = () => { };
-const UPDATE = () => { };
+const SEARCH = () => {};
+const UPDATE = () => {};
 
 const REGISTER = async (model: RegisterPayload): Promise<UserDocument> => {
     // create user
@@ -90,7 +102,7 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
         user.loginAttempts = (user.loginAttempts || 0) + 1;
         // TODO:lock account if attempts crosses 3
         await user.save();
-        return throwError('Invalid credentials', 400);
+        return throwError('Invalid credentials', 401);
     }
 
     // update lastLoginAt

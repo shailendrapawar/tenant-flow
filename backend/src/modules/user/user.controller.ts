@@ -1,11 +1,14 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
 import { UserValidators } from './user.validators';
-import { formatZodError, throwError } from '../../shared/utils/error';
+import { formatZodError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
-import { generateToken } from '../../shared/utils/jwt';
+import { generateAcessToken } from '../../shared/utils/jwt';
 import ENV from '../../shared/configs/app.config';
 import logger from '../../shared/utils/logger';
+import { CompanyService } from '../company/company.service';
+import { AUTH_TOKENS, USER_ROLES } from './user.constants';
+import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
 
 const login = async (req: any, res: any) => {
     try {
@@ -20,22 +23,28 @@ const login = async (req: any, res: any) => {
             });
         }
 
-        //2: call service
-        const user = await UserService.login(data);
+        let tokenPayload = {};
+        //2: call user  service
+        let user = await UserService.login(data);
+
         if (!user) {
-            return ResponseHandler.appResponse(res, 400, false, 'Invalid email or password', null);
+            return ResponseHandler.appResponse(res, 401, false, 'Invalid credentials', null);
+        }
+        tokenPayload = MapUserDTO(user, 'auth');
+        // logger.info('user', user);
+
+        //3: call company service only if landlord
+        if (user?.role == USER_ROLES.LANDLORD) {
+            const company = await CompanyService.get(user?._id?.toString(), { role: user.role });
+            tokenPayload = { ...tokenPayload, companyID: company?._id?.toString() || '' };
         }
 
-        //3: generate token and set cookie
-        const token = generateToken(MapUserDTO(user, 'auth'));
-        res.cookie('xat', token, {
-            httpOnly: true,
-            secure: ENV.App.Environment == 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
+        //4: generate token and set cookie
+        const token = generateAcessToken(tokenPayload);
+        clearAppCookie(res, AUTH_TOKENS.XAT);
+        setAppCookie(res, AUTH_TOKENS.XAT, token);
 
-        //4: map response according to role/action-key
+        //5: map response according to role/action-key
         return ResponseHandler.appResponse(
             res,
             200,
@@ -44,7 +53,14 @@ const login = async (req: any, res: any) => {
             MapUserDTO(user, 'auth'),
         );
     } catch (error: any) {
-        return ResponseHandler.appResponse(res, error?.status || 500, false, error?.message, null);
+        console.log(error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message,
+            null,
+        );
     }
 };
 
@@ -64,7 +80,13 @@ const register = async (req: any, res: any) => {
         //2: call service
         const user = await UserService.register(data);
 
-        return ResponseHandler.appResponse(res, 201, true, 'User created successfully', MapUserDTO(user, 'auth'));
+        return ResponseHandler.appResponse(
+            res,
+            201,
+            true,
+            'User created successfully',
+            MapUserDTO(user, 'auth'),
+        );
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
