@@ -18,10 +18,8 @@ const Public_userDTO = (user: User) => ({});
 
 const Auth_userDTO = (user: HydratedDocument<User>) => ({
     _id: user._id.toString(),
-    firstName: user.firstName,
     email: user.email,
     role: user.role,
-    status: user.status,
 });
 
 // ======================================================================

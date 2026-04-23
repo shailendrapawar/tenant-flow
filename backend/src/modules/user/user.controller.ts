@@ -23,7 +23,7 @@ const login = async (req: any, res: any) => {
             });
         }
 
-        let tokenPayload = {};
+        let authUser = {};
         //2: call user  service
         let user = await UserService.login(data);
 
@@ -31,16 +31,18 @@ const login = async (req: any, res: any) => {
             return throwAppError('Invalid credentials', 401);
         }
 
-        tokenPayload = MapUserDTO(user, 'auth');
+        authUser = MapUserDTO(user, 'auth');
 
         //3: call company service only if landlord
         if (user?.role == USER_ROLES.LANDLORD) {
-            const company = await CompanyService.get(user?._id?.toString(), { role: user.role });
-            tokenPayload = { ...tokenPayload, companyID: company?._id?.toString() || '' };
+            const company = await CompanyService.get(user?._id?.toString(), {
+                role: user.role,
+            });
+            authUser = { ...authUser, companyID: company?._id?.toString() || '' };
         }
 
         //4: generate token and set cookie
-        const token = generateAcessToken(tokenPayload);
+        const token = generateAcessToken(authUser);
         clearAppCookie(res, AUTH_TOKENS.XAT);
         setAppCookie(res, AUTH_TOKENS.XAT, token);
 
@@ -95,7 +97,6 @@ const register = async (req: any, res: any) => {
 const getUserProfile = async (req: any, res: any) => {
     try {
         const user = req.user;
-
         const userProfile = await UserService.get(user._id);
 
         return ResponseHandler.appResponse(res, 200, true, 'User profile fetched successfully', {

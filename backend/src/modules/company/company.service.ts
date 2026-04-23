@@ -47,7 +47,7 @@ const GET = async (id: string, options?: any): Promise<CompanyDocument> => {
 };
 
 const SEARCH = () => {};
-const UPDATE = () => {};
+const UPDATE = (id: string, model: any) => {};
 
 export const CompanyService = {
     create: CREATE,

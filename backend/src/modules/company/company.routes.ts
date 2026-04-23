@@ -2,6 +2,7 @@
 import { registry } from '../../shared/configs/registry';
 import express from 'express';
 import { CompanyControler } from './company.controller';
+import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 export const CompanyRouter = express.Router();
 // =================================================
 // ============ register swagger config ============
@@ -26,4 +27,4 @@ registry.registerPath({
 
 // =========================================
 // ============ register routes ============
-CompanyRouter.get('/:id', CompanyControler.get);
+CompanyRouter.get('/:id', AuthMiddleware, CompanyControler.get);

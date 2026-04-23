@@ -8,6 +8,7 @@ import { ResponseHandler } from '../shared/utils/responseHandler';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { buildContext } from '../shared/utils/contextBuilder';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -30,8 +31,9 @@ app.get('/', (req, res) => {
 // api docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// app.use();
 // inject routes=======>
-app.use('/users', UserRouter);
+app.use('/users', buildContext, UserRouter);
 app.use('/companies', CompanyRouter);
 
 export { app };
