@@ -19,7 +19,7 @@ export class AppError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
-export const throwError = (
+export const throwAppError = (
     message: string,
     statusCode: number = 500,
     extra: Record<string, any> = {},

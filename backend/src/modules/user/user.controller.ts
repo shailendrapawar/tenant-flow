@@ -1,7 +1,7 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
 import { UserValidators } from './user.validators';
-import { formatZodError } from '../../shared/utils/error';
+import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
 import ENV from '../../shared/configs/app.config';
@@ -28,10 +28,10 @@ const login = async (req: any, res: any) => {
         let user = await UserService.login(data);
 
         if (!user) {
-            return ResponseHandler.appResponse(res, 401, false, 'Invalid credentials', null);
+            return throwAppError('Invalid credentials', 401);
         }
+
         tokenPayload = MapUserDTO(user, 'auth');
-        // logger.info('user', user);
 
         //3: call company service only if landlord
         if (user?.role == USER_ROLES.LANDLORD) {

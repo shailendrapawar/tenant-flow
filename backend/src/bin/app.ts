@@ -2,7 +2,8 @@ import '../shared/configs/registry'; // MUST BE FIRST
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../shared/configs/swagger.config';
-import UserRouter from '../modules/user/user.routes';
+import { UserRouter } from '../modules/user/user.routes';
+import { CompanyRouter } from '../modules/company/company.routes';
 import { ResponseHandler } from '../shared/utils/responseHandler';
 
 import cookieParser from 'cookie-parser';
@@ -31,5 +32,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // inject routes=======>
 app.use('/users', UserRouter);
+app.use('/companies', CompanyRouter);
 
 export { app };

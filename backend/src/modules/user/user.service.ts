@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { IUser, UserModel } from './user.model';
 import { LoginPayload, RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
-import { throwError } from '../../shared/utils/error';
+import { throwAppError } from '../../shared/utils/error';
 
 import { HydratedDocument } from 'mongoose';
 import { CompanyService } from '../company/company.service';
@@ -24,8 +24,7 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
     user = await GET(model.email, { lean: true });
 
     if (user) {
-        // throw new Error('User already exists');
-        return throwError('User already exists with this email', 400);
+        return throwAppError('User already exists with this email', 400);
     }
 
     // 2: hash password
@@ -36,7 +35,6 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
     const newUser = new UserModel({
         ...model,
         password: hashedPassword,
-        // roles: 'landlord',
     });
 
     user = await newUser.save();
@@ -66,11 +64,12 @@ const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
         query = UserModel.findOne({ email: keyword?.toLowerCase() });
     } else {
         // error invalid identifier
-        throw new Error('Invalid identifier');
+        return throwAppError('Invalid identifier', 400);
+        // return null;
     }
 
     if (options?.populate) {
-        query = query.populate(populate);
+        query = query?.populate(populate);
     }
     return await query;
 };
@@ -90,7 +89,7 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
     let user = await GET(model.email, {});
 
     if (!user) {
-        return throwError('User does not exist', 400);
+        return throwAppError('User does not exist', 400);
     }
 
     // check password
@@ -102,7 +101,7 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
         user.loginAttempts = (user.loginAttempts || 0) + 1;
         // TODO:lock account if attempts crosses 3
         await user.save();
-        return throwError('Invalid credentials', 401);
+        return throwAppError('Invalid credentials', 401);
     }
 
     // update lastLoginAt
