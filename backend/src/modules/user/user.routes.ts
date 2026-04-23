@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
 import { LoginSchema, RegisterSchema } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-const UserRouter = express.Router();
+export const UserRouter = express.Router();
 
 // ====================================
 // ============ register swagger config ============
@@ -74,4 +74,4 @@ UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
 // UserRouter.get('/:id', UserController.getById);
 // UserRouter.get('/', UserController.search);
 
-export default UserRouter;
+// export default UserRouter;

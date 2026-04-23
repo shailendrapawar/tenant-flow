@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
-import UserModel, { User } from './user.model';
+import { IUser, UserModel } from './user.model';
 import { LoginPayload, RegisterPayload } from './user.validators';
 import bcrypt from 'bcrypt';
-import { throwError } from '../../shared/utils/error';
+import { throwAppError } from '../../shared/utils/error';
 
 import { HydratedDocument } from 'mongoose';
+import { CompanyService } from '../company/company.service';
+import { CreateCompanyPayload } from '../company/company.types';
+import { USER_ROLES } from './user.constants';
 
-type UserDocument = HydratedDocument<User> | null;
+type UserDocument = HydratedDocument<IUser> | null;
 
 const populate: any[] = [];
 
@@ -21,8 +24,7 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
     user = await GET(model.email, { lean: true });
 
     if (user) {
-        // throw new Error('User already exists');
-        return throwError('User already exists with this email', 400);
+        return throwAppError('User already exists with this email', 400);
     }
 
     // 2: hash password
@@ -33,10 +35,18 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
     const newUser = new UserModel({
         ...model,
         password: hashedPassword,
-        roles: 'landlord',
     });
 
     user = await newUser.save();
+
+    // 4: create default company
+    const newCompanyPayload: CreateCompanyPayload = {
+        companyNamePrefix: user.lastName || user.firstName,
+        ownerID: user._id.toString(),
+        ownerEmail: model.email,
+    };
+
+    await CompanyService.create(newCompanyPayload);
 
     return user;
 };
@@ -54,17 +64,18 @@ const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
         query = UserModel.findOne({ email: keyword?.toLowerCase() });
     } else {
         // error invalid identifier
-        throw new Error('Invalid identifier');
+        return throwAppError('Invalid identifier', 400);
+        // return null;
     }
 
     if (options?.populate) {
-        query = query.populate(populate);
+        query = query?.populate(populate);
     }
     return await query;
 };
 
-const SEARCH = () => { };
-const UPDATE = () => { };
+const SEARCH = () => {};
+const UPDATE = () => {};
 
 const REGISTER = async (model: RegisterPayload): Promise<UserDocument> => {
     // create user
@@ -78,7 +89,7 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
     let user = await GET(model.email, {});
 
     if (!user) {
-        return throwError('User does not exist', 400);
+        return throwAppError('User does not exist', 400);
     }
 
     // check password
@@ -90,7 +101,7 @@ const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
         user.loginAttempts = (user.loginAttempts || 0) + 1;
         // TODO:lock account if attempts crosses 3
         await user.save();
-        return throwError('Invalid credentials', 400);
+        return throwAppError('Invalid credentials', 401);
     }
 
     // update lastLoginAt

@@ -1,18 +1,17 @@
 import { ResponseHandler } from '../utils/responseHandler';
-import { verifyToken } from '../utils/jwt';
+import { verifyAccessToken } from '../utils/jwt';
 
 export const AuthMiddleware = (req: any, res: any, next: any) => {
     try {
         //1: get token from cookies
 
         const token = req.cookies['xat'];
-        console.log('cookies=====>', req.cookies);
         if (!token) {
             return ResponseHandler.appResponse(res, 401, false, 'Token not found', null);
         }
 
         //2: verify token
-        const decoded = verifyToken(token);
+        const decoded = verifyAccessToken(token);
 
         if (!decoded) {
             return ResponseHandler.appResponse(res, 401, false, 'Token expired', null);

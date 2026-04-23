@@ -2,11 +2,13 @@ import '../shared/configs/registry'; // MUST BE FIRST
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../shared/configs/swagger.config';
-import UserRouter from '../modules/user/user.routes';
+import { UserRouter } from '../modules/user/user.routes';
+import { CompanyRouter } from '../modules/company/company.routes';
 import { ResponseHandler } from '../shared/utils/responseHandler';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { buildContext } from '../shared/utils/contextBuilder';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -29,7 +31,9 @@ app.get('/', (req, res) => {
 // api docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// app.use();
 // inject routes=======>
-app.use('/users', UserRouter);
+app.use('/users', buildContext, UserRouter);
+app.use('/companies', CompanyRouter);
 
 export { app };

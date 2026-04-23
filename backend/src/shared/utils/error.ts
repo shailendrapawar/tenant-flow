@@ -1,4 +1,4 @@
-import { ZodError } from "zod";
+import { ZodError } from 'zod';
 
 export class AppError extends Error {
     statusCode: number;
@@ -6,11 +6,7 @@ export class AppError extends Error {
     isOperational: boolean;
     extra?: Record<string, any>;
 
-    constructor(
-        message: string,
-        statusCode: number = 500,
-        extra: Record<string, any> = {}
-    ) {
+    constructor(message: string, statusCode: number = 500, extra: Record<string, any> = {}) {
         super(message);
 
         this.statusCode = statusCode;
@@ -18,25 +14,24 @@ export class AppError extends Error {
         this.isOperational = true; // helps distinguish expected vs unknown errors
         this.extra = extra;
 
-        this.name = "AppError";
+        this.name = 'AppError';
 
         Error.captureStackTrace(this, this.constructor);
     }
 }
-export const throwError = (
+export const throwAppError = (
     message: string,
     statusCode: number = 500,
-    extra: Record<string, any> = {}
+    extra: Record<string, any> = {},
 ): never => {
     throw new AppError(message, statusCode, extra);
 };
-
 
 export const formatZodError = (error: ZodError) => {
     const fieldErrors: Record<string, string> = {};
 
     error.issues.forEach((issue: any) => {
-        const field = issue.path.join("."); // supports nested fields
+        const field = issue.path.join('.'); // supports nested fields
         fieldErrors[field] = issue.message;
     });
 

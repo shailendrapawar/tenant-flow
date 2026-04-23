@@ -34,15 +34,14 @@ const userSchema = new mongoose.Schema(
         },
 
         avatar: {
-
             url: {
                 type: String,
                 default: defaultUserImage,
             },
             id: {
                 type: String,
-                default: "",
-            }
+                default: '',
+            },
         },
 
         // Account Management
@@ -87,8 +86,6 @@ const userSchema = new mongoose.Schema(
     },
 );
 
-export type User = mongoose.InferSchemaType<typeof userSchema>;
+export type IUser = mongoose.InferSchemaType<typeof userSchema>;
 
-const UserModel = mongoose.model('User', userSchema);
-
-export default UserModel;
+export const UserModel = mongoose.model('User', userSchema);
