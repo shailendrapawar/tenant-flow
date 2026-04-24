@@ -1,6 +1,7 @@
 // Company Controller
 
 import { throwAppError } from '../../shared/utils/error';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { CompanyService } from './company.service';
 
@@ -41,8 +42,21 @@ const update = async (req: any, res: any) => {
     }
 };
 
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+        const companies = await CompanyService.search(query, ctx, { pagination });
+        return ResponseHandler.appResponse(res, 200, true, 'Companies retrieved successfully', companies);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
+
 export const CompanyControler = {
     // create,
     get,
     update,
+    search,
 };

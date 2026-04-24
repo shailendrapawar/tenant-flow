@@ -3,7 +3,7 @@ import { registry } from '../../shared/configs/registry';
 import express from 'express';
 import { CompanyControler } from './company.controller';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { UpdateCompanySchema } from './company.validators';
+import { CompanySearchQuerySchema, UpdateCompanySchema } from './company.validators';
 export const CompanyRouter = express.Router();
 // =================================================
 // ============ register swagger config ============
@@ -23,6 +23,22 @@ registry.registerPath({
     responses: {
         200: { description: 'Company retrieved successfully' },
         404: { description: 'Company not found' },
+    },
+});
+
+registry.registerPath({
+    method: 'get',
+    path: '/companies',
+    tags: ['Company'],
+    summary: 'Search companies',
+
+    request: {
+        query: CompanySearchQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Companies retrieved successfully' },
+        404: { description: 'Companies not found' },
     },
 });
 
@@ -54,4 +70,5 @@ registry.registerPath({
 // =========================================
 // ============ register routes ============
 CompanyRouter.get('/:id', AuthMiddleware, CompanyControler.get);
+CompanyRouter.get('/', AuthMiddleware, CompanyControler.search);
 CompanyRouter.put('/:id', AuthMiddleware, CompanyControler.update);

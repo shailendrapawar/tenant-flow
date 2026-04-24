@@ -6,6 +6,7 @@ import { CreateCompanyPayload, UpdateCompanyPayload } from './company.types';
 import { USER_ROLES } from '../user/user.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { RequestContext } from '../../shared/utils/contextBuilder';
+import { timeStamp } from 'node:console';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
@@ -90,6 +91,9 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Comp
 };
 
 const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
+    let sort: any = {
+        timeStamp: -1,
+    };
     let where: any = {};
 
     if (query.owner) {
@@ -105,7 +109,11 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     }
 
     const countPromise = CompanyModel.countDocuments(where);
-    const itemsPromise = CompanyModel.find(where).populate(populate);
+    const itemsPromise = CompanyModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
     const [count, companies] = await Promise.all([countPromise, itemsPromise]);
     return { count, companies };
 };

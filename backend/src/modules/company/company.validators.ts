@@ -49,3 +49,23 @@ export const UpdateCompanySchema = z.object({
         })
         .optional(),
 });
+
+export const CompanySearchQuerySchema = z.object({
+    name: z.string().optional(),
+
+    status: z.enum([COMPANY_STATUS.ACTIVE, COMPANY_STATUS.INACTIVE]).optional(),
+
+    page: z
+        .string()
+        .optional()
+        .transform((val) => (val ? Number(val) : 1)),
+
+    limit: z
+        .string()
+        .optional()
+        .transform((val) => (val ? Number(val) : 10)),
+
+    // sortBy: z.enum(['name', 'createdAt']).optional(),
+
+    // order: z.enum(['asc', 'desc']).optional().default('desc'),
+});
