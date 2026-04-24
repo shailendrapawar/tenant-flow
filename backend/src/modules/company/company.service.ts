@@ -2,14 +2,43 @@
 
 import { HydratedDocument } from 'mongoose';
 import { CompanyModel, ICompany } from './company.model';
-import { CreateCompanyPayload } from './company.types';
+import { CreateCompanyPayload, UpdateCompanyPayload } from './company.types';
 import { USER_ROLES } from '../user/user.constants';
 import { throwAppError } from '../../shared/utils/error';
+import { RequestContext } from '../../shared/utils/contextBuilder';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
 // ====================================
 // ============ export methods ============
+
+const set = async (model: UpdateCompanyPayload, entity: HydratedDocument<ICompany>): Promise<CompanyDocument> => {
+    if (model.name) {
+        entity.name = model.name;
+    }
+    if (model.contact) {
+        if (model.contact.email && entity.contact) {
+            entity.contact.email = model.contact.email;
+        }
+        if (model.contact.phone && entity.contact) {
+            entity.contact.phone = model.contact.phone;
+        }
+    }
+
+    if (model.location) {
+        entity.location = model.location;
+    }
+
+    if (model.status) {
+        entity.status = model.status;
+    }
+
+    if (model.settings) {
+        entity.settings = model.settings;
+    }
+
+    return entity;
+};
 const CREATE = async (payload: CreateCompanyPayload): Promise<CompanyDocument> => {
     const newCompany = new CompanyModel({
         name: payload.companyNamePrefix?.toUpperCase() + ' Accomodations',
@@ -26,13 +55,16 @@ const CREATE = async (payload: CreateCompanyPayload): Promise<CompanyDocument> =
     return company;
 };
 
-const GET = async (id: string, options?: any): Promise<CompanyDocument> => {
+const GET = async (id: string, ctx: RequestContext, options?: any): Promise<CompanyDocument> => {
     let query = null;
+    const user = ctx.user;
 
-    if (options?.role == USER_ROLES.ADMIN) {
+    if (user?.role == USER_ROLES.ADMIN) {
         query = CompanyModel.findById({ _id: id });
     } else {
-        query = CompanyModel.findOne({ owner: id });
+        //other user else than admin add ownership here
+
+        query = CompanyModel.findOne({ owner: user?._id, _id: id });
     }
     if (options?.populate) {
         query = query.populate(populate);
@@ -47,7 +79,20 @@ const GET = async (id: string, options?: any): Promise<CompanyDocument> => {
 };
 
 const SEARCH = () => {};
-const UPDATE = (id: string, model: any) => {};
+
+const UPDATE = async (id: string, model: UpdateCompanyPayload, ctx: RequestContext) => {
+    let entity = await GET(id, ctx);
+
+    if (!entity) {
+        return throwAppError('Company not found', 404);
+    }
+
+    entity = await set(model, entity);
+    await entity?.save();
+
+    //perform any side-effects here
+    return entity;
+};
 
 export const CompanyService = {
     create: CREATE,

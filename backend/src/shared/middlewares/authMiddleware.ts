@@ -18,15 +18,9 @@ export const AuthMiddleware = (req: any, res: any, next: any) => {
         }
 
         //3: attach user to request object
-        req.user = decoded;
+        req.context.setUser(decoded);
         next();
     } catch (error: any) {
-        return ResponseHandler.appResponse(
-            res,
-            error?.statusCode || 401,
-            false,
-            error?.message,
-            null,
-        );
+        return ResponseHandler.appResponse(res, error?.statusCode || 401, false, error?.message, null);
     }
 };

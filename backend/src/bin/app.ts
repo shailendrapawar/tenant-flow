@@ -34,6 +34,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // app.use();
 // inject routes=======>
 app.use('/users', buildContext, UserRouter);
-app.use('/companies', CompanyRouter);
+app.use('/companies', buildContext, CompanyRouter);
 
 export { app };
