@@ -5,10 +5,13 @@
       "name": "Debug Node App",
       "type": "node",
       "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--import", "tsx", "--nolazy"],
       "program": "${workspaceFolder}/backend/src/bin/server.ts",
-      "runtimeArgs": ["--nolazy"],
       "console": "integratedTerminal",
       "restart": true,
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/backend",
       "env": {
         "NODE_ENV": "development"
       }

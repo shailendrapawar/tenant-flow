@@ -3,6 +3,7 @@ import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
 import { LoginSchema, RegisterSchema } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
+import { buildContext } from '../../shared/utils/contextBuilder';
 export const UserRouter = express.Router();
 
 // ====================================
