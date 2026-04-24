@@ -9,9 +9,20 @@ import logger from '../../shared/utils/logger';
 import { CompanyService } from '../company/company.service';
 import { AUTH_TOKENS, USER_ROLES } from './user.constants';
 import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
+import { RequestContext } from '../../shared/utils/contextBuilder';
+
+const registerAdmin = async (req: any, res: any) => {
+    try {
+        // TODO: Implement admin registration logic
+    } catch (error) {
+        logger.error('Error registering admin:', error);
+        return ResponseHandler.appResponse(res, 500, false, 'Internal Server Error');
+    }
+};
 
 const login = async (req: any, res: any) => {
     try {
+        const ctx: RequestContext = req.ctx;
         //1: validations
         const { data, success, error } = UserValidators.LoginSchema.safeParse(req.body);
 
@@ -31,13 +42,17 @@ const login = async (req: any, res: any) => {
             return throwAppError('Invalid credentials', 401);
         }
 
+        ctx?.setUser(user);
         authUser = MapUserDTO(user, 'auth');
 
         //3: call company service only if landlord
         if (user?.role == USER_ROLES.LANDLORD) {
-            const company = await CompanyService.get(user?._id?.toString(), {
-                role: user.role,
-            });
+            const { companies } = await CompanyService.search({}, ctx);
+            if (companies?.length == 0) {
+                return throwAppError('Company not found');
+            }
+            const company = companies[0];
+
             authUser = { ...authUser, companyID: company?._id?.toString() || '' };
         }
 
@@ -47,22 +62,10 @@ const login = async (req: any, res: any) => {
         setAppCookie(res, AUTH_TOKENS.XAT, token);
 
         //5: map response according to role/action-key
-        return ResponseHandler.appResponse(
-            res,
-            200,
-            true,
-            'Login successful',
-            MapUserDTO(user, 'auth'),
-        );
+        return ResponseHandler.appResponse(res, 200, true, 'Login successful', MapUserDTO(user, 'auth'));
     } catch (error: any) {
         console.log(error);
-        return ResponseHandler.appResponse(
-            res,
-            error?.statusCode || 500,
-            false,
-            error?.message,
-            null,
-        );
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
 
@@ -82,13 +85,7 @@ const register = async (req: any, res: any) => {
         //2: call service
         const user = await UserService.register(data);
 
-        return ResponseHandler.appResponse(
-            res,
-            201,
-            true,
-            'User created successfully',
-            MapUserDTO(user, 'auth'),
-        );
+        return ResponseHandler.appResponse(res, 201, true, 'User created successfully', MapUserDTO(user, 'auth'));
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
@@ -103,13 +100,7 @@ const getUserProfile = async (req: any, res: any) => {
             user: MapUserDTO(userProfile, user.role), // send user data based on role
         });
     } catch (error: any) {
-        return ResponseHandler.appResponse(
-            res,
-            error?.statusCode || 500,
-            false,
-            error?.message,
-            null,
-        );
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
 
@@ -134,6 +125,7 @@ const logout = async (req: any, res: any) => {
 };
 
 export const UserController = {
+    registerAdmin,
     login,
     register,
     logout,

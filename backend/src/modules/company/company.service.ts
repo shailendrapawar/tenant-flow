@@ -12,11 +12,17 @@ const populate = [{ path: 'owner', select: 'email' }];
 // ====================================
 // ============ export methods ============
 
-const set = async (model: UpdateCompanyPayload, entity: HydratedDocument<ICompany>): Promise<CompanyDocument> => {
+const set = async (
+    model: UpdateCompanyPayload,
+    entity: HydratedDocument<ICompany>,
+    ctx: RequestContext,
+): Promise<CompanyDocument> => {
     if (model.name) {
         entity.name = model.name;
     }
     if (model.contact) {
+        // FIXME: later this isnt required coz,
+        // user would be poopulated or caretaker number would be added
         if (model.contact.email && entity.contact) {
             entity.contact.email = model.contact.email;
         }
@@ -30,6 +36,11 @@ const set = async (model: UpdateCompanyPayload, entity: HydratedDocument<ICompan
     }
 
     if (model.status) {
+        if (ctx.user?.role !== USER_ROLES.ADMIN) {
+            //throw error if not admin
+            // TODO: also add journal who dare to do this shit
+            return throwAppError('forbidden', 403);
+        }
         entity.status = model.status;
     }
 
@@ -78,7 +89,26 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Comp
     return company;
 };
 
-const SEARCH = () => {};
+const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
+    let where: any = {};
+
+    if (query.owner) {
+        where.owner = query.owner;
+    }
+
+    if (query.name) {
+        where.name = { $regex: query.name, $options: 'i' };
+    }
+
+    if (query.status) {
+        where.status = query.status;
+    }
+
+    const countPromise = CompanyModel.countDocuments(where);
+    const itemsPromise = CompanyModel.find(where).populate(populate);
+    const [count, companies] = await Promise.all([countPromise, itemsPromise]);
+    return { count, companies };
+};
 
 const UPDATE = async (id: string, model: UpdateCompanyPayload, ctx: RequestContext) => {
     let entity = await GET(id, ctx);
@@ -87,7 +117,7 @@ const UPDATE = async (id: string, model: UpdateCompanyPayload, ctx: RequestConte
         return throwAppError('Company not found', 404);
     }
 
-    entity = await set(model, entity);
+    entity = await set(model, entity, ctx);
     await entity?.save();
 
     //perform any side-effects here

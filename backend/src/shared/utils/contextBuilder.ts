@@ -12,7 +12,7 @@ export type RequestContext = {
     permisisons: string[];
     logger: typeof logger;
 
-    setUser: (user: User) => void;
+    setUser: (user: any) => void;
     setPermissions: (permissions: string[]) => void;
 };
 
@@ -22,7 +22,13 @@ export const buildContext = (req: any, res: any, next: any) => {
         user: req?.user || null,
         logger: logger,
         permisisons: req?.permissions || [],
-        setUser: (user: User) => {
+
+        setUser: (userData: any) => {
+            const user: User = {
+                _id: userData._id,
+                email: userData.email,
+                role: userData.role,
+            };
             req.context.user = user;
         },
 
