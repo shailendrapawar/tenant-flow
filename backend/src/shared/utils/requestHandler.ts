@@ -1,5 +1,4 @@
 const parseQuery = (req: any) => {
-    // TODO: parse query params
     let query: Record<string, any> = {};
 
     Object.entries(req.query).forEach(([key, value]) => {
