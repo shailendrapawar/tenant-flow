@@ -68,7 +68,9 @@ registry.registerPath({
 });
 
 // =========================================
+
 // ============ register routes ============
-CompanyRouter.get('/:id', AuthMiddleware, CompanyControler.get);
-CompanyRouter.get('/', AuthMiddleware, CompanyControler.search);
-CompanyRouter.put('/:id', AuthMiddleware, CompanyControler.update);
+CompanyRouter.use(AuthMiddleware); //group level middleware
+CompanyRouter.get('/:id', CompanyControler.get);
+CompanyRouter.get('/', CompanyControler.search);
+CompanyRouter.put('/:id', CompanyControler.update);

@@ -14,6 +14,8 @@ export type RequestContext = {
 
     setUser: (user: any) => void;
     setPermissions: (permissions: string[]) => void;
+    hasAnyPermissions: (required: string[]) => boolean;
+    hasAllPermissions: (required: string[]) => boolean;
 };
 
 export const buildContext = (req: any, res: any, next: any) => {
@@ -36,6 +38,16 @@ export const buildContext = (req: any, res: any, next: any) => {
             // later: validate, log, merge with role defaults
             req.context.logger.info('permissions attached to context', { count: permissions.length });
             req.context.permissions = permissions;
+        },
+
+        // either this OR that
+        hasAnyPermissions(required: string[]) {
+            return req.context.permissions.some((perm: string) => required.includes(perm));
+        },
+
+        // must have this AND that
+        hasAllPermissions(required: string[]) {
+            return required.every((perm: string) => req.context.permissions.includes(perm));
         },
     };
     req.context = context;

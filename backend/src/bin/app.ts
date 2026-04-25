@@ -37,8 +37,9 @@ INIT_SYSTEM_DATA();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // inject routes=======>
-app.use('/users', buildContext, UserRouter);
-app.use('/companies', buildContext, CompanyRouter);
-app.use('/roles', buildContext, RoleRouter);
+app.use(buildContext);
+app.use('/users', UserRouter);
+app.use('/companies', CompanyRouter);
+app.use('/roles', RoleRouter);
 
 export { app };

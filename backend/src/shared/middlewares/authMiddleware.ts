@@ -2,10 +2,7 @@ import { ResponseHandler } from '../utils/responseHandler';
 import { verifyAccessToken } from '../utils/jwt';
 import { RoleService } from '../../modules/access-management/role/role.service';
 import { RequestContext } from '../utils/contextBuilder';
-import { permission } from 'node:process';
 import { extractPermissionName } from '../utils/strings';
-import logger from '../utils/logger';
-import { populate } from 'dotenv';
 
 export const AuthMiddleware = async (req: any, res: any, next: any) => {
     try {

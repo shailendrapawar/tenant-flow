@@ -93,7 +93,7 @@ const register = async (req: any, res: any) => {
 
 const getUserProfile = async (req: any, res: any) => {
     try {
-        const user = req.user;
+        const user = req.context.user;
         const userProfile = await UserService.get(user._id);
 
         return ResponseHandler.appResponse(res, 200, true, 'User profile fetched successfully', {
