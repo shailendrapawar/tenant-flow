@@ -9,6 +9,8 @@ import { ResponseHandler } from '../shared/utils/responseHandler';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { buildContext } from '../shared/utils/contextBuilder';
+import { INIT_SYSTEM_DATA } from '../env/init_env';
+import { RoleRouter } from '../modules/access-management/role/role.routes';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -28,12 +30,16 @@ app.get('/', (req, res) => {
     return ResponseHandler.appResponse(res, 200, true, 'Server is running, Hello World!', null);
 });
 
-// api docs
+//all system data like roles,permission
+INIT_SYSTEM_DATA();
+
+// api docs============>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// app.use();
 // inject routes=======>
-app.use('/users', buildContext, UserRouter);
-app.use('/companies', buildContext, CompanyRouter);
+app.use(buildContext);
+app.use('/users', UserRouter);
+app.use('/companies', CompanyRouter);
+app.use('/roles', RoleRouter);
 
 export { app };

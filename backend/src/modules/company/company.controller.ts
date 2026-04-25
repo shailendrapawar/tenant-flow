@@ -23,6 +23,7 @@ const get = async (req: any, res: any) => {
 };
 
 const update = async (req: any, res: any) => {
+    // TODO: only update permisisons according to transition map
     try {
         const ctx = req.context;
         const { id } = req.params;
