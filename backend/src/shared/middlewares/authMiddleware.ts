@@ -1,10 +1,16 @@
 import { ResponseHandler } from '../utils/responseHandler';
 import { verifyAccessToken } from '../utils/jwt';
+import { RoleService } from '../../modules/access-management/role/role.service';
+import { RequestContext } from '../utils/contextBuilder';
+import { permission } from 'node:process';
+import { extractPermissionName } from '../utils/strings';
+import logger from '../utils/logger';
+import { populate } from 'dotenv';
 
-export const AuthMiddleware = (req: any, res: any, next: any) => {
+export const AuthMiddleware = async (req: any, res: any, next: any) => {
     try {
+        const ctx: RequestContext = req?.context;
         //1: get token from cookies
-
         const token = req.cookies['xat'];
         if (!token) {
             return ResponseHandler.appResponse(res, 401, false, 'Token not found', null);
@@ -18,7 +24,14 @@ export const AuthMiddleware = (req: any, res: any, next: any) => {
         }
 
         //3: attach user to request object
-        req.context.setUser(decoded);
+        ctx.setUser(decoded);
+
+        // fetch permissions
+        const role = await RoleService.get(ctx.user?.role || '', ctx, { populate: true });
+
+        const permissions = extractPermissionName(role?.permissions || []);
+        ctx.setPermissions(permissions);
+
         next();
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode || 401, false, error?.message, null);

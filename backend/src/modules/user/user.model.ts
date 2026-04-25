@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 import { USER_ROLES, USER_STATUS } from './user.constants';
 
-const defaultUserImage =
-    'https://as2.ftcdn.net/jpg/00/64/67/27/1000_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.webp';
+const defaultUserImage = 'https://as2.ftcdn.net/jpg/00/64/67/27/1000_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.webp';
 const userSchema = new mongoose.Schema(
     {
         firstName: {
@@ -10,22 +9,27 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true,
             maxlength: 50,
-            lowercase: true,
         },
         lastName: {
             type: String,
             //   required: true,
             trim: true,
             maxlength: 50,
-            lowercase: true,
+        },
+
+        companyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Company',
+            default: null,
         },
 
         email: {
             type: String,
             required: true,
-            unique: true,
             trim: true,
             lowercase: true,
+            index: true,
+            unique: true,
         },
         password: {
             type: String,
@@ -53,12 +57,7 @@ const userSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: [
-                USER_STATUS.ACTIVE,
-                USER_STATUS.INACTIVE,
-                USER_STATUS.SUSPENDED,
-                USER_STATUS.BANNED,
-            ],
+            enum: [USER_STATUS.ACTIVE, USER_STATUS.INACTIVE, USER_STATUS.SUSPENDED, USER_STATUS.BANNED],
             default: USER_STATUS.ACTIVE,
         },
 

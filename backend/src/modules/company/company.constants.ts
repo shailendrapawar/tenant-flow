@@ -9,12 +9,19 @@ export const COMPANY_STATUS = {
 
 // ===============================================================
 // =================COMPANY ENTITY PERMISSIONS====================
-export const COMPANY_PERMISSIONS = [
-    { name: 'company:create', description: 'Create company' },
-    { name: 'company:read', description: 'Read company' },
-    { name: 'company:list', description: 'List companies' },
-    { name: 'company:update', description: 'Update company' },
-    { name: 'company:delete', description: 'Delete company' },
+export const COMPANY_CREATE = 'company:create';
+export const COMPANY_READ = 'company:read';
+export const COMPANY_LIST = 'company:list';
+export const COMPANY_UPDATE = 'company:update';
+export const COMPANY_DELETE = 'company:delete';
+export const COMPANY_MANAGE = 'company:manage';
 
-    { name: 'company:manage', description: 'Manage company' }, //aggregate permission for admin whihc includes sensitive fileds like status
+export const COMPANY_PERMISSIONS = [
+    { name: COMPANY_CREATE, description: 'Create company' },
+    { name: COMPANY_READ, description: 'Read company' },
+    { name: COMPANY_LIST, description: 'List companies' },
+    { name: COMPANY_UPDATE, description: 'Update company' },
+    { name: COMPANY_DELETE, description: 'Delete company' },
+
+    { name: COMPANY_MANAGE, description: 'Manage company' }, //aggregate permission for admin whihc includes sensitive fileds like status
 ];

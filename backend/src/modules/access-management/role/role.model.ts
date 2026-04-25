@@ -32,4 +32,4 @@ const RoleSchema = new mongoose.Schema(
 
 export type IRole = mongoose.InferSchemaType<typeof RoleSchema>;
 
-export const RoleModel = mongoose.model<IRole>('Role', RoleSchema);
+export const RoleModel = mongoose.model('Role', RoleSchema);

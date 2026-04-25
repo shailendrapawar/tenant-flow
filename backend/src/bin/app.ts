@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { buildContext } from '../shared/utils/contextBuilder';
 import { INIT_SYSTEM_DATA } from '../env/init_env';
+import { RoleRouter } from '../modules/access-management/role/role.routes';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -38,5 +39,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // inject routes=======>
 app.use('/users', buildContext, UserRouter);
 app.use('/companies', buildContext, CompanyRouter);
+app.use('/roles', buildContext, RoleRouter);
 
 export { app };

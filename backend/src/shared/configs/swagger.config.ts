@@ -2,6 +2,7 @@ import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 import { registry } from './registry';
 import '../../modules/user/user.routes';
 import '../../modules/company/company.routes';
+import '../../modules/access-management/role/role.routes';
 
 export const swaggerSpec = new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.0',
