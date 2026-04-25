@@ -6,7 +6,7 @@ import { CreateCompanyPayload, UpdateCompanyPayload } from './company.types';
 import { USER_ROLES } from '../user/user.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { timeStamp } from 'node:console';
+import { COMPANY_MANAGE } from './company.constants';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
@@ -37,7 +37,7 @@ const set = async (
     }
 
     if (model.status) {
-        if (ctx.user?.role !== USER_ROLES.ADMIN) {
+        if (!ctx.hasAllPermissions([COMPANY_MANAGE])) {
             //throw error if not admin
             // TODO: also add journal who dare to do this shit
             return throwAppError('forbidden', 403);
@@ -75,9 +75,9 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Comp
         query = CompanyModel.findById({ _id: id });
     } else {
         //other user else than admin add ownership here
-
         query = CompanyModel.findOne({ owner: user?._id, _id: id });
     }
+
     if (options?.populate) {
         query = query.populate(populate);
     }

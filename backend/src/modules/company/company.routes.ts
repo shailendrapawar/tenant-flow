@@ -4,6 +4,8 @@ import express from 'express';
 import { CompanyControler } from './company.controller';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { CompanySearchQuerySchema, UpdateCompanySchema } from './company.validators';
+import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
+import { USER_ROLES } from '../user/user.constants';
 export const CompanyRouter = express.Router();
 // =================================================
 // ============ register swagger config ============
@@ -70,7 +72,20 @@ registry.registerPath({
 // =========================================
 
 // ============ register routes ============
-CompanyRouter.use(AuthMiddleware); //group level middleware
-CompanyRouter.get('/:id', CompanyControler.get);
-CompanyRouter.get('/', CompanyControler.search);
-CompanyRouter.put('/:id', CompanyControler.update);
+CompanyRouter.use(AuthMiddleware); //group level auth middleware
+
+
+CompanyRouter.get('/:id',
+    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
+    CompanyControler.get
+);
+
+CompanyRouter.get('/',
+    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
+    CompanyControler.search
+);
+
+CompanyRouter.put('/:id',
+    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
+    CompanyControler.update
+);

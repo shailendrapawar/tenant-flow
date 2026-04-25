@@ -2,7 +2,7 @@
 
 import { NextFunction } from 'express';
 
-export const authorizeRole = (...roles: string[]) => {
+export const authorizedRoles = (roles: string[]) => {
     return (req: any, res: any, next: NextFunction) => {
         if (!req.context?.user?.role) {
             return res.status(401).json({ error: 'Unauthorized, no role found' });

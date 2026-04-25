@@ -42,12 +42,23 @@ export const buildContext = (req: any, res: any, next: any) => {
 
         // either this OR that
         hasAnyPermissions(required: string[]) {
-            return req.context.permissions.some((perm: string) => required.includes(perm));
+            for (const item of required) {
+                if (req.context.permissions.includes(item)) {
+                    return true
+                }
+            }
+            return false
         },
 
         // must have this AND that
         hasAllPermissions(required: string[]) {
-            return required.every((perm: string) => req.context.permissions.includes(perm));
+
+            for (const item of required) {
+                if (!req.context.permissions.includes(item)) {
+                    return false
+                }
+            }
+            return true
         },
     };
     req.context = context;

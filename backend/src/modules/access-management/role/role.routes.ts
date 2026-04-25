@@ -4,6 +4,8 @@ import express from 'express';
 import { RoleController } from './role.controller';
 import { registry } from '../../../shared/configs/registry';
 import { AuthMiddleware } from '../../../shared/middlewares/authMiddleware';
+import { authorizedRoles } from '../../../shared/middlewares/authorizeMiddleware';
+import { USER_ROLES } from '../../user/user.constants';
 
 export const RoleRouter = express.Router();
 
@@ -30,4 +32,9 @@ registry.registerPath({
 
 // =========================================
 // ============ register routes ============
-RoleRouter.get('/:id', AuthMiddleware, RoleController.get);
+RoleRouter.use(AuthMiddleware) //group level auth middleware
+
+RoleRouter.get('/:id',
+    authorizedRoles([USER_ROLES.ADMIN]),
+    RoleController.get
+);
