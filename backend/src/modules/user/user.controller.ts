@@ -187,9 +187,10 @@ const get = async (req: any, res: any) => {
 
 export const UserController = {
     registerAdmin,
-    login,
     register,
+    login,
     logout,
+
     getUserProfile,
     update,
     get
