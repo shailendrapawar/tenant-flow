@@ -10,6 +10,7 @@ import { CompanyService } from '../company/company.service';
 import { AUTH_TOKENS, USER_ROLES } from './user.constants';
 import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
 import { RequestContext } from '../../shared/utils/contextBuilder';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 
 const registerAdmin = async (req: any, res: any) => {
     try {
@@ -184,6 +185,27 @@ const get = async (req: any, res: any) => {
         );
     }
 }
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+
+        const users = await CompanyService.search(query, ctx, { pagination })
+
+        return ResponseHandler.appResponse(res, 200, true, 'Users retrieved successfully', users);
+
+    } catch (error: any) {
+        logger.error('Get users search error:', error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message || 'Logout failed',
+            null,
+        );
+    }
+}
 
 export const UserController = {
     registerAdmin,
@@ -193,5 +215,6 @@ export const UserController = {
 
     getUserProfile,
     update,
-    get
+    get,
+    search
 };

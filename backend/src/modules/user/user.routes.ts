@@ -1,11 +1,13 @@
 import express from 'express';
 import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
-import { LoginSchema, RegisterSchema, UpdateUserSchema } from './user.validators';
+import { LoginSchema, RegisterSchema, UpdateUserSchema, UserSearchQuerySchema } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { buildContext } from '../../shared/utils/contextBuilder';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from './user.constants';
+import { UserService } from './user.service';
+import { Query } from 'mongoose';
 export const UserRouter = express.Router();
 
 // ====================================
@@ -110,6 +112,22 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
+
+registry.registerPath({
+    method: 'get',
+    path: '/users',
+    tags: ['Users'],
+    summary: 'Search users',
+
+    request: {
+        query: UserSearchQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Companies retrieved successfully' },
+        404: { description: 'Companies not found' },
+    },
+});
 // =========================================
 // ============ register routes ============
 
@@ -123,6 +141,11 @@ UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 UserRouter.get("/:id", AuthMiddleware,
     authorizedRoles([USER_ROLES.ADMIN]),
     UserController.get
+)
+
+UserRouter.get("/", AuthMiddleware,
+    authorizedRoles([USER_ROLES.ADMIN]),
+    UserController.search
 )
 
 UserRouter.put("/:id", AuthMiddleware,

@@ -76,9 +76,30 @@ const GET = async (keyword: string, ctx: RequestContext, options?: any): Promise
     return await query;
 };
 
-const SEARCH = () => { };
-const UPDATE = async (id: string, model: UpdateUserPayload, ctx: RequestContext): Promise<UserDocument> => {
+const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
+    let sort: any = {
+        timeStamp: -1,
+    };
+    let where: any = {};
 
+    if (query.status) {
+        where.status = query.status;
+    }
+
+    if (query.name) {
+        where.name = { $regex: query.name, $options: 'i' };
+    }
+    const countPromise = UserModel.countDocuments(where);
+    const itemsPromise = UserModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
+    const [count, companies] = await Promise.all([countPromise, itemsPromise]);
+    return { count, companies };
+};
+
+const UPDATE = async (id: string, model: UpdateUserPayload, ctx: RequestContext): Promise<UserDocument> => {
 
     let entity = await UserService.get(id, ctx);
 
