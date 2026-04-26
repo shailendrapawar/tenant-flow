@@ -1,27 +1,29 @@
 import mongoose from 'mongoose';
 import { IUser, UserModel } from './user.model';
-import { LoginPayload, RegisterPayload } from './user.validators';
+import { LoginPayload, RegisterPayload, UpdateUserPayload } from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwAppError } from '../../shared/utils/error';
 
 import { HydratedDocument } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { CreateCompanyPayload } from '../company/company.types';
-import { USER_ROLES } from './user.constants';
+import { RequestContext } from '../../shared/utils/contextBuilder';
 
 type UserDocument = HydratedDocument<IUser> | null;
 
 const populate: any[] = [];
 
-const set = (payload: any) => {
-    console.log(payload);
+const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestContext): Promise<UserDocument> => {
+    // console.log(payload);
+
+    return entity
 };
 
-const create = async (model: RegisterPayload): Promise<UserDocument> => {
+const create = async (model: RegisterPayload, ctx: RequestContext): Promise<UserDocument> => {
     let user = null;
 
     // 1: get if existing user
-    user = await GET(model.email, { lean: true });
+    user = await GET(model.email, ctx, { lean: true });
 
     if (user) {
         return throwAppError('User already exists with this email', 400);
@@ -46,14 +48,14 @@ const create = async (model: RegisterPayload): Promise<UserDocument> => {
         ownerEmail: model.email,
     };
 
-    await CompanyService.create(newCompanyPayload);
+    await CompanyService.create(newCompanyPayload, ctx);
 
     return user;
 };
 
 // ====================================
 // ============ export methods ============
-const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
+const GET = async (keyword: string, ctx: RequestContext, options?: any): Promise<UserDocument> => {
     let query = null;
 
     if (mongoose.isValidObjectId(keyword)) {
@@ -74,19 +76,33 @@ const GET = async (keyword: string, options?: any): Promise<UserDocument> => {
     return await query;
 };
 
-const SEARCH = () => {};
-const UPDATE = () => {};
+const SEARCH = () => { };
+const UPDATE = async (id: string, model: UpdateUserPayload, ctx: RequestContext): Promise<UserDocument> => {
 
-const REGISTER = async (model: RegisterPayload): Promise<UserDocument> => {
+
+    let entity = await UserService.get(id, ctx);
+
+    if (!entity) {
+        return throwAppError("User not found", 404)
+    }
+
+    entity = await set(model, entity, ctx)
+
+    await entity?.save()
+
+    return entity
+};
+
+const REGISTER = async (model: RegisterPayload, ctx: RequestContext): Promise<UserDocument> => {
     // create user
-    const user = await create(model);
+    const user = await create(model, ctx);
     //perform side effects like mailing of onboard
     return user;
 };
 
-const LOGIN = async (model: LoginPayload): Promise<UserDocument> => {
+const LOGIN = async (model: LoginPayload, ctx: RequestContext): Promise<UserDocument> => {
     // get user
-    let user = await GET(model.email, {});
+    let user = await GET(model.email, ctx);
 
     if (!user) {
         return throwAppError('User does not exist', 400);

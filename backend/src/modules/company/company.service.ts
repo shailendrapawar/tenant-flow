@@ -51,7 +51,7 @@ const set = async (
 
     return entity;
 };
-const CREATE = async (payload: CreateCompanyPayload): Promise<CompanyDocument> => {
+const CREATE = async (payload: CreateCompanyPayload, ctx: RequestContext): Promise<CompanyDocument> => {
     const newCompany = new CompanyModel({
         name: payload.companyNamePrefix?.toUpperCase() + ' Accomodations',
         owner: payload.ownerID,
@@ -118,7 +118,7 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     return { count, companies };
 };
 
-const UPDATE = async (id: string, model: UpdateCompanyPayload, ctx: RequestContext) => {
+const UPDATE = async (id: string, model: UpdateCompanyPayload, ctx: RequestContext): Promise<CompanyDocument> => {
     let entity = await GET(id, ctx);
 
     if (!entity) {

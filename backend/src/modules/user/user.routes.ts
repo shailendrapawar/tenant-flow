@@ -1,9 +1,11 @@
 import express from 'express';
 import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
-import { LoginSchema, RegisterSchema } from './user.validators';
+import { LoginSchema, RegisterSchema, UpdateUserSchema } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { buildContext } from '../../shared/utils/contextBuilder';
+import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
+import { USER_ROLES } from './user.constants';
 export const UserRouter = express.Router();
 
 // ====================================
@@ -11,7 +13,7 @@ export const UserRouter = express.Router();
 registry.registerPath({
     method: 'post',
     path: '/users/auth/register',
-    tags: ['User-auth'],
+    tags: ['Users-auth'],
     summary: 'Register a new user',
     request: {
         body: {
@@ -27,7 +29,7 @@ registry.registerPath({
 registry.registerPath({
     method: 'post',
     path: '/users/auth/login',
-    tags: ['User-auth'],
+    tags: ['Users-auth'],
     summary: 'Login a user',
     request: {
         body: {
@@ -43,7 +45,7 @@ registry.registerPath({
 registry.registerPath({
     method: 'post',
     path: '/users/auth/logout',
-    tags: ['User-auth'],
+    tags: ['Users-auth'],
     summary: 'Logout a user',
     request: {},
     responses: {
@@ -52,27 +54,83 @@ registry.registerPath({
     },
 });
 
+
 registry.registerPath({
     method: 'get',
     path: '/users/me',
-    tags: ['User'],
+    tags: ['Users'],
     summary: 'Get Logged in user profile',
-    request: {},
     responses: {
         201: { description: 'User profile fetched successfully' },
         400: { description: 'Validation error' },
     },
 });
 
+registry.registerPath({
+    method: 'put',
+    path: '/users/:id',
+    tags: ['Users'],
+    summary: 'Update a  user',
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+    request: {
+        body: {
+            content: { 'application/json': { schema: UpdateUserSchema } },
+            required: true,
+        },
+    },
+    responses: {
+        201: { description: 'User updated successfully' },
+        400: { description: 'Validation error' },
+    },
+});
+
+registry.registerPath({
+    method: 'get',
+    path: '/users/:id',
+    tags: ['Users'],
+    summary: 'Get a user',
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+
+    responses: {
+        200: { description: 'Get user' },
+        400: { description: 'Validation error' },
+    },
+});
 // =========================================
 // ============ register routes ============
+
+//auth routes
 UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
+
+//user routes
+UserRouter.get("/:id", AuthMiddleware,
+    authorizedRoles([USER_ROLES.ADMIN]),
+    UserController.get
+)
+
+UserRouter.put("/:id", AuthMiddleware,
+    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
+    UserController.update
+)
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
 
-// UserRouter.get('/:id', UserController.getById);
-// UserRouter.get('/', UserController.search);
+
 
 // export default UserRouter;

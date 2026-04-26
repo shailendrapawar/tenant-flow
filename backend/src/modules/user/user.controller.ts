@@ -1,6 +1,6 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
-import { UserValidators } from './user.validators';
+import { LoginSchema, RegisterSchema, UpdateUserSchema } from './user.validators';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
@@ -24,7 +24,7 @@ const login = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.ctx;
         //1: validations
-        const { data, success, error } = UserValidators.LoginSchema.safeParse(req.body);
+        const { data, success, error } = LoginSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -36,7 +36,7 @@ const login = async (req: any, res: any) => {
 
         let authUser = {};
         //2: call user  service
-        let user = await UserService.login(data);
+        let user = await UserService.login(data, ctx);
 
         if (!user) {
             return throwAppError('Invalid credentials', 401);
@@ -71,8 +71,9 @@ const login = async (req: any, res: any) => {
 
 const register = async (req: any, res: any) => {
     try {
+        const ctx: RequestContext = req.ctx;
         //1: validation handling
-        const { data, success, error } = UserValidators.RegisterSchema.safeParse(req.body);
+        const { data, success, error } = RegisterSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -83,7 +84,7 @@ const register = async (req: any, res: any) => {
         }
 
         //2: call service
-        const user = await UserService.register(data);
+        const user = await UserService.register(data, ctx);
 
         return ResponseHandler.appResponse(res, 201, true, 'User created successfully', MapUserDTO(user, 'auth'));
     } catch (error: any) {
@@ -93,8 +94,9 @@ const register = async (req: any, res: any) => {
 
 const getUserProfile = async (req: any, res: any) => {
     try {
+        const ctx: RequestContext = req.ctx;
         const user = req.context.user;
-        const userProfile = await UserService.get(user._id);
+        const userProfile = await UserService.get(user._id, ctx);
 
         return ResponseHandler.appResponse(res, 200, true, 'User profile fetched successfully', {
             user: MapUserDTO(userProfile, user.role), // send user data based on role
@@ -123,6 +125,65 @@ const logout = async (req: any, res: any) => {
         );
     }
 };
+const update = async (req: any, res: any) => {
+    try {
+
+        const ctx = req.context;
+        const { id } = req.params;
+        if (id?.trim() == '') {
+            return throwAppError('Invalid company id', 400);
+        }
+
+        const { data, success, error } = UpdateUserSchema.safeParse(req.body)
+
+        if (!success) {
+            const validationErrors = formatZodError(error);
+
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+
+        const user = await UserService.update(id, data, ctx)
+
+        return ResponseHandler.appResponse(res, 201, true, 'User updated successfully', MapUserDTO(user, ctx?.user?.role));
+
+    } catch (error: any) {
+        logger.error('User update Error:', error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message || 'Logout failed',
+            null,
+        );
+    }
+}
+
+const get = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid company id', 400);
+        }
+
+        const user = await UserService.get(id, ctx);
+
+        return ResponseHandler.appResponse(res, 200, true, 'User retrieved successfully', MapUserDTO(user, ctx.user.role));
+
+    } catch (error: any) {
+        logger.error('Get user error:', error);
+        return ResponseHandler.appResponse(
+            res,
+            error?.statusCode || 500,
+            false,
+            error?.message || 'Logout failed',
+            null,
+        );
+    }
+}
 
 export const UserController = {
     registerAdmin,
@@ -130,4 +191,6 @@ export const UserController = {
     register,
     logout,
     getUserProfile,
+    update,
+    get
 };

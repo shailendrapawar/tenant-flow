@@ -16,7 +16,9 @@ export const LoginSchema = z.object({
 
 export type LoginPayload = z.infer<typeof LoginSchema>;
 
-registry.register('RegisterPayload', RegisterSchema);
-registry.register('LoginPayload', LoginSchema);
-
-export const UserValidators = { RegisterSchema, LoginSchema };
+export const UpdateUserSchema = z.object({
+    firstName: z.string().min(1).openapi({ example: 'john' }),
+    lastName: z.string().openapi({ example: 'doe' }),
+    status: z.string().openapi({ example: 'inactive' }),
+})
+export type UpdateUserPayload = z.infer<typeof UpdateUserSchema>;

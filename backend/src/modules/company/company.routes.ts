@@ -16,7 +16,7 @@ registry.registerPath({
     summary: 'Get a company',
     parameters: [
         {
-            name: 'id',
+            name: 'id2',
             in: 'path',
             required: true,
             schema: { type: 'string' },
