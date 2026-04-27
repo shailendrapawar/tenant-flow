@@ -3,7 +3,7 @@ import { registry } from '../../shared/configs/registry';
 import express from 'express';
 import { CompanyControler } from './company.controller';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { CompanySearchQuerySchema, UpdateCompanySchema } from './company.validators';
+import { SearchCompanyQuerySchema, UpdateCompanyPayloadSchema } from './company.validators';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
 export const CompanyRouter = express.Router();
@@ -35,7 +35,7 @@ registry.registerPath({
     summary: 'Search companies',
 
     request: {
-        query: CompanySearchQuerySchema,
+        query: SearchCompanyQuerySchema,
     },
 
     responses: {
@@ -59,7 +59,7 @@ registry.registerPath({
     ],
     request: {
         body: {
-            content: { 'application/json': { schema: UpdateCompanySchema } },
+            content: { 'application/json': { schema: UpdateCompanyPayloadSchema } },
             required: true,
         },
     },

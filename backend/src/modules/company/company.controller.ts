@@ -5,7 +5,7 @@ import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapCompanyDTO } from './company.dto';
 import { CompanyService } from './company.service';
-import { UpdateCompanySchema } from './company.validators';
+import { UpdateCompanyPayloadSchema } from './company.validators';
 
 const get = async (req: any, res: any) => {
     try {
@@ -39,7 +39,7 @@ const update = async (req: any, res: any) => {
         if (id?.trim() == '') {
             return throwAppError('Invalid company id', 400);
         }
-        const { data, success, error } = UpdateCompanySchema.safeParse(req.body);
+        const { data, success, error } = UpdateCompanyPayloadSchema.safeParse(req.body);
         if (!success) {
             const validationErrors = formatZodError(error);
 

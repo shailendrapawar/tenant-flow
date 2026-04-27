@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { COMPANY_STATUS } from './company.constants';
-import { settings } from 'node:cluster';
 
-export const UpdateCompanySchema = z.object({
+// 1: Update =======================>
+export const UpdateCompanyPayloadSchema = z.object({
     name: z.string().min(1).openapi({ example: 'john' }),
     logo: z
         .object({
@@ -49,9 +49,9 @@ export const UpdateCompanySchema = z.object({
         })
         .optional(),
 });
-export type UpdateCompanySchema = z.infer<typeof UpdateCompanySchema>;
+export type UpdateCompanyPayloadType = z.infer<typeof UpdateCompanyPayloadSchema>;
 
-export const CompanySearchQuerySchema = z.object({
+export const SearchCompanyQuerySchema = z.object({
     name: z.string().optional(),
 
     status: z.enum([COMPANY_STATUS.ACTIVE, COMPANY_STATUS.INACTIVE]).optional(),
@@ -70,3 +70,5 @@ export const CompanySearchQuerySchema = z.object({
 
     // order: z.enum(['asc', 'desc']).optional().default('desc'),
 });
+
+export type SearchCompanyQueryType = z.infer<typeof SearchCompanyQuerySchema>;

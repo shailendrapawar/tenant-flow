@@ -2,12 +2,12 @@
 
 import { HydratedDocument } from 'mongoose';
 import { CompanyModel, ICompany } from './company.model';
-import { CreateCompanyPayload, UpdateCompanyPayload } from './company.types';
+import { CreateCompanyPayload } from './company.types';
 import { USER_ROLES } from '../user/user.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { COMPANY_MANAGE } from './company.constants';
-import { UpdateCompanySchema } from './company.validators';
+import { UpdateCompanyPayloadType } from './company.validators';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
@@ -15,7 +15,7 @@ const populate = [{ path: 'owner', select: 'email' }];
 // ============ export methods ============
 
 const set = async (
-    model: UpdateCompanySchema,
+    model: UpdateCompanyPayloadType,
     entity: HydratedDocument<ICompany>,
     ctx: RequestContext,
 ): Promise<CompanyDocument> => {
@@ -119,7 +119,7 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     return { count, companies };
 };
 
-const UPDATE = async (id: string, model: UpdateCompanySchema, ctx: RequestContext): Promise<CompanyDocument> => {
+const UPDATE = async (id: string, model: UpdateCompanyPayloadType, ctx: RequestContext): Promise<CompanyDocument> => {
     let entity = await GET(id, ctx);
 
     if (!entity) {
