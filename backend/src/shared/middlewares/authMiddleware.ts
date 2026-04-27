@@ -3,12 +3,17 @@ import { verifyAccessToken } from '../utils/jwt';
 import { RoleService } from '../../modules/access-management/role/role.service';
 import { RequestContext } from '../utils/contextBuilder';
 import { extractPermissionName } from '../utils/strings';
+import { AUTH_TOKENS } from '../../modules/user/user.constants';
 
 export const AuthMiddleware = async (req: any, res: any, next: any) => {
     try {
         const ctx: RequestContext = req?.context;
+        if (!ctx) {
+            return ResponseHandler.appResponse(res, 401, false, 'Context not found', null);
+        }
+
         //1: get token from cookies
-        const token = req.cookies['xat'];
+        const token = req.cookies[AUTH_TOKENS.XAT];
         if (!token) {
             return ResponseHandler.appResponse(res, 401, false, 'Token not found', null);
         }

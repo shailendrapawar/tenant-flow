@@ -1,13 +1,16 @@
 import express from 'express';
 import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
-import { LoginSchema, RegisterSchema, UpdateUserSchema, UserSearchQuerySchema } from './user.validators';
+import {
+    LoginPayloadSchema,
+    RegisterPayloadSchema,
+    UpdateUserPayloadSchema,
+    SearchUserQuerySchema,
+} from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { buildContext } from '../../shared/utils/contextBuilder';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from './user.constants';
-import { UserService } from './user.service';
-import { Query } from 'mongoose';
+
 export const UserRouter = express.Router();
 
 // ====================================
@@ -19,7 +22,7 @@ registry.registerPath({
     summary: 'Register a new user',
     request: {
         body: {
-            content: { 'application/json': { schema: RegisterSchema } },
+            content: { 'application/json': { schema: RegisterPayloadSchema } },
             required: true,
         },
     },
@@ -35,7 +38,7 @@ registry.registerPath({
     summary: 'Login a user',
     request: {
         body: {
-            content: { 'application/json': { schema: LoginSchema } },
+            content: { 'application/json': { schema: LoginPayloadSchema } },
             required: true,
         },
     },
@@ -55,7 +58,6 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
-
 
 registry.registerPath({
     method: 'get',
@@ -83,7 +85,7 @@ registry.registerPath({
     ],
     request: {
         body: {
-            content: { 'application/json': { schema: UpdateUserSchema } },
+            content: { 'application/json': { schema: UpdateUserPayloadSchema } },
             required: true,
         },
     },
@@ -120,7 +122,7 @@ registry.registerPath({
     summary: 'Search users',
 
     request: {
-        query: UserSearchQuerySchema,
+        query: SearchUserQuerySchema,
     },
 
     responses: {
@@ -136,24 +138,12 @@ UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
-
 //user routes
-UserRouter.get("/:id", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN]),
-    UserController.get
-)
+UserRouter.get('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.get);
 
-UserRouter.get("/", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN]),
-    UserController.search
-)
+UserRouter.get('/', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.search);
 
-UserRouter.put("/:id", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    UserController.update
-)
+UserRouter.put('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), UserController.update);
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
-
-
 
 // export default UserRouter;

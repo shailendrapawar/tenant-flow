@@ -11,6 +11,7 @@ import cors from 'cors';
 import { buildContext } from '../shared/utils/contextBuilder';
 import { INIT_SYSTEM_DATA } from '../env/init_env';
 import { RoleRouter } from '../modules/access-management/role/role.routes';
+import { PropertyRouter } from '../modules/property/property.routes';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -41,5 +42,6 @@ app.use(buildContext);
 app.use('/users', UserRouter);
 app.use('/companies', CompanyRouter);
 app.use('/roles', RoleRouter);
+app.use('/properties', PropertyRouter);
 
 export { app };

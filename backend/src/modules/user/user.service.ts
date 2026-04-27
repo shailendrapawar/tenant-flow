@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { IUser, UserModel } from './user.model';
-import { LoginPayload, RegisterPayload, UpdateUserPayload } from './user.validators';
+import { LoginPayloadType, RegisterPayloadType, UpdateUserPayloadType } from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwAppError } from '../../shared/utils/error';
 
@@ -16,10 +16,10 @@ const populate: any[] = [];
 const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestContext): Promise<UserDocument> => {
     // console.log(payload);
 
-    return entity
+    return entity;
 };
 
-const create = async (model: RegisterPayload, ctx: RequestContext): Promise<UserDocument> => {
+const create = async (model: RegisterPayloadType, ctx: RequestContext): Promise<UserDocument> => {
     let user = null;
 
     // 1: get if existing user
@@ -99,29 +99,28 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     return { count, companies };
 };
 
-const UPDATE = async (id: string, model: UpdateUserPayload, ctx: RequestContext): Promise<UserDocument> => {
-
+const UPDATE = async (id: string, model: UpdateUserPayloadType, ctx: RequestContext): Promise<UserDocument> => {
     let entity = await UserService.get(id, ctx);
 
     if (!entity) {
-        return throwAppError("User not found", 404)
+        return throwAppError('User not found', 404);
     }
 
-    entity = await set(model, entity, ctx)
+    entity = await set(model, entity, ctx);
 
-    await entity?.save()
+    await entity?.save();
 
-    return entity
+    return entity;
 };
 
-const REGISTER = async (model: RegisterPayload, ctx: RequestContext): Promise<UserDocument> => {
+const REGISTER = async (model: RegisterPayloadType, ctx: RequestContext): Promise<UserDocument> => {
     // create user
     const user = await create(model, ctx);
     //perform side effects like mailing of onboard
     return user;
 };
 
-const LOGIN = async (model: LoginPayload, ctx: RequestContext): Promise<UserDocument> => {
+const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<UserDocument> => {
     // get user
     let user = await GET(model.email, ctx);
 

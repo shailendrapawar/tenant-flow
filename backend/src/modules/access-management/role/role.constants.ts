@@ -1,6 +1,13 @@
 // Role Constants
 
 import { COMPANY_CREATE, COMPANY_MANAGE, COMPANY_READ, COMPANY_UPDATE } from '../../company/company.constants';
+import {
+    PROPERTY_CREATE,
+    PROPERTY_DELETE,
+    PROPERTY_MANAGE,
+    PROPERTY_READ,
+    PROPERTY_UPDATE,
+} from '../../property/property.constants';
 import { USER_MANAGE, USER_ROLES } from '../../user/user.constants';
 
 // =========================================
@@ -9,7 +16,7 @@ import { USER_MANAGE, USER_ROLES } from '../../user/user.constants';
 export const SYSTEM_ROLES = [
     {
         name: USER_ROLES.ADMIN,
-        permissions: [USER_MANAGE, COMPANY_MANAGE],
+        permissions: [USER_MANAGE, COMPANY_MANAGE, PROPERTY_MANAGE],
         description: 'System administrator with full access',
         isSystem: true,
     },
@@ -21,6 +28,10 @@ export const SYSTEM_ROLES = [
             COMPANY_CREATE,
             COMPANY_READ,
             COMPANY_UPDATE,
+            //property permissions
+            PROPERTY_CREATE,
+            PROPERTY_READ,
+            PROPERTY_UPDATE,
         ],
         description: 'Property landlord with limited access',
         isSystem: true,

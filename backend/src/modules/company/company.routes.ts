@@ -3,7 +3,7 @@ import { registry } from '../../shared/configs/registry';
 import express from 'express';
 import { CompanyControler } from './company.controller';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { CompanySearchQuerySchema, UpdateCompanySchema } from './company.validators';
+import { SearchCompanyQuerySchema, UpdateCompanyPayloadSchema } from './company.validators';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
 export const CompanyRouter = express.Router();
@@ -16,7 +16,7 @@ registry.registerPath({
     summary: 'Get a company',
     parameters: [
         {
-            name: 'id2',
+            name: 'id',
             in: 'path',
             required: true,
             schema: { type: 'string' },
@@ -35,7 +35,7 @@ registry.registerPath({
     summary: 'Search companies',
 
     request: {
-        query: CompanySearchQuerySchema,
+        query: SearchCompanyQuerySchema,
     },
 
     responses: {
@@ -59,7 +59,7 @@ registry.registerPath({
     ],
     request: {
         body: {
-            content: { 'application/json': { schema: UpdateCompanySchema } },
+            content: { 'application/json': { schema: UpdateCompanyPayloadSchema } },
             required: true,
         },
     },
@@ -74,18 +74,8 @@ registry.registerPath({
 // ============ register routes ============
 CompanyRouter.use(AuthMiddleware); //group level auth middleware
 
+CompanyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.get);
 
-CompanyRouter.get('/:id',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.get
-);
+CompanyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.search);
 
-CompanyRouter.get('/',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.search
-);
-
-CompanyRouter.put('/:id',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.update
-);
+CompanyRouter.put('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.update);
