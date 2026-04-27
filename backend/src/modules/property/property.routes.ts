@@ -2,7 +2,11 @@
 import express from 'express';
 import { registry } from '../../shared/configs/registry';
 import { PropertyController } from './property.controller';
-import { CreatePropertySchema, PropertySearchQuerySchema, UpdatePropertySchema } from './property.validators';
+import {
+    CreatePropertyPayloadSchema,
+    SearchPropertyQuerySchema,
+    UpdatePropertyPayloadSchema,
+} from './property.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
@@ -18,7 +22,7 @@ registry.registerPath({
     summary: 'Add new Property',
     request: {
         body: {
-            content: { 'application/json': { schema: CreatePropertySchema } },
+            content: { 'application/json': { schema: CreatePropertyPayloadSchema } },
             required: true,
         },
     },
@@ -56,7 +60,7 @@ registry.registerPath({
     summary: 'Search properties',
 
     request: {
-        query: PropertySearchQuerySchema,
+        query: SearchPropertyQuerySchema,
     },
 
     responses: {
@@ -80,7 +84,7 @@ registry.registerPath({
     ],
     request: {
         body: {
-            content: { 'application/json': { schema: UpdatePropertySchema } },
+            content: { 'application/json': { schema: UpdatePropertyPayloadSchema } },
             required: true,
         },
     },

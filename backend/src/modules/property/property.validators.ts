@@ -3,8 +3,8 @@
 import z from 'zod';
 import { PROPERTY_ACQUISITION_TYPES, PROPERTY_STATUS, PROPERTY_TYPES } from './property.constants';
 
-//1:create
-export const CreatePropertySchema = z.object({
+//1: create===========================================>
+export const CreatePropertyPayloadSchema = z.object({
     name: z.string().min(1).openapi({ example: 'jantwal properties' }),
     location: z.object({
         addressLine1: z.string().min(1).openapi({ example: '123 Main St' }),
@@ -37,10 +37,10 @@ export const CreatePropertySchema = z.object({
     }),
     description: z.string().optional().openapi({ example: 'A beautiful apartment in the heart of the city' }),
 });
-export type CreatePropertyPayload = z.infer<typeof CreatePropertySchema>;
+export type CreatePropertyPayloadType = z.infer<typeof CreatePropertyPayloadSchema>;
 
-//2: update
-export const UpdatePropertySchema = z.object({
+//2: update ========================================>
+export const UpdatePropertyPayloadSchema = z.object({
     name: z.string().min(1).optional().openapi({ example: 'jantwal properties' }),
     location: z
         .object({
@@ -83,10 +83,10 @@ export const UpdatePropertySchema = z.object({
             description: `Available values: ${Object.values(PROPERTY_STATUS).join(', ')}`,
         }),
 });
-export type UpdatePropertySchema = z.infer<typeof UpdatePropertySchema>;
+export type UpdatePropertyPayloadType = z.infer<typeof UpdatePropertyPayloadSchema>;
 
-//search
-export const PropertySearchQuerySchema = z.object({
+//search  ===========================================>
+export const SearchPropertyQuerySchema = z.object({
     name: z.string().optional(),
     type: z
         .enum([PROPERTY_TYPES.APARTMENT, PROPERTY_TYPES.HOUSE, PROPERTY_TYPES.HOSTEL, PROPERTY_TYPES.COMMERCIAL])
@@ -110,4 +110,4 @@ export const PropertySearchQuerySchema = z.object({
     }),
 });
 
-export type PropertySearchQuerySchema = z.infer<typeof PropertySearchQuerySchema>;
+export type SearchPropertyQueryType = z.infer<typeof SearchPropertyQuerySchema>;

@@ -6,12 +6,12 @@ import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapPropertyDTO } from './property.dto';
 import { PropertyService } from './property.service';
-import { CreatePropertySchema, UpdatePropertySchema } from './property.validators';
+import { CreatePropertyPayloadSchema, UpdatePropertyPayloadSchema } from './property.validators';
 
 const create = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.context;
-        const { success, data, error } = CreatePropertySchema.safeParse(req.body);
+        const { success, data, error } = CreatePropertyPayloadSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -78,7 +78,7 @@ const update = async (req: any, res: any) => {
             return throwAppError('Invalid property id', 400);
         }
 
-        const { data, success, error } = UpdatePropertySchema.safeParse(req.body);
+        const { data, success, error } = UpdatePropertyPayloadSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);

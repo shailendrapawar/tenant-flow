@@ -3,7 +3,7 @@
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { HydratedDocument } from 'mongoose';
 import { IProperty, PropertyModel } from './property.model';
-import { CreatePropertyPayload, PropertySearchQuerySchema, UpdatePropertySchema } from './property.validators';
+import { CreatePropertyPayloadType, SearchPropertyQueryType, UpdatePropertyPayloadType } from './property.validators';
 import { PROPERTY_ACQUISITION_TYPES, PROPERTY_MANAGE } from './property.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { USER_ROLES } from '../user/user.constants';
@@ -17,7 +17,7 @@ const populate = [
     },
 ];
 
-const set = (model: UpdatePropertySchema, entity: HydratedDocument<IProperty>, ctx: RequestContext) => {
+const set = (model: UpdatePropertyPayloadType, entity: HydratedDocument<IProperty>, ctx: RequestContext) => {
     if (model.name) {
         entity.name = model.name;
     }
@@ -43,7 +43,7 @@ const set = (model: UpdatePropertySchema, entity: HydratedDocument<IProperty>, c
     return entity;
 };
 
-const CREATE = async (payload: CreatePropertyPayload, ctx: RequestContext): Promise<PropertyDocument> => {
+const CREATE = async (payload: CreatePropertyPayloadType, ctx: RequestContext): Promise<PropertyDocument> => {
     const newProperty = new PropertyModel({
         name: payload.name,
         location: payload.location,
@@ -96,7 +96,7 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Prop
     return property;
 };
 
-const SEARCH = async (query: PropertySearchQuerySchema, ctx: RequestContext, options?: any) => {
+const SEARCH = async (query: SearchPropertyQueryType, ctx: RequestContext, options?: any) => {
     const user = ctx.user;
     let sort: any = {
         timeStamp: -1,
@@ -141,7 +141,7 @@ const SEARCH = async (query: PropertySearchQuerySchema, ctx: RequestContext, opt
     const [count, properties] = await Promise.all([countPromise, itemsPromise]);
     return { count, properties };
 };
-const UPDATE = async (id: string, model: UpdatePropertySchema, ctx: RequestContext) => {
+const UPDATE = async (id: string, model: UpdatePropertyPayloadType, ctx: RequestContext) => {
     let entity = await GET(id, ctx);
     if (!entity) {
         return throwAppError('Property not found', 404);
