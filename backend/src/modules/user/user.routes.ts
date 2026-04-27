@@ -6,6 +6,7 @@ import {
     RegisterPayloadSchema,
     UpdateUserPayloadSchema,
     SearchUserQuerySchema,
+    InitializeAdminPayloadSchema,
 } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
@@ -15,6 +16,22 @@ export const UserRouter = express.Router();
 
 // ====================================
 // ============ register swagger config ============
+registry.registerPath({
+    method: 'post',
+    path: '/users/auth/init-admin',
+    tags: ['Users-auth'],
+    summary: 'Initialize admin',
+    request: {
+        body: {
+            content: { 'application/json': { schema: InitializeAdminPayloadSchema } },
+            required: true,
+        },
+    },
+    responses: {
+        201: { description: 'Admin intiialization successfull' },
+        400: { description: 'Validation error' },
+    },
+});
 registry.registerPath({
     method: 'post',
     path: '/users/auth/register',
@@ -134,6 +151,7 @@ registry.registerPath({
 // ============ register routes ============
 
 //auth routes
+UserRouter.post("/auth/init-admin", UserController.initializeAdmin)
 UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);

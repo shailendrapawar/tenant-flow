@@ -1,6 +1,6 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
-import { LoginPayloadSchema, RegisterPayloadSchema, UpdateUserPayloadSchema } from './user.validators';
+import { InitializeAdminPayloadSchema, LoginPayloadSchema, RegisterPayloadSchema, UpdateUserPayloadSchema } from './user.validators';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
@@ -12,18 +12,34 @@ import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 
-const registerAdmin = async (req: any, res: any) => {
+const initializeAdmin = async (req: any, res: any) => {
     try {
-        // TODO: Implement admin registration logic
-    } catch (error) {
+        const ctx: RequestContext = req.context
+
+        const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body)
+
+        // FIXME: issue while registering admin
+        
+        if (!success) {
+            const validationErrors = formatZodError(error);
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+
+        const admin = UserService.initAdmin(data, ctx)
+
+        return ResponseHandler.appResponse(res, 201, true, "Admin initialized", admin)
+
+    } catch (error: any) {
         logger.error('Error registering admin:', error);
-        return ResponseHandler.appResponse(res, 500, false, 'Internal Server Error');
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
 };
 
 const login = async (req: any, res: any) => {
     try {
-        const ctx: RequestContext = req.ctx;
+        const ctx: RequestContext = req.context;
         //1: validations
         const { data, success, error } = LoginPayloadSchema.safeParse(req.body);
 
@@ -216,7 +232,7 @@ const search = async (req: any, res: any) => {
 };
 
 export const UserController = {
-    registerAdmin,
+    initializeAdmin,
     register,
     login,
     logout,

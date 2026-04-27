@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { USER_STATUS } from './user.constants';
 
+// # INIT ADMIN =================================>
+export const InitializeAdminPayloadSchema = z.object({
+    firstName: z.string().min(1).openapi({ example: 'admin' }),
+    lastName: z.string().openapi({ example: '' }),
+    email: z.string().email().openapi({ example: 'admin@example.com' }),
+    password: z.string().min(1).openapi({ example: 'Test@123' }),
+    initAdminToken: z.string().min(1).openapi({ example: 'secret token' })
+})
+export type InitializeAdminPayloadType = z.infer<typeof InitializeAdminPayloadSchema>
+
 //1: register ====================================>
 export const RegisterPayloadSchema = z.object({
     firstName: z.string().min(1).openapi({ example: 'john' }),

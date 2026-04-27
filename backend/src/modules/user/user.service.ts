@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { IUser, UserModel } from './user.model';
-import { LoginPayloadType, RegisterPayloadType, UpdateUserPayloadType } from './user.validators';
+import { InitializeAdminPayloadType, LoginPayloadType, RegisterPayloadType, UpdateUserPayloadType } from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwAppError } from '../../shared/utils/error';
 
@@ -8,26 +8,27 @@ import { HydratedDocument } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { CreateCompanyPayload } from '../company/company.types';
 import { RequestContext } from '../../shared/utils/contextBuilder';
+import { USER_ROLES } from './user.constants';
+import ENV from '../../shared/configs/app.config';
 
 type UserDocument = HydratedDocument<IUser> | null;
 
 const populate: any[] = [];
 
 const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestContext): Promise<UserDocument> => {
-    // console.log(payload);
+
+    if (model.firstName) {
+        entity.firstName = model.firstName
+    }
+    if (model.lastName) {
+        entity.lastName = model.lastName
+    }
 
     return entity;
 };
 
 const create = async (model: RegisterPayloadType, ctx: RequestContext): Promise<UserDocument> => {
     let user = null;
-
-    // 1: get if existing user
-    user = await GET(model.email, ctx, { lean: true });
-
-    if (user) {
-        return throwAppError('User already exists with this email', 400);
-    }
 
     // 2: hash password
     const salt = await bcrypt.genSalt(10);
@@ -85,6 +86,9 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     if (query.status) {
         where.status = query.status;
     }
+    if (query.role) {
+        where.role = query.role
+    }
 
     if (query.name) {
         where.name = { $regex: query.name, $options: 'i' };
@@ -95,8 +99,8 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
         .limit(options?.pagination?.limit)
         .skip(options?.pagination?.skip)
         .sort(sort);
-    const [count, companies] = await Promise.all([countPromise, itemsPromise]);
-    return { count, companies };
+    const [count, users] = await Promise.all([countPromise, itemsPromise]);
+    return { count, users };
 };
 
 const UPDATE = async (id: string, model: UpdateUserPayloadType, ctx: RequestContext): Promise<UserDocument> => {
@@ -114,8 +118,17 @@ const UPDATE = async (id: string, model: UpdateUserPayloadType, ctx: RequestCont
 };
 
 const REGISTER = async (model: RegisterPayloadType, ctx: RequestContext): Promise<UserDocument> => {
+    let user = null;
+
+    // 1: get if existing user
+    user = await GET(model.email, ctx, { lean: true });
+
+    if (user) {
+        return throwAppError('User already exists with this email', 400);
+    }
+
     // create user
-    const user = await create(model, ctx);
+    user = await create(model, ctx);
     //perform side effects like mailing of onboard
     return user;
 };
@@ -148,10 +161,44 @@ const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<User
     return user;
 };
 
+const INIT_ADMIN = async (model: InitializeAdminPayloadType, ctx: RequestContext): Promise<UserDocument> => {
+
+    
+    //1: check if any admin role already exists
+    let admin = null
+    admin = await SEARCH({ role: USER_ROLES.ADMIN }, ctx)
+
+    if (admin?.count > 0) {
+        return throwAppError("Admin already exists", 403)
+    }
+
+    //check the payload
+    const isMatch = ENV.App.INIT_ADMIN_TOKEN === model.initAdminToken
+    if (!isMatch) {
+        return throwAppError("Invalid token", 403)
+    }
+
+    // 2: hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(model.password, salt);
+
+    const newAdmin = new UserModel({
+        firstName: model.firstName,
+        lastName: model.lastName,
+        email: model.email,
+        password: hashedPassword
+    })
+
+    admin = await newAdmin.save()
+
+    return admin
+}
+
 export const UserService = {
     register: REGISTER,
     login: LOGIN,
     get: GET,
     search: SEARCH,
     update: UPDATE,
+    initAdmin: INIT_ADMIN
 };

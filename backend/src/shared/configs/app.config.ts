@@ -3,6 +3,7 @@ configDotenv();
 
 let ENV = {
     App: {
+        INIT_ADMIN_TOKEN: process.env.INIT_ADMIN_TOKEN || "",
         Port: process.env.APP_PORT || 3000,
         Host: process.env.APP_HOST || 'localhost',
         Environment: process.env.APP_ENV || 'development',
