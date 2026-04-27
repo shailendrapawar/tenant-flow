@@ -1,9 +1,9 @@
 // Property Validators
 
 import z from 'zod';
-import { PROPERTY_ACQUISITION_TYPES, PROPERTY_TYPES } from './property.constants';
+import { PROPERTY_ACQUISITION_TYPES, PROPERTY_STATUS, PROPERTY_TYPES } from './property.constants';
 
-export const createPropertySchema = z.object({
+export const CreatePropertySchema = z.object({
     name: z.string().min(1).openapi({ example: 'jantwal properties' }),
     location: z.object({
         addressLine1: z.string().min(1).openapi({ example: '123 Main St' }),
@@ -37,4 +37,31 @@ export const createPropertySchema = z.object({
     description: z.string().optional().openapi({ example: 'A beautiful apartment in the heart of the city' }),
 });
 
-export type CreatePropertyPayload = z.infer<typeof createPropertySchema>;
+export type CreatePropertyPayload = z.infer<typeof CreatePropertySchema>;
+
+//search
+export const PropertySearchQuerySchema = z.object({
+    name: z.string().optional(),
+    type: z
+        .enum([PROPERTY_TYPES.APARTMENT, PROPERTY_TYPES.HOUSE, PROPERTY_TYPES.HOSTEL, PROPERTY_TYPES.COMMERCIAL])
+        .optional()
+        .openapi({
+            example: 'apartment',
+            description: `Available values: ${Object.values(PROPERTY_TYPES).join(', ')}`,
+        }),
+
+    address: z.string().optional().openapi({}),
+    city: z.string().optional().openapi({}),
+    state: z.string().optional().openapi({}),
+
+    //for admin
+    status: z
+        .enum([PROPERTY_STATUS.ACTIVE, PROPERTY_STATUS.INACTIVE, PROPERTY_STATUS.SUSPENDED, PROPERTY_STATUS.BANNED])
+        .optional()
+        .openapi({}),
+    companyID: z.string().optional().openapi({
+        description: 'admin only',
+    }),
+});
+
+export type SearchPropertyPayload = z.infer<typeof PropertySearchQuerySchema>;

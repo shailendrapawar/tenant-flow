@@ -9,12 +9,13 @@ export const MapPropertyDTO = (data: any, key?: string | '') => {
         ...property?.toObject(),
     });
     const Private_companyDTO = (property: HydratedDocument<IProperty>) => ({
-        name: property.name,
-        type: property.type,
-        acquisition: property.acquisition,
-        description: property.description,
+        // name: property.name,
+        // type: property.type,
+        // acquisition: property.acquisition,
+        // description: property.description,
 
-        location: property.location,
+        // location: property.location,
+        ...property?.toObject(),
     });
 
     const Public_companyDTO = (property: HydratedDocument<IProperty>) => ({

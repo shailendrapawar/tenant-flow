@@ -4,7 +4,7 @@ import { RequestContext } from '../../shared/utils/contextBuilder';
 import { HydratedDocument } from 'mongoose';
 import { IProperty, PropertyModel } from './property.model';
 import { CreatePropertyPayload } from './property.validators';
-import { PROPERTY_ACQUISITION_TYPES } from './property.constants';
+import { PROPERTY_ACQUISITION_TYPES, PROPERTY_MANAGE } from './property.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { USER_ROLES } from '../user/user.constants';
 
@@ -71,11 +71,56 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Prop
 
     return property;
 };
-const search = () => {};
+
+const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
+    const user = ctx.user;
+    let sort: any = {
+        timeStamp: -1,
+    };
+    let where: any = {};
+
+    //scope in companyID for landlord only
+    if (user?.role === USER_ROLES.LANDLORD) {
+        where.companyID = user?.companyID;
+    }
+
+    if (query.name) {
+        where.name = { $regex: query.name, $options: 'i' };
+    }
+    if (query.type) {
+        where.type = query.type;
+    }
+    if (query.address) {
+        where['location.addressLine1'] = { $regex: query.address, $options: 'i' };
+    }
+    if (query.city) {
+        where['location.city'] = query.city;
+    }
+    if (query.state) {
+        where['location.state'] = query.state;
+    }
+    if (query.status) {
+        where.status = query.status;
+    }
+
+    //for admin to search properties based on companyID
+    if (query.companyID && ctx.hasAllPermissions([PROPERTY_MANAGE])) {
+        where.companyID = query.companyID;
+    }
+    const countPromise = PropertyModel.countDocuments(where);
+    const itemsPromise = PropertyModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
+
+    const [count, properties] = await Promise.all([countPromise, itemsPromise]);
+    return { count, properties };
+};
 
 export const PropertyService = {
     set,
     create: CREATE,
     get: GET,
-    search,
+    search: SEARCH,
 };

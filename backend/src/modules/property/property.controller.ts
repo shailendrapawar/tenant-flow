@@ -2,15 +2,16 @@
 
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapPropertyDTO } from './property.dto';
 import { PropertyService } from './property.service';
-import { createPropertySchema } from './property.validators';
+import { CreatePropertySchema } from './property.validators';
 
 const create = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.context;
-        const { success, data, error } = createPropertySchema.safeParse(req.body);
+        const { success, data, error } = CreatePropertySchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -21,6 +22,9 @@ const create = async (req: any, res: any) => {
         }
 
         const property = await PropertyService.create(data, ctx);
+        // if (!property) {
+        //     return ResponseHandler.appResponse(res, 400, false, 'Failed to create property', null);
+        // }
         return ResponseHandler.appResponse(
             res,
             201,
@@ -55,7 +59,20 @@ const get = async (req: any, res: any) => {
     }
 };
 
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+        const properties = await PropertyService.search(query, ctx, { pagination });
+        return ResponseHandler.appResponse(res, 200, true, 'Properties retrieved successfully', properties);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
+
 export const PropertyController = {
     create,
     get,
+    search,
 };

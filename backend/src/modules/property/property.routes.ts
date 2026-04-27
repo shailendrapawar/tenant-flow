@@ -2,7 +2,7 @@
 import express from 'express';
 import { registry } from '../../shared/configs/registry';
 import { PropertyController } from './property.controller';
-import { createPropertySchema } from './property.validators';
+import { CreatePropertySchema, PropertySearchQuerySchema } from './property.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
@@ -18,7 +18,7 @@ registry.registerPath({
     summary: 'Add new Property',
     request: {
         body: {
-            content: { 'application/json': { schema: createPropertySchema } },
+            content: { 'application/json': { schema: CreatePropertySchema } },
             required: true,
         },
     },
@@ -49,8 +49,25 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    method: 'get',
+    path: '/properties',
+    tags: ['Properties'],
+    summary: 'Search properties',
+
+    request: {
+        query: PropertySearchQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Properties retrieved successfully' },
+        404: { description: 'Properties not found' },
+    },
+});
+
 // =================================================
 // ============ register routes ====================
 PropertyRouter.use(AuthMiddleware);
 PropertyRouter.post('/', authorizedRoles([USER_ROLES.LANDLORD]), PropertyController.create);
 PropertyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.get);
+PropertyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.search);
