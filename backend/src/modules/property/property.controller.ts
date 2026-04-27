@@ -1,7 +1,7 @@
 // Property Controller
 
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { formatZodError } from '../../shared/utils/error';
+import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapPropertyDTO } from './property.dto';
 import { PropertyService } from './property.service';
@@ -33,6 +33,29 @@ const create = async (req: any, res: any) => {
     }
 };
 
+const get = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid property id', 400);
+        }
+
+        const property = await PropertyService.get(id, ctx, { populate: true });
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Property retrieved successfully',
+            MapPropertyDTO(property, ctx?.user?.role),
+        );
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
+
 export const PropertyController = {
     create,
+    get,
 };

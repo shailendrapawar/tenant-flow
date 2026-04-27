@@ -16,7 +16,7 @@ registry.registerPath({
     summary: 'Get a company',
     parameters: [
         {
-            name: 'id2',
+            name: 'id',
             in: 'path',
             required: true,
             schema: { type: 'string' },
@@ -74,18 +74,8 @@ registry.registerPath({
 // ============ register routes ============
 CompanyRouter.use(AuthMiddleware); //group level auth middleware
 
+CompanyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.get);
 
-CompanyRouter.get('/:id',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.get
-);
+CompanyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.search);
 
-CompanyRouter.get('/',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.search
-);
-
-CompanyRouter.put('/:id',
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    CompanyControler.update
-);
+CompanyRouter.put('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.update);

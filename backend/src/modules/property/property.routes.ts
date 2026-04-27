@@ -28,8 +28,29 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
+registry.registerPath({
+    method: 'get',
+    path: '/properties/{id}',
+    tags: ['Properties'],
+    summary: 'Get Property by ID',
 
-// =========================================
-// ============ register routes ============
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+
+    responses: {
+        200: { description: 'Property retrieved successfully' },
+        400: { description: 'Validation error' },
+    },
+});
+
+// =================================================
+// ============ register routes ====================
 PropertyRouter.use(AuthMiddleware);
 PropertyRouter.post('/', authorizedRoles([USER_ROLES.LANDLORD]), PropertyController.create);
+PropertyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.get);
