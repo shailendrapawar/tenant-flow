@@ -3,11 +3,9 @@ import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
 import { LoginSchema, RegisterSchema, UpdateUserSchema, UserSearchQuerySchema } from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { buildContext } from '../../shared/utils/contextBuilder';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from './user.constants';
-import { UserService } from './user.service';
-import { Query } from 'mongoose';
+
 export const UserRouter = express.Router();
 
 // ====================================
@@ -55,7 +53,6 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
-
 
 registry.registerPath({
     method: 'get',
@@ -136,24 +133,12 @@ UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
-
 //user routes
-UserRouter.get("/:id", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN]),
-    UserController.get
-)
+UserRouter.get('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.get);
 
-UserRouter.get("/", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN]),
-    UserController.search
-)
+UserRouter.get('/', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.search);
 
-UserRouter.put("/:id", AuthMiddleware,
-    authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]),
-    UserController.update
-)
+UserRouter.put('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), UserController.update);
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
-
-
 
 // export default UserRouter;

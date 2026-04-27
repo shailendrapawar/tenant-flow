@@ -5,11 +5,12 @@ type User = {
     _id: string;
     email: string;
     role: string;
+    companyID?: string;
 };
 export type RequestContext = {
     requestID?: string;
     user: User | null;
-    permisisons: string[];
+    permissions: string[];
     logger: typeof logger;
 
     setUser: (user: any) => void;
@@ -23,7 +24,7 @@ export const buildContext = (req: any, res: any, next: any) => {
         requestID: generateUUID(),
         user: req?.user || null,
         logger: logger,
-        permisisons: req?.permissions || [],
+        permissions: req?.permissions || [],
 
         setUser: (userData: any) => {
             const user: User = {
@@ -31,12 +32,15 @@ export const buildContext = (req: any, res: any, next: any) => {
                 email: userData.email,
                 role: userData.role,
             };
+            if (userData?.companyID) {
+                user.companyID = userData.companyID;
+            }
             req.context.user = user;
         },
 
         setPermissions(permissions: string[]) {
             // later: validate, log, merge with role defaults
-            req.context.logger.info('permissions attached to context', { count: permissions.length });
+            // req.context.logger.info('permissions attached to context', { count: permissions.length });
             req.context.permissions = permissions;
         },
 
@@ -44,21 +48,20 @@ export const buildContext = (req: any, res: any, next: any) => {
         hasAnyPermissions(required: string[]) {
             for (const item of required) {
                 if (req.context.permissions.includes(item)) {
-                    return true
+                    return true;
                 }
             }
-            return false
+            return false;
         },
 
         // must have this AND that
         hasAllPermissions(required: string[]) {
-
             for (const item of required) {
                 if (!req.context.permissions.includes(item)) {
-                    return false
+                    return false;
                 }
             }
-            return true
+            return true;
         },
     };
     req.context = context;
