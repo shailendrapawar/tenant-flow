@@ -3,7 +3,7 @@
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { HydratedDocument } from 'mongoose';
 import { IProperty, PropertyModel } from './property.model';
-import { CreatePropertyPayload } from './property.validators';
+import { CreatePropertyPayload, PropertySearchQuerySchema, UpdatePropertySchema } from './property.validators';
 import { PROPERTY_ACQUISITION_TYPES, PROPERTY_MANAGE } from './property.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { USER_ROLES } from '../user/user.constants';
@@ -17,7 +17,31 @@ const populate = [
     },
 ];
 
-const set = () => {};
+const set = (model: UpdatePropertySchema, entity: HydratedDocument<IProperty>, ctx: RequestContext) => {
+    if (model.name) {
+        entity.name = model.name;
+    }
+    if (model.location) {
+        entity.location = model.location;
+    }
+    if (model.type) {
+        entity.type = model.type;
+    }
+    if (model.acquisition) {
+        entity.acquisition = model.acquisition;
+    }
+    if (model.description) {
+        entity.description = model.description;
+    }
+    if (model.status) {
+        if (!ctx.hasAllPermissions([PROPERTY_MANAGE])) {
+            return throwAppError('Forbidden', 400);
+        }
+        entity.status = model.status;
+    }
+
+    return entity;
+};
 
 const CREATE = async (payload: CreatePropertyPayload, ctx: RequestContext): Promise<PropertyDocument> => {
     const newProperty = new PropertyModel({
@@ -72,7 +96,7 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Prop
     return property;
 };
 
-const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
+const SEARCH = async (query: PropertySearchQuerySchema, ctx: RequestContext, options?: any) => {
     const user = ctx.user;
     let sort: any = {
         timeStamp: -1,
@@ -117,10 +141,21 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     const [count, properties] = await Promise.all([countPromise, itemsPromise]);
     return { count, properties };
 };
+const UPDATE = async (id: string, model: UpdatePropertySchema, ctx: RequestContext) => {
+    let entity = await GET(id, ctx);
+    if (!entity) {
+        return throwAppError('Property not found', 404);
+    }
+
+    entity = await set(model, entity, ctx);
+    await entity?.save();
+    return entity;
+};
 
 export const PropertyService = {
     set,
     create: CREATE,
     get: GET,
     search: SEARCH,
+    update: UPDATE,
 };

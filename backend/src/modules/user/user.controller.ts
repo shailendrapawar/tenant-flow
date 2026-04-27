@@ -1,6 +1,6 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
-import { LoginSchema, RegisterSchema, UpdateUserSchema } from './user.validators';
+import { LoginPayloadSchema, RegisterPayloadSchema, UpdateUserPayloadSchema } from './user.validators';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
@@ -25,7 +25,7 @@ const login = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.ctx;
         //1: validations
-        const { data, success, error } = LoginSchema.safeParse(req.body);
+        const { data, success, error } = LoginPayloadSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -74,7 +74,7 @@ const register = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.ctx;
         //1: validation handling
-        const { data, success, error } = RegisterSchema.safeParse(req.body);
+        const { data, success, error } = RegisterPayloadSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -128,14 +128,13 @@ const logout = async (req: any, res: any) => {
 };
 const update = async (req: any, res: any) => {
     try {
-
         const ctx = req.context;
         const { id } = req.params;
         if (id?.trim() == '') {
             return throwAppError('Invalid company id', 400);
         }
 
-        const { data, success, error } = UpdateUserSchema.safeParse(req.body)
+        const { data, success, error } = UpdateUserPayloadSchema.safeParse(req.body);
 
         if (!success) {
             const validationErrors = formatZodError(error);
@@ -145,10 +144,15 @@ const update = async (req: any, res: any) => {
             });
         }
 
-        const user = await UserService.update(id, data, ctx)
+        const user = await UserService.update(id, data, ctx);
 
-        return ResponseHandler.appResponse(res, 201, true, 'User updated successfully', MapUserDTO(user, ctx?.user?.role));
-
+        return ResponseHandler.appResponse(
+            res,
+            201,
+            true,
+            'User updated successfully',
+            MapUserDTO(user, ctx?.user?.role),
+        );
     } catch (error: any) {
         logger.error('User update Error:', error);
         return ResponseHandler.appResponse(
@@ -159,7 +163,7 @@ const update = async (req: any, res: any) => {
             null,
         );
     }
-}
+};
 
 const get = async (req: any, res: any) => {
     try {
@@ -172,8 +176,13 @@ const get = async (req: any, res: any) => {
 
         const user = await UserService.get(id, ctx);
 
-        return ResponseHandler.appResponse(res, 200, true, 'User retrieved successfully', MapUserDTO(user, ctx.user.role));
-
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'User retrieved successfully',
+            MapUserDTO(user, ctx.user.role),
+        );
     } catch (error: any) {
         logger.error('Get user error:', error);
         return ResponseHandler.appResponse(
@@ -184,17 +193,16 @@ const get = async (req: any, res: any) => {
             null,
         );
     }
-}
+};
 const search = async (req: any, res: any) => {
     try {
         const ctx = req.context;
         const query = RequestHandler.parseQuery(req);
         const pagination = RequestHandler.getPagination(req);
 
-        const users = await CompanyService.search(query, ctx, { pagination })
+        const users = await CompanyService.search(query, ctx, { pagination });
 
         return ResponseHandler.appResponse(res, 200, true, 'Users retrieved successfully', users);
-
     } catch (error: any) {
         logger.error('Get users search error:', error);
         return ResponseHandler.appResponse(
@@ -205,7 +213,7 @@ const search = async (req: any, res: any) => {
             null,
         );
     }
-}
+};
 
 export const UserController = {
     registerAdmin,
@@ -216,5 +224,5 @@ export const UserController = {
     getUserProfile,
     update,
     get,
-    search
+    search,
 };

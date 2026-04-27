@@ -1,7 +1,12 @@
 import express from 'express';
 import { UserController } from './user.controller';
 import { registry } from '../../shared/configs/registry';
-import { LoginSchema, RegisterSchema, UpdateUserSchema, UserSearchQuerySchema } from './user.validators';
+import {
+    LoginPayloadSchema,
+    RegisterPayloadSchema,
+    UpdateUserPayloadSchema,
+    SearchUserQuerySchema,
+} from './user.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from './user.constants';
@@ -17,7 +22,7 @@ registry.registerPath({
     summary: 'Register a new user',
     request: {
         body: {
-            content: { 'application/json': { schema: RegisterSchema } },
+            content: { 'application/json': { schema: RegisterPayloadSchema } },
             required: true,
         },
     },
@@ -33,7 +38,7 @@ registry.registerPath({
     summary: 'Login a user',
     request: {
         body: {
-            content: { 'application/json': { schema: LoginSchema } },
+            content: { 'application/json': { schema: LoginPayloadSchema } },
             required: true,
         },
     },
@@ -80,7 +85,7 @@ registry.registerPath({
     ],
     request: {
         body: {
-            content: { 'application/json': { schema: UpdateUserSchema } },
+            content: { 'application/json': { schema: UpdateUserPayloadSchema } },
             required: true,
         },
     },
@@ -117,7 +122,7 @@ registry.registerPath({
     summary: 'Search users',
 
     request: {
-        query: UserSearchQuerySchema,
+        query: SearchUserQuerySchema,
     },
 
     responses: {

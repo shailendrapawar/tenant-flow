@@ -6,7 +6,7 @@ import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapPropertyDTO } from './property.dto';
 import { PropertyService } from './property.service';
-import { CreatePropertySchema } from './property.validators';
+import { CreatePropertySchema, UpdatePropertySchema } from './property.validators';
 
 const create = async (req: any, res: any) => {
     try {
@@ -22,9 +22,7 @@ const create = async (req: any, res: any) => {
         }
 
         const property = await PropertyService.create(data, ctx);
-        // if (!property) {
-        //     return ResponseHandler.appResponse(res, 400, false, 'Failed to create property', null);
-        // }
+
         return ResponseHandler.appResponse(
             res,
             201,
@@ -71,8 +69,41 @@ const search = async (req: any, res: any) => {
     }
 };
 
+const update = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid property id', 400);
+        }
+
+        const { data, success, error } = UpdatePropertySchema.safeParse(req.body);
+
+        if (!success) {
+            const validationErrors = formatZodError(error);
+
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+
+        const property = await PropertyService.update(id, data, ctx);
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Property updated successfully',
+            MapPropertyDTO(property, ctx?.user?.role),
+        );
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
+
 export const PropertyController = {
     create,
     get,
     search,
+    update,
 };

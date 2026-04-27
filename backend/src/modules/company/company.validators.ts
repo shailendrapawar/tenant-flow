@@ -49,6 +49,7 @@ export const UpdateCompanySchema = z.object({
         })
         .optional(),
 });
+export type UpdateCompanySchema = z.infer<typeof UpdateCompanySchema>;
 
 export const CompanySearchQuerySchema = z.object({
     name: z.string().optional(),

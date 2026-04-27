@@ -2,7 +2,7 @@
 import express from 'express';
 import { registry } from '../../shared/configs/registry';
 import { PropertyController } from './property.controller';
-import { CreatePropertySchema, PropertySearchQuerySchema } from './property.validators';
+import { CreatePropertySchema, PropertySearchQuerySchema, UpdatePropertySchema } from './property.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
@@ -65,9 +65,36 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    method: 'put',
+    path: '/properties/{id}',
+    tags: ['Properties'],
+    summary: 'update property',
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+    request: {
+        body: {
+            content: { 'application/json': { schema: UpdatePropertySchema } },
+            required: true,
+        },
+    },
+
+    responses: {
+        200: { description: 'Property updated successfully' },
+        404: { description: 'Property not found' },
+    },
+});
+
 // =================================================
 // ============ register routes ====================
 PropertyRouter.use(AuthMiddleware);
 PropertyRouter.post('/', authorizedRoles([USER_ROLES.LANDLORD]), PropertyController.create);
 PropertyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.get);
 PropertyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.search);
+PropertyRouter.put('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), PropertyController.update);

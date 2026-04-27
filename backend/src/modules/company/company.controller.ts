@@ -1,10 +1,11 @@
 // Company Controller
 
-import { throwAppError } from '../../shared/utils/error';
+import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { MapCompanyDTO } from './company.dto';
 import { CompanyService } from './company.service';
+import { UpdateCompanySchema } from './company.validators';
 
 const get = async (req: any, res: any) => {
     try {
@@ -17,7 +18,13 @@ const get = async (req: any, res: any) => {
 
         const company = await CompanyService.get(id, ctx, { populate: true });
 
-        return ResponseHandler.appResponse(res, 200, true, 'Company retrieved successfully', MapCompanyDTO(company, ctx.user.role));
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Company retrieved successfully',
+            MapCompanyDTO(company, ctx.user.role),
+        );
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
@@ -32,13 +39,27 @@ const update = async (req: any, res: any) => {
         if (id?.trim() == '') {
             return throwAppError('Invalid company id', 400);
         }
-        const company = await CompanyService.update(id, req.body, ctx);
+        const { data, success, error } = UpdateCompanySchema.safeParse(req.body);
+        if (!success) {
+            const validationErrors = formatZodError(error);
+
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+
+        const company = await CompanyService.update(id, data, ctx);
         if (!company) {
             return throwAppError('Failed to update company', 404);
         }
 
-
-        return ResponseHandler.appResponse(res, 200, true, 'Company updated successfully', MapCompanyDTO(company, ctx.user.role));
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Company updated successfully',
+            MapCompanyDTO(company, ctx.user.role),
+        );
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
