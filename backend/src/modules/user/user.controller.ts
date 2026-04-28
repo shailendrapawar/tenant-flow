@@ -23,8 +23,6 @@ const initializeAdmin = async (req: any, res: any) => {
 
         const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body);
 
-        // FIXME: issue while registering admin
-
         if (!success) {
             const validationErrors = formatZodError(error);
             return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
@@ -146,6 +144,7 @@ const logout = async (req: any, res: any) => {
         );
     }
 };
+
 const update = async (req: any, res: any) => {
     try {
         const ctx = req.context;
@@ -220,7 +219,7 @@ const search = async (req: any, res: any) => {
         const query = RequestHandler.parseQuery(req);
         const pagination = RequestHandler.getPagination(req);
 
-        const users = await CompanyService.search(query, ctx, { pagination });
+        const users = await UserService.search(query, ctx, { pagination });
 
         return ResponseHandler.appResponse(res, 200, true, 'Users retrieved successfully', users);
     } catch (error: any) {
@@ -236,11 +235,13 @@ const search = async (req: any, res: any) => {
 };
 
 export const UserController = {
+    //users-auth
     initializeAdmin,
     register,
     login,
     logout,
 
+    //users
     getUserProfile,
     update,
     get,

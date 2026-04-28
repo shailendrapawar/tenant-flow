@@ -13,7 +13,7 @@ import { HydratedDocument } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { CreateCompanyPayload } from '../company/company.types';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { USER_ROLES } from './user.constants';
+import { USER_MANAGE, USER_ROLES } from './user.constants';
 import ENV from '../../shared/configs/app.config';
 
 type UserDocument = HydratedDocument<IUser> | null;
@@ -26,6 +26,17 @@ const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestCont
     }
     if (model.lastName) {
         entity.lastName = model.lastName;
+    }
+    if (model.status) {
+        //check if admin is updating itself
+        if (ctx.user?._id.toString() === entity._id.toString()) {
+            return throwAppError('forbidden: cannot update yourself', 403);
+        }
+        //check if user has sufficient permission
+        if (!ctx.hasAllPermissions([USER_MANAGE])) {
+            return throwAppError('forbidden:status_update', 403);
+        }
+        entity.status = model.status;
     }
 
     return entity;
@@ -58,7 +69,7 @@ const create = async (model: RegisterPayloadType, ctx: RequestContext): Promise<
     return user;
 };
 
-// ====================================
+// ========================================
 // ============ export methods ============
 const GET = async (keyword: string, ctx: RequestContext, options?: any): Promise<UserDocument> => {
     let query = null;

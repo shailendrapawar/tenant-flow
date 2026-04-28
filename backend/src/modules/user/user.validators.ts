@@ -7,9 +7,9 @@ export const InitializeAdminPayloadSchema = z.object({
     lastName: z.string().openapi({ example: '' }),
     email: z.string().email().openapi({ example: 'admin@example.com' }),
     password: z.string().min(1).openapi({ example: 'Test@123' }),
-    initAdminToken: z.string().min(1).openapi({ example: 'secret token' })
-})
-export type InitializeAdminPayloadType = z.infer<typeof InitializeAdminPayloadSchema>
+    initAdminToken: z.string().min(1).openapi({ example: 'secret token' }),
+});
+export type InitializeAdminPayloadType = z.infer<typeof InitializeAdminPayloadSchema>;
 
 //1: register ====================================>
 export const RegisterPayloadSchema = z.object({
@@ -29,9 +29,9 @@ export type LoginPayloadType = z.infer<typeof LoginPayloadSchema>;
 
 //3: update user================================>
 export const UpdateUserPayloadSchema = z.object({
-    firstName: z.string().min(1).openapi({ example: 'john' }),
-    lastName: z.string().openapi({ example: 'doe' }),
-    status: z.string().openapi({ example: 'inactive' }),
+    firstName: z.string().min(1).optional().openapi({ example: 'john' }),
+    lastName: z.string().optional().openapi({ example: 'doe' }),
+    status: z.string().optional().openapi({ example: 'inactive' }),
 });
 export type UpdateUserPayloadType = z.infer<typeof UpdateUserPayloadSchema>;
 

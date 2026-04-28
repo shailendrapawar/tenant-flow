@@ -2,7 +2,16 @@ import { USER_ROLES } from './user.constants';
 import { User } from './user.types';
 import { HydratedDocument } from 'mongoose';
 
-const Admin_userDTO = (user: HydratedDocument<User>) => ({ ...user?.toJSON() });
+const Admin_userDTO = (user: HydratedDocument<User>) => {
+    const userData: any = user?.toObject();
+
+    delete userData.companyId;
+    delete userData.password;
+    delete userData.loginAttempts;
+
+    return userData;
+};
+
 const Private_userDTO = (user: HydratedDocument<User>) => ({
     _id: user._id.toString(),
     firstName: user.firstName,
