@@ -1,6 +1,11 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
-import { InitializeAdminPayloadSchema, LoginPayloadSchema, RegisterPayloadSchema, UpdateUserPayloadSchema } from './user.validators';
+import {
+    InitializeAdminPayloadSchema,
+    LoginPayloadSchema,
+    RegisterPayloadSchema,
+    UpdateUserPayloadSchema,
+} from './user.validators';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
@@ -14,12 +19,10 @@ import { RequestHandler } from '../../shared/utils/requestHandler';
 
 const initializeAdmin = async (req: any, res: any) => {
     try {
-        const ctx: RequestContext = req.context
+        const ctx: RequestContext = req.context;
 
-        const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body)
+        const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body);
 
-        // FIXME: issue while registering admin
-        
         if (!success) {
             const validationErrors = formatZodError(error);
             return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
@@ -27,10 +30,9 @@ const initializeAdmin = async (req: any, res: any) => {
             });
         }
 
-        const admin = UserService.initAdmin(data, ctx)
+        const admin = await UserService.initAdmin(data, ctx);
 
-        return ResponseHandler.appResponse(res, 201, true, "Admin initialized", admin)
-
+        return ResponseHandler.appResponse(res, 201, true, 'Admin initialized', admin);
     } catch (error: any) {
         logger.error('Error registering admin:', error);
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
@@ -142,6 +144,7 @@ const logout = async (req: any, res: any) => {
         );
     }
 };
+
 const update = async (req: any, res: any) => {
     try {
         const ctx = req.context;
@@ -216,7 +219,7 @@ const search = async (req: any, res: any) => {
         const query = RequestHandler.parseQuery(req);
         const pagination = RequestHandler.getPagination(req);
 
-        const users = await CompanyService.search(query, ctx, { pagination });
+        const users = await UserService.search(query, ctx, { pagination });
 
         return ResponseHandler.appResponse(res, 200, true, 'Users retrieved successfully', users);
     } catch (error: any) {
@@ -232,11 +235,13 @@ const search = async (req: any, res: any) => {
 };
 
 export const UserController = {
+    //users-auth
     initializeAdmin,
     register,
     login,
     logout,
 
+    //users
     getUserProfile,
     update,
     get,

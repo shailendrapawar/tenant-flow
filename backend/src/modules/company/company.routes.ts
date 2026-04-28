@@ -6,7 +6,9 @@ import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { SearchCompanyQuerySchema, UpdateCompanyPayloadSchema } from './company.validators';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { USER_ROLES } from '../user/user.constants';
+
 export const CompanyRouter = express.Router();
+
 // =================================================
 // ============ register swagger config ============
 registry.registerPath({

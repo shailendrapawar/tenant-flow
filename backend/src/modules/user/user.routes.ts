@@ -80,16 +80,16 @@ registry.registerPath({
     method: 'get',
     path: '/users/me',
     tags: ['Users'],
-    summary: 'Get Logged in user profile',
+    summary: 'Get logged-in user profile',
     responses: {
-        201: { description: 'User profile fetched successfully' },
+        200: { description: 'User profile fetched successfully' },
         400: { description: 'Validation error' },
     },
 });
 
 registry.registerPath({
     method: 'put',
-    path: '/users/:id',
+    path: '/users/{id}',
     tags: ['Users'],
     summary: 'Update a  user',
     parameters: [
@@ -114,7 +114,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'get',
-    path: '/users/:id',
+    path: '/users/{id}',
     tags: ['Users'],
     summary: 'Get a user',
     parameters: [
@@ -151,17 +151,13 @@ registry.registerPath({
 // ============ register routes ============
 
 //auth routes
-UserRouter.post("/auth/init-admin", UserController.initializeAdmin)
+UserRouter.post('/auth/init-admin', UserController.initializeAdmin);
 UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
 //user routes
-UserRouter.get('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.get);
-
-UserRouter.get('/', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.search);
-
-UserRouter.put('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), UserController.update);
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
-
-// export default UserRouter;
+UserRouter.get('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.get);
+UserRouter.get('/', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.search);
+UserRouter.put('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), UserController.update);
