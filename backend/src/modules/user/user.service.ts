@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import { IUser, UserModel } from './user.model';
-import { InitializeAdminPayloadType, LoginPayloadType, RegisterPayloadType, UpdateUserPayloadType } from './user.validators';
+import {
+    InitializeAdminPayloadType,
+    LoginPayloadType,
+    RegisterPayloadType,
+    UpdateUserPayloadType,
+} from './user.validators';
 import bcrypt from 'bcrypt';
 import { throwAppError } from '../../shared/utils/error';
 
@@ -16,12 +21,11 @@ type UserDocument = HydratedDocument<IUser> | null;
 const populate: any[] = [];
 
 const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestContext): Promise<UserDocument> => {
-
     if (model.firstName) {
-        entity.firstName = model.firstName
+        entity.firstName = model.firstName;
     }
     if (model.lastName) {
-        entity.lastName = model.lastName
+        entity.lastName = model.lastName;
     }
 
     return entity;
@@ -87,7 +91,7 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
         where.status = query.status;
     }
     if (query.role) {
-        where.role = query.role
+        where.role = query.role;
     }
 
     if (query.name) {
@@ -162,20 +166,18 @@ const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<User
 };
 
 const INIT_ADMIN = async (model: InitializeAdminPayloadType, ctx: RequestContext): Promise<UserDocument> => {
-
-    
     //1: check if any admin role already exists
-    let admin = null
-    admin = await SEARCH({ role: USER_ROLES.ADMIN }, ctx)
+    let admin = null;
+    admin = await SEARCH({ role: USER_ROLES.ADMIN }, ctx);
 
     if (admin?.count > 0) {
-        return throwAppError("Admin already exists", 403)
+        return throwAppError('Admin already exists', 403);
     }
 
     //check the payload
-    const isMatch = ENV.App.INIT_ADMIN_TOKEN === model.initAdminToken
+    const isMatch = ENV.App.INIT_ADMIN_TOKEN === model.initAdminToken;
     if (!isMatch) {
-        return throwAppError("Invalid token", 403)
+        return throwAppError('Invalid token', 403);
     }
 
     // 2: hash password
@@ -186,13 +188,14 @@ const INIT_ADMIN = async (model: InitializeAdminPayloadType, ctx: RequestContext
         firstName: model.firstName,
         lastName: model.lastName,
         email: model.email,
-        password: hashedPassword
-    })
+        password: hashedPassword,
+        role: USER_ROLES.ADMIN,
+    });
 
-    admin = await newAdmin.save()
+    admin = await newAdmin.save();
 
-    return admin
-}
+    return admin;
+};
 
 export const UserService = {
     register: REGISTER,
@@ -200,5 +203,5 @@ export const UserService = {
     get: GET,
     search: SEARCH,
     update: UPDATE,
-    initAdmin: INIT_ADMIN
+    initAdmin: INIT_ADMIN,
 };

@@ -1,6 +1,11 @@
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { UserService } from './user.service';
-import { InitializeAdminPayloadSchema, LoginPayloadSchema, RegisterPayloadSchema, UpdateUserPayloadSchema } from './user.validators';
+import {
+    InitializeAdminPayloadSchema,
+    LoginPayloadSchema,
+    RegisterPayloadSchema,
+    UpdateUserPayloadSchema,
+} from './user.validators';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { MapUserDTO } from './user.dto';
 import { generateAcessToken } from '../../shared/utils/jwt';
@@ -14,12 +19,12 @@ import { RequestHandler } from '../../shared/utils/requestHandler';
 
 const initializeAdmin = async (req: any, res: any) => {
     try {
-        const ctx: RequestContext = req.context
+        const ctx: RequestContext = req.context;
 
-        const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body)
+        const { data, success, error } = InitializeAdminPayloadSchema.safeParse(req.body);
 
         // FIXME: issue while registering admin
-        
+
         if (!success) {
             const validationErrors = formatZodError(error);
             return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
@@ -27,10 +32,9 @@ const initializeAdmin = async (req: any, res: any) => {
             });
         }
 
-        const admin = UserService.initAdmin(data, ctx)
+        const admin = await UserService.initAdmin(data, ctx);
 
-        return ResponseHandler.appResponse(res, 201, true, "Admin initialized", admin)
-
+        return ResponseHandler.appResponse(res, 201, true, 'Admin initialized', admin);
     } catch (error: any) {
         logger.error('Error registering admin:', error);
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
