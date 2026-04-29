@@ -6,7 +6,7 @@ import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { RoomService } from './room.service';
-import { CreateRoomsPayloadSchema } from './room.validators';
+import { CreateRoomsPayloadSchema, UpdateRoomPayloadSchema } from './room.validators';
 
 const create = async (req: any, res: any) => {
     try {
@@ -63,7 +63,39 @@ const search = async (req: any, res: any) => {
     }
 };
 
-const update = async (req: any, res: any) => {};
+const update = async (req: any, res: any) => {
+    try {
+
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid property id', 400);
+        }
+
+        const { data, success, error } = UpdateRoomPayloadSchema.safeParse(req.body);
+
+        if (!success) {
+            const validationErrors = formatZodError(error);
+
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+
+        const room = await RoomService.update(id, data, ctx);
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Room updated successfully',
+            room
+        );
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+
+    }
+};
 
 export const RoomController = {
     create,
