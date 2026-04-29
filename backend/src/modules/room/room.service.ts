@@ -5,6 +5,8 @@ import { IRoom } from './room.model';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { CreateRoomsPayloadType } from './room.validators';
 import { RoomModel } from './room.model';
+import { PropertyService } from '../property/property.service';
+import { throwAppError } from '../../shared/utils/error';
 
 type RoomDocument = HydratedDocument<IRoom> | null;
 const populate = [
@@ -21,6 +23,10 @@ const set = async (model: any, entity: Promise<HydratedDocument<IRoom>>): Promis
 const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
     // TODO: start from here
     const user = ctx.user;
+    const property = await PropertyService.get(payload.propertyID, ctx)
+    if (!property) {
+        return throwAppError("Property not found")
+    }
     const newRooms: Promise<RoomDocument>[] = [];
     for (const room of payload.rooms) {
         const newRoom = new RoomModel({
@@ -38,9 +44,9 @@ const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
     const result = await Promise.all(newRooms);
     return result;
 };
-const GET = async () => {};
-const SEARCH = async () => {};
-const UPDATE = async () => {};
+const GET = async () => { };
+const SEARCH = async () => { };
+const UPDATE = async () => { };
 
 export const RoomService = {
     create: CREATE,
