@@ -8,6 +8,7 @@ import { RoomModel } from './room.model';
 import { PropertyService } from '../property/property.service';
 import { throwAppError } from '../../shared/utils/error';
 import { toObjectID } from '../../shared/utils/strings';
+import { USER_ROLES } from '../user/user.constants';
 
 type RoomDocument = HydratedDocument<IRoom> | null;
 const populate = [
@@ -29,7 +30,7 @@ const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
         return throwAppError('Property not found');
     }
 
-    //1: check which rooms exist first ====>
+    //1: check which rooms exist first
     const existingRooms = await RoomModel.find({
         propertyID: toObjectID(payload.propertyID),
         companyID: toObjectID(user?.companyID),
@@ -61,7 +62,27 @@ const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
     const result = await RoomModel.insertMany(newRooms, { ordered: false });
     return result;
 };
-const GET = async () => {};
+const GET = async (id: string, ctx: RequestContext, options?: any) => {
+    let query = null;
+    const user = ctx.user;
+
+    if (user?.role === USER_ROLES.LANDLORD) {
+        query = RoomModel.findOne({ _id: toObjectID(id), companyID: toObjectID(user?.companyID) });
+    } else {
+        query = RoomModel.findOne({ _id: toObjectID(id) });
+    }
+
+    if (options?.populate) {
+        query = query.populate(options.populate);
+    }
+
+    const room = await query;
+    if (!room) {
+        return throwAppError('Room not found', 404);
+    }
+
+    return room;
+};
 const SEARCH = async () => {};
 const UPDATE = async () => {};
 

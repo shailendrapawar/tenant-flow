@@ -10,7 +10,8 @@ export const RoomRouter = express.Router();
 // =================================================
 // ============ register swagger config ============
 
-registry.registerPath({//CREATE ROOMS
+registry.registerPath({
+    //CREATE ROOMS
     method: 'post',
     path: '/rooms',
     tags: ['Rooms'],
@@ -27,10 +28,31 @@ registry.registerPath({//CREATE ROOMS
         400: { description: 'Validation error' },
     },
 });
+registry.registerPath({
+    method: 'get',
+    path: '/rooms/{id}',
+    tags: ['Rooms'],
+    summary: 'Get Room by ID',
+
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+
+    responses: {
+        200: { description: 'Room retrieved successfully' },
+        400: { description: 'Validation error' },
+    },
+});
+
 // =================================================
 // ============ register routes ====================
 RoomRouter.use(AuthMiddleware);
 RoomRouter.post('/', AuthMiddleware, RoomController.create);
-// RoomRouter.get('/:id', RoomController.get);
+RoomRouter.get('/:id', RoomController.get);
 // RoomRouter.get('/', RoomController.search);
 // RoomRouter.put('/:id', RoomController.update);

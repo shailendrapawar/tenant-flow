@@ -2,7 +2,7 @@
 
 import { extractUniqueRooms } from '../../shared/helpers/room.helper';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { formatZodError } from '../../shared/utils/error';
+import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { RoomService } from './room.service';
 import { CreateRoomsPayloadSchema } from './room.validators';
@@ -34,7 +34,21 @@ const create = async (req: any, res: any) => {
     }
 };
 
-const get = async (req: any, res: any) => {};
+const get = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid room id', 400);
+        }
+
+        const room = await RoomService.get(id, ctx, { poulate: true });
+        return ResponseHandler.appResponse(res, 200, true, 'Room retrieved successfully', room);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
 
 const search = async (req: any, res: any) => {};
 
