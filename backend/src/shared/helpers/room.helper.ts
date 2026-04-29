@@ -1,14 +1,16 @@
-import { any } from "zod"
+import { string } from 'zod';
+import { CreateRoomsPayloadType } from '../../modules/room/room.validators';
 
-const extractUniqueRooms = (data: any) => {
-    let uniqueRooms = new Map()
+export const extractUniqueRooms = (data: CreateRoomsPayloadType['rooms'] = []) => {
+    const set = new Set();
+    let result: CreateRoomsPayloadType['rooms'] = [];
 
-    data?.map((room: any) => {
-        // uniqueRooms?.set(room?.roomNumber) = room
-        uniqueRooms.set(room.roomNumber, room)
-    })
-
-    let result = Object.entries(uniqueRooms).map((v) => v)
-
-    return result || []
-}
+    data.forEach((item) => {
+        const isExist = set.has(item.roomNumber);
+        if (!isExist) {
+            result.push(item);
+            set.add(item.roomNumber);
+        }
+    });
+    return result;
+};

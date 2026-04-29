@@ -1,9 +1,13 @@
 // Room Validators
 
 import { z } from 'zod';
+import { objectIDRegex } from '../../shared/utils/strings';
 
 export const CreateRoomsPayloadSchema = z.object({
-    propertyID: z.string().openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+    propertyID: z
+        .string()
+        .regex(objectIDRegex)
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
     rooms: z.array(
         z.object({
             roomNumber: z.string().openapi({ example: '101' }),
