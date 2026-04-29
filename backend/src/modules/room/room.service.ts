@@ -3,7 +3,7 @@
 import { HydratedDocument } from 'mongoose';
 import { IRoom } from './room.model';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { CreateRoomsPayloadType } from './room.validators';
+import { CreateRoomsPayloadType, SearchRoomsQueryType } from './room.validators';
 import { RoomModel } from './room.model';
 import { PropertyService } from '../property/property.service';
 import { throwAppError } from '../../shared/utils/error';
@@ -83,7 +83,53 @@ const GET = async (id: string, ctx: RequestContext, options?: any) => {
 
     return room;
 };
-const SEARCH = async () => {};
+const SEARCH = async (query: SearchRoomsQueryType, ctx: RequestContext, options?: any) => {
+    //TODO: improve this api
+    const user = ctx.user;
+    let sort: any = {
+        timeStamp: -1,
+    };
+    let where: any = {};
+
+    //scope in companyID for landlord only
+    if (user?.role === USER_ROLES.LANDLORD) {
+        where.companyID = user?.companyID;
+    }
+
+    if (query.companyID) {
+        //optional case for admin
+        where.companyID = toObjectID(query.companyID);
+    }
+    if (query.propertyID) {
+        where.propertyID = toObjectID(query.propertyID);
+    }
+    if (query.roomNumber) {
+        where.roomNumber = query.roomNumber;
+    }
+    if (query.floor) {
+        where.floor = query.floor;
+    }
+    if (query.capacity) {
+        where.capacity = query.capacity;
+    }
+    if (query.occupancyCount) {
+        where.occupancyCount = query.occupancyCount;
+    }
+    if (query.operationalStatus) {
+        where.operationalStatus = query.operationalStatus;
+    }
+
+    const countPromise = RoomModel.countDocuments(where);
+    const itemsPromise = RoomModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
+
+    const [count, rooms] = await Promise.all([countPromise, itemsPromise]);
+    return { count, rooms };
+};
+
 const UPDATE = async () => {};
 
 export const RoomService = {

@@ -3,7 +3,7 @@ import express from 'express';
 import { registry } from '../../shared/configs/registry';
 import { RoomController } from './room.controller';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
-import { CreateRoomsPayloadSchema } from './room.validators';
+import { CreateRoomsPayloadSchema, SearchRoomsQuerySchema } from './room.validators';
 
 export const RoomRouter = express.Router();
 
@@ -49,10 +49,26 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    method: 'get',
+    path: '/rooms',
+    tags: ['Rooms'],
+    summary: 'Search rooms',
+
+    request: {
+        query: SearchRoomsQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Rooms retrieved successfully' },
+        404: { description: 'Rooms not found' },
+    },
+});
+
 // =================================================
 // ============ register routes ====================
 RoomRouter.use(AuthMiddleware);
 RoomRouter.post('/', AuthMiddleware, RoomController.create);
 RoomRouter.get('/:id', RoomController.get);
-// RoomRouter.get('/', RoomController.search);
+RoomRouter.get('/', RoomController.search);
 // RoomRouter.put('/:id', RoomController.update);

@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 import { objectIDRegex } from '../../shared/utils/strings';
+import { ROOM_OPERATIONAL_STATUS } from './room.constants';
+const { ACTIVE, INACTIVE, MAINTENANCE } = ROOM_OPERATIONAL_STATUS;
 
 export const CreateRoomsPayloadSchema = z.object({
     propertyID: z
@@ -19,3 +21,14 @@ export const CreateRoomsPayloadSchema = z.object({
     ),
 });
 export type CreateRoomsPayloadType = z.infer<typeof CreateRoomsPayloadSchema>;
+
+export const SearchRoomsQuerySchema = z.object({
+    companyID: z.string().regex(objectIDRegex).optional(),
+    propertyID: z.string().regex(objectIDRegex).optional(),
+    roomNumber: z.string().optional(),
+    floor: z.number().optional(),
+    capacity: z.number().optional(),
+    occupancyCount: z.number().optional(),
+    operationalStatus: z.enum([ACTIVE, INACTIVE, MAINTENANCE]).optional(),
+});
+export type SearchRoomsQueryType = z.infer<typeof SearchRoomsQuerySchema>;

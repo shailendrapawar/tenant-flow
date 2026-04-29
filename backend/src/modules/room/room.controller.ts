@@ -3,6 +3,7 @@
 import { extractUniqueRooms } from '../../shared/helpers/room.helper';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { RoomService } from './room.service';
 import { CreateRoomsPayloadSchema } from './room.validators';
@@ -50,7 +51,17 @@ const get = async (req: any, res: any) => {
     }
 };
 
-const search = async (req: any, res: any) => {};
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+        const rooms = await RoomService.search(query, ctx, { pagination });
+        return ResponseHandler.appResponse(res, 200, true, 'Rooms retrieved successfully', rooms);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
+    }
+};
 
 const update = async (req: any, res: any) => {};
 
