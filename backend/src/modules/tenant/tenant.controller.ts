@@ -19,13 +19,28 @@ const create = async (req: any, res: any) => {
             });
         }
 
+        // 2: call service
         const tennat = await TenantService.create(data, ctx);
         return ResponseHandler.appResponse(res, 201, true, 'Tenants Added successfully', tennat);
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
-const get = async (req: any, res: any) => {};
+const get = async (req: any, res: any) => {
+    try {
+        const ctx: RequestContext = req.context;
+
+        const { id } = req.params;
+
+        if (id?.trim() == '') {
+            return throwAppError('Invalid company id', 400);
+        }
+        const tenant = await TenantService.get(req.params.id, ctx);
+        return ResponseHandler.appResponse(res, 200, true, 'Tenant retrieved successfully', tenant);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
+    }
+};
 const search = async (req: any, res: any) => {};
 const update = async (req: any, res: any) => {};
 

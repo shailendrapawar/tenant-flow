@@ -9,6 +9,7 @@ import { PropertyService } from '../property/property.service';
 import { RoomService } from '../room/room.service';
 import { throwAppError } from '../../shared/utils/error';
 import { CompanyService } from '../company/company.service';
+import { USER_ROLES } from '../user/user.constants';
 
 type TenantDocument = HydratedDocument<ITenant> | null;
 const populate = [
@@ -86,7 +87,28 @@ const CREATE = async (payload: CreateTenantPayloadType, ctx: RequestContext) => 
     return newTenant;
 };
 
-const GET = async () => {};
+const GET = async (query: string, ctx: RequestContext, options?: any): Promise<TenantDocument> => {
+    let entity = null;
+    const user = ctx.user;
+
+    if (user?.role == USER_ROLES.ADMIN) {
+        entity = TenantModel.findById({ _id: query });
+    } else {
+        //other user else than admin add ownership here
+        entity = TenantModel.findOne({ _id: query, companyID: user?.companyID });
+    }
+
+    if (options?.populate) {
+        entity = entity.populate(populate);
+    }
+
+    entity = await entity;
+    if (!entity) {
+        return throwAppError('tenant not found', 404);
+    }
+
+    return entity;
+};
 
 const SEARCH = async () => {};
 

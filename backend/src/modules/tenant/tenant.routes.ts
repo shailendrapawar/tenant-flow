@@ -31,6 +31,28 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    //GET TENANT
+    method: 'get',
+    path: '/tenants/{id}',
+    tags: ['Tenants'],
+    summary: 'Get Tenant by ID',
+
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+
+    responses: {
+        200: { description: 'Tenant retrieved successfully' },
+        400: { description: 'Validation error' },
+    },
+});
+
 // =================================================
 // ============ register routes ====================
 TenantRouter.use(AuthMiddleware);
