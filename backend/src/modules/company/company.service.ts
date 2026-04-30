@@ -23,7 +23,7 @@ const set = async (
         entity.name = model.name;
     }
     if (model.contact) {
-        // FIXME: later this isnt required coz,
+        //  LATER: ater this isnt required coz,
         // user would be poopulated or caretaker number would be added
         if (model.contact.email && entity.contact) {
             entity.contact.email = model.contact.email;
