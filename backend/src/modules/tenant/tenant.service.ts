@@ -3,7 +3,7 @@
 
 import { HydratedDocument } from 'mongoose';
 import { ITenant, TenantModel } from './tenant.model';
-import { CreateTenantPayloadType, SearchTenantQueryType } from './tenant.validators';
+import { CreateTenantPayloadType, SearchTenantQueryType, UpdateTenantPayloadType } from './tenant.validators';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { PropertyService } from '../property/property.service';
 import { RoomService } from '../room/room.service';
@@ -49,7 +49,7 @@ const set = async (model: any, entity: HydratedDocument<ITenant>, ctx: RequestCo
     }
 
     //this is crucial
-    // allow only when there is actual change (i.s will in update)
+    // allow only when there is actual change (i.e  will in UPDATE)
     if (model.roomID && model.roomID != entity.roomID) {
         const room = await RoomService.get(model.roomID, ctx, { populate: true });
 
@@ -111,17 +111,18 @@ const GET = async (query: string, ctx: RequestContext, options?: any): Promise<T
 };
 
 const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options?: any) => {
+
+    const user = ctx.user
     //TODO:
     let sort: any = {
         timeStamp: -1,
     };
 
     let where: any = {};
-    //scope in
 
-    if (query.companyID && ctx?.user?.role !== USER_ROLES.ADMIN) {
-        //for admin filter is allowed
-        where.companyID = query.companyID;
+    //scope in compulsory for landlord
+    if (user?.role == USER_ROLES.LANDLORD) {
+        where.companyID = user?.companyID;
     }
 
     if (query.propertyID) {
@@ -131,9 +132,67 @@ const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options
     if (query.roomID) {
         where.roomID = query.roomID;
     }
+
+    if (query.status) {
+        where.status = query.status
+    }
+
+    if (query.name) {
+        where.firstName = { $regex: query.name, $options: 'i' }
+    }
+
+    if (query.companyID && user?.role !== USER_ROLES.ADMIN) {
+        //for admin filter is allowed/optional
+        where.companyID = query.companyID;
+    }
+
+    // business filters
+    if (query.joiningDateFrom) {
+        where.joiningDate = { $gte: query.joiningDateFrom }
+    }
+    if (query.joiningDateTo) {
+        where.joiningDate = { $lte: query.joiningDateTo }
+    }
+    if (query.leavingDateFrom) {
+        where.leavingDate = { $gte: query.leavingDateFrom }
+    }
+    if (query.leavingDateTo) {
+        where.leavingDate = { $lte: query.leavingDateTo }
+    }
+
+    if (query.minRent) {
+        where.rentShare = { $gte: query.minRent }
+    }
+
+    if (query.maxRent) {
+        where.rentShare = { $lte: query.maxRent }
+    }
+
+    const countPromise = TenantModel.countDocuments(where);
+    const itemsPromise = TenantModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
+
+    const [count, tenants] = await Promise.all([countPromise, itemsPromise]);
+    return { count, tenants };
 };
 
-const UPDATE = async () => {};
+const UPDATE = async (id: string, model: UpdateTenantPayloadType, ctx: RequestContext) => {
+
+    let entity = await GET(id, ctx);
+
+    if (!entity) {
+        return throwAppError('Property not found', 404);
+    }
+
+    entity = await set(model, entity, ctx);
+
+    await entity.save()
+
+    return entity
+};
 
 export const TenantService = {
     create: CREATE,

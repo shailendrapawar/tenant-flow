@@ -73,6 +73,7 @@ const CREATE = async (payload: CreatePropertyPayloadType, ctx: RequestContext): 
     }
     return property;
 };
+
 const GET = async (id: string, ctx: RequestContext, options?: any): Promise<PropertyDocument> => {
     let query = null;
     const user = ctx.user;

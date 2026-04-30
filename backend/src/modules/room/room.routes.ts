@@ -94,7 +94,7 @@ registry.registerPath({   //UPDATE ROOM
 
 // =================================================
 // ============ register routes ====================
-RoomRouter.use(AuthMiddleware);
+RoomRouter.use(AuthMiddleware); //apply middlewares in grouped
 RoomRouter.use(authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]))
 
 RoomRouter.post('/', RoomController.create);
