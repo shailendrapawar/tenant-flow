@@ -3,6 +3,7 @@ import { RequestContext } from '../../shared/utils/contextBuilder';
 import { TenantService } from './tenant.service';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 
 const create = async (req: any, res: any) => {
     try {
@@ -26,6 +27,7 @@ const create = async (req: any, res: any) => {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
+
 const get = async (req: any, res: any) => {
     try {
         const ctx: RequestContext = req.context;
@@ -41,7 +43,16 @@ const get = async (req: any, res: any) => {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
-const search = async (req: any, res: any) => {};
+
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
 const update = async (req: any, res: any) => {};
 
 export const TenantController = {

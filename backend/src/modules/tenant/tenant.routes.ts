@@ -6,7 +6,7 @@ import { USER_ROLES } from '../user/user.constants';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
 import { registry } from '../../shared/configs/registry';
-import { CreateTenantPayloadSchema } from './tenant.validators';
+import { CreateTenantPayloadSchema, SearchTenantQuerySchema } from './tenant.validators';
 export const TenantRouter = express.Router();
 
 // =================================================
@@ -50,6 +50,22 @@ registry.registerPath({
     responses: {
         200: { description: 'Tenant retrieved successfully' },
         400: { description: 'Validation error' },
+    },
+});
+
+registry.registerPath({
+    method: 'get',
+    path: '/tenants',
+    tags: ['Tenants'],
+    summary: 'Search tenants',
+
+    request: {
+        query: SearchTenantQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Properties retrieved successfully' },
+        404: { description: 'Properties not found' },
     },
 });
 

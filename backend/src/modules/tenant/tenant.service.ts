@@ -3,7 +3,7 @@
 
 import { HydratedDocument } from 'mongoose';
 import { ITenant, TenantModel } from './tenant.model';
-import { CreateTenantPayloadType } from './tenant.validators';
+import { CreateTenantPayloadType, SearchTenantQueryType } from './tenant.validators';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { PropertyService } from '../property/property.service';
 import { RoomService } from '../room/room.service';
@@ -110,7 +110,28 @@ const GET = async (query: string, ctx: RequestContext, options?: any): Promise<T
     return entity;
 };
 
-const SEARCH = async () => {};
+const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options?: any) => {
+    //TODO:
+    let sort: any = {
+        timeStamp: -1,
+    };
+
+    let where: any = {};
+    //scope in
+
+    if (query.companyID && ctx?.user?.role !== USER_ROLES.ADMIN) {
+        //for admin filter is allowed
+        where.companyID = query.companyID;
+    }
+
+    if (query.propertyID) {
+        where.propertyID = query.propertyID;
+    }
+
+    if (query.roomID) {
+        where.roomID = query.roomID;
+    }
+};
 
 const UPDATE = async () => {};
 

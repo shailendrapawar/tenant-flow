@@ -22,5 +22,29 @@ export const CreateTenantPayloadSchema = z.object({
     leavingDate: z.coerce.date().optional(),
     notes: z.string().optional(),
 });
-
 export type CreateTenantPayloadType = z.infer<typeof CreateTenantPayloadSchema>;
+
+// SEARCH
+export const SearchTenantQuerySchema = z.object({
+    //scope filters
+    companyID: z.string().optional(), //admin
+    propertyID: z.string().optional(),
+    roomID: z.string().optional(),
+
+    //tenant info filters
+    firstName: z.string().optional(),
+    gender: z.enum(['male', 'female', 'other']).optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    status: z.enum(['living', 'left']).optional(),
+
+    //computational fields
+    joiningDateFrom: z.coerce.date().optional(),
+    joiningDateTo: z.coerce.date().optional(),
+    leavingDateFrom: z.coerce.date().optional(),
+    leavingDateTo: z.coerce.date().optional(),
+
+    minRent: z.number().min(0).optional(),
+    maxRent: z.number().min(0).optional(),
+});
+export type SearchTenantQueryType = z.infer<typeof SearchTenantQuerySchema>;
