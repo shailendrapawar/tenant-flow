@@ -13,6 +13,7 @@ import { INIT_SYSTEM_DATA } from '../env/init_env';
 import { RoleRouter } from '../modules/access-management/role/role.routes';
 import { PropertyRouter } from '../modules/property/property.routes';
 import { RoomRouter } from '../modules/room/room.routes';
+import { TenantRouter } from '../modules/tenant/tenant.routes';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -44,6 +45,7 @@ app.use('/users', UserRouter);
 app.use('/companies', CompanyRouter);
 app.use('/roles', RoleRouter);
 app.use('/properties', PropertyRouter);
-app.use('/rooms', RoomRouter)
+app.use('/rooms', RoomRouter);
+app.use('/tenants', TenantRouter);
 
 export { app };

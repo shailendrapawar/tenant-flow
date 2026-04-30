@@ -18,31 +18,34 @@ const populate = [
     },
 ];
 
-const set = async (model: UpdateRoomPayloadType, entity: HydratedDocument<IRoom>, ctx: RequestContext): Promise<HydratedDocument<IRoom>> => {
-
+const set = async (
+    model: UpdateRoomPayloadType,
+    entity: HydratedDocument<IRoom>,
+    ctx: RequestContext,
+): Promise<HydratedDocument<IRoom>> => {
     if (model.floor) {
-        entity.floor = model.floor
+        entity.floor = model.floor;
     }
     if (model.roomNumber) {
-        entity.roomNumber = model.roomNumber
+        entity.roomNumber = model.roomNumber;
     }
     if (model.roomRent) {
-        entity.roomRent = model.roomRent
+        entity.roomRent = model.roomRent;
     }
 
     //FIXME: check condition before updating
     if (model.capacity) {
-        entity.capacity = model.capacity
+        entity.capacity = model.capacity;
     }
     if (model.occupancyCount) {
-        entity.occupancyCount = model.occupancyCount
+        entity.occupancyCount = model.occupancyCount;
     }
 
     if (model.operationalStatus) {
-        entity.operationalStatus = model.operationalStatus
+        entity.operationalStatus = model.operationalStatus;
     }
     if (model.notes) {
-        entity.notes = model.notes
+        entity.notes = model.notes;
     }
 
     return entity;
@@ -99,7 +102,7 @@ const GET = async (id: string, ctx: RequestContext, options?: any): Promise<Room
     }
 
     if (options?.populate) {
-        query = query.populate(options.populate);
+        query = query.populate(populate);
     }
 
     const room = await query;
@@ -162,7 +165,7 @@ const SEARCH = async (query: SearchRoomsQueryType, ctx: RequestContext, options?
 };
 
 const UPDATE = async (id: string, model: UpdateRoomPayloadType, ctx: RequestContext) => {
-    let entity = await GET(id, ctx)
+    let entity = await GET(id, ctx);
     if (!entity) {
         return throwAppError('Room not found', 404);
     }

@@ -5,6 +5,7 @@ import '../../modules/company/company.routes';
 import '../../modules/access-management/role/role.routes';
 import '../../modules/property/property.routes';
 import '../../modules/room/room.routes';
+import '../../modules/tenant/tenant.routes';
 
 export const swaggerSpec = new OpenApiGeneratorV3(registry.definitions).generateDocument({
     openapi: '3.0.0',

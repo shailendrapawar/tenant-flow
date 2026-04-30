@@ -24,3 +24,8 @@ export const toObjectID = (id: string = '') => {
     }
     return new Types.ObjectId(id);
 };
+
+//dates
+export const datesHandler = {
+    regex: /^\d{4}-\d{2}-\d{2}$/,
+};
