@@ -5,17 +5,21 @@ import { HydratedDocument } from 'mongoose';
 import { ITenant, TenantModel } from './tenant.model';
 import { CreateTenantPayloadType, SearchTenantQueryType, UpdateTenantPayloadType } from './tenant.validators';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { PropertyService } from '../property/property.service';
 import { RoomService } from '../room/room.service';
 import { throwAppError } from '../../shared/utils/error';
-import { CompanyService } from '../company/company.service';
 import { USER_ROLES } from '../user/user.constants';
+import { isObjectID } from '../../shared/utils/strings';
+import { TENANT_MANAGE } from './tenant.constants';
 
 type TenantDocument = HydratedDocument<ITenant> | null;
 const populate = [
     {
         path: 'roomID',
-        select: 'roomNumber',
+        select: 'roomNumber floor roomRent notes',
+    },
+    {
+        path: 'propertyID',
+        select: 'name location',
     },
 ];
 
@@ -72,7 +76,14 @@ const CREATE = async (payload: CreateTenantPayloadType, ctx: RequestContext) => 
     const user = ctx.user;
     const companyID: string = user?.companyID || '';
 
-    // 1: check if tenant exists TODO:
+    // 1: check if tenant exists :
+    const isExists = await TenantModel.findOne({
+        $or: [{ email: payload.email }, { phone: payload.phone }],
+        companyID: companyID,
+    });
+    if (isExists) {
+        return throwAppError('Tenant already exists with this email or phone', 400);
+    }
 
     // 2: set bare minimum values
     let newTenant = new TenantModel({
@@ -87,43 +98,38 @@ const CREATE = async (payload: CreateTenantPayloadType, ctx: RequestContext) => 
     return newTenant;
 };
 
-const GET = async (query: string, ctx: RequestContext, options?: any): Promise<TenantDocument> => {
-    let entity = null;
-    const user = ctx.user;
+const GET = async (query: any, ctx: RequestContext, options?: any): Promise<TenantDocument> => {
+    //return invalid
+    if (!query) return null;
 
-    if (user?.role == USER_ROLES.ADMIN) {
-        entity = TenantModel.findById({ _id: query });
+    // if already a document, return as is
+    if (query?._doc) return query;
+
+    let entity = null;
+    const where: Object = ctx.where();
+
+    if (isObjectID(query)) {
+        entity = TenantModel.findOne({ _id: query, ...where });
     } else {
-        //other user else than admin add ownership here
-        entity = TenantModel.findOne({ _id: query, companyID: user?.companyID });
+        return throwAppError('Invalid tenant ID', 400);
     }
 
-    if (options?.populate) {
-        entity = entity.populate(populate);
+    if (entity != null) {
+        if (options?.populate) {
+            entity = entity.populate(populate);
+        }
     }
 
     entity = await entity;
-    if (!entity) {
-        return throwAppError('tenant not found', 404);
-    }
-
     return entity;
 };
 
 const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options?: any) => {
-
-    const user = ctx.user
-    //TODO:
     let sort: any = {
         timeStamp: -1,
     };
 
-    let where: any = {};
-
-    //scope in compulsory for landlord
-    if (user?.role == USER_ROLES.LANDLORD) {
-        where.companyID = user?.companyID;
-    }
+    let where: any = ctx.where();
 
     if (query.propertyID) {
         where.propertyID = query.propertyID;
@@ -134,38 +140,38 @@ const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options
     }
 
     if (query.status) {
-        where.status = query.status
+        where.status = query.status;
     }
 
     if (query.name) {
-        where.firstName = { $regex: query.name, $options: 'i' }
+        where.firstName = { $regex: query.name, $options: 'i' };
     }
 
-    if (query.companyID && user?.role !== USER_ROLES.ADMIN) {
+    if (query.companyID && ctx.hasAllPermissions([TENANT_MANAGE])) {
         //for admin filter is allowed/optional
         where.companyID = query.companyID;
     }
 
     // business filters
     if (query.joiningDateFrom) {
-        where.joiningDate = { $gte: query.joiningDateFrom }
+        where.joiningDate = { $gte: query.joiningDateFrom };
     }
     if (query.joiningDateTo) {
-        where.joiningDate = { $lte: query.joiningDateTo }
+        where.joiningDate = { $lte: query.joiningDateTo };
     }
     if (query.leavingDateFrom) {
-        where.leavingDate = { $gte: query.leavingDateFrom }
+        where.leavingDate = { $gte: query.leavingDateFrom };
     }
     if (query.leavingDateTo) {
-        where.leavingDate = { $lte: query.leavingDateTo }
+        where.leavingDate = { $lte: query.leavingDateTo };
     }
 
     if (query.minRent) {
-        where.rentShare = { $gte: query.minRent }
+        where.rentShare = { $gte: query.minRent };
     }
 
     if (query.maxRent) {
-        where.rentShare = { $lte: query.maxRent }
+        where.rentShare = { $lte: query.maxRent };
     }
 
     const countPromise = TenantModel.countDocuments(where);
@@ -180,18 +186,17 @@ const SEARCH = async (query: SearchTenantQueryType, ctx: RequestContext, options
 };
 
 const UPDATE = async (id: string, model: UpdateTenantPayloadType, ctx: RequestContext) => {
-
-    let entity = await GET(id, ctx);
+    let entity = await GET(id, ctx, { populate: true });
 
     if (!entity) {
-        return throwAppError('Property not found', 404);
+        return throwAppError('Tenant not found', 404);
     }
 
     entity = await set(model, entity, ctx);
 
-    await entity.save()
+    await entity.save();
 
-    return entity
+    return entity;
 };
 
 export const TenantService = {

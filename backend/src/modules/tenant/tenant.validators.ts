@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { objectIDRegex } from '../../shared/utils/strings';
 import { phoneHandler } from '../../shared/utils/numbers';
+import { TENANT_STATUS } from './tenant.constants';
 
 // CREATE========================================>
 export const CreateTenantPayloadSchema = z.object({
@@ -49,23 +50,24 @@ export const SearchTenantQuerySchema = z.object({
 });
 export type SearchTenantQueryType = z.infer<typeof SearchTenantQuerySchema>;
 
-
 // UPDATE ========================================>
 export const UpdateTenantPayloadSchema = z.object({
     roomID: z
         .string()
         .regex(objectIDRegex)
+        .optional()
         .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
 
-    firstName: z.string(),
+    firstName: z.string().optional(),
     lastName: z.string().optional(),
     gender: z.enum(['male', 'female', 'other']).optional(),
-    phone: z.string().regex(phoneHandler.regex),
-    email: z.string().email(),
+    phone: z.string().regex(phoneHandler.regex).optional(),
+    email: z.string().email().optional(),
+    status: z.enum([TENANT_STATUS.LIVING, TENANT_STATUS.LEFT]).optional(),
 
-    rentShare: z.number().min(0).max(100),
+    rentShare: z.number().min(100).max(10000000).optional(),
     joiningDate: z.coerce.date().optional(),
     leavingDate: z.coerce.date().optional(),
     notes: z.string().optional(),
-})
-export type UpdateTenantPayloadType = z.infer<typeof UpdateTenantPayloadSchema>
+});
+export type UpdateTenantPayloadType = z.infer<typeof UpdateTenantPayloadSchema>;

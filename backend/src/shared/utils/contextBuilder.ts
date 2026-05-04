@@ -1,3 +1,4 @@
+import { USER_ROLES } from '../../modules/user/user.constants';
 import logger from './logger';
 import { generateUUID } from './strings';
 
@@ -17,6 +18,7 @@ export type RequestContext = {
     setPermissions: (permissions: string[]) => void;
     hasAnyPermissions: (required: string[]) => boolean;
     hasAllPermissions: (required: string[]) => boolean;
+    where: () => Object;
 };
 
 export const buildContext = (req: any, res: any, next: any) => {
@@ -62,6 +64,36 @@ export const buildContext = (req: any, res: any, next: any) => {
                 }
             }
             return true;
+        },
+
+        //context where
+        where(): Object {
+            const clause: any = {};
+            const role = context.user?.role;
+
+            //add scope here for different roles
+            switch (role) {
+                case USER_ROLES.ADMIN:
+                    // no scope needed for admin
+                    break;
+                case USER_ROLES.LANDLORD:
+                    clause.companyID = context.user?.companyID;
+                    break;
+                default:
+                    // no scope for other roles
+                    break;
+            }
+
+            // // # USE THIS WHEN THERE WILL BE NEED TO EXTEND FILTER LOGIC
+            // // i.e i wanna add additonal filters to base clause for single request instance
+
+            // const filters: any = {};
+            // filters.add = (field: string, value: any) => {
+            //     if (value) clause[field] = value;
+            //     return filters;
+            // };
+
+            return clause;
         },
     };
     req.context = context;

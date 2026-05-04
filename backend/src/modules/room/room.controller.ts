@@ -5,6 +5,7 @@ import { RequestContext } from '../../shared/utils/contextBuilder';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
+import { isObjectID } from '../../shared/utils/strings';
 import { RoomService } from './room.service';
 import { CreateRoomsPayloadSchema, UpdateRoomPayloadSchema } from './room.validators';
 
@@ -15,7 +16,7 @@ const create = async (req: any, res: any) => {
         //1: basic validations
         const { success, data, error } = CreateRoomsPayloadSchema.safeParse(req.body);
 
-        //2: additional validation(remove duplicate rooms data)
+        //2: handle validation errors
         if (!success) {
             const validationErrors = formatZodError(error);
 
@@ -40,11 +41,15 @@ const get = async (req: any, res: any) => {
         const ctx = req.context;
         const { id } = req.params;
 
-        if (id?.trim() == '') {
+        if (!isObjectID(id)) {
             return throwAppError('Invalid room id', 400);
         }
 
         const room = await RoomService.get(id, ctx, { poulate: true });
+
+        if (!room) {
+            return throwAppError('Room not found', 404);
+        }
         return ResponseHandler.appResponse(res, 200, true, 'Room retrieved successfully', room);
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
@@ -65,7 +70,6 @@ const search = async (req: any, res: any) => {
 
 const update = async (req: any, res: any) => {
     try {
-
         const ctx = req.context;
         const { id } = req.params;
 
@@ -84,16 +88,9 @@ const update = async (req: any, res: any) => {
         }
 
         const room = await RoomService.update(id, data, ctx);
-        return ResponseHandler.appResponse(
-            res,
-            200,
-            true,
-            'Room updated successfully',
-            room
-        );
+        return ResponseHandler.appResponse(res, 200, true, 'Room updated successfully', room);
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
-
     }
 };
 
