@@ -7,8 +7,9 @@ import { CreateRoomsPayloadType, SearchRoomsQueryType, UpdateRoomPayloadType } f
 import { RoomModel } from './room.model';
 import { PropertyService } from '../property/property.service';
 import { throwAppError } from '../../shared/utils/error';
-import { toObjectID } from '../../shared/utils/strings';
+import { isObjectID, toObjectID } from '../../shared/utils/strings';
 import { USER_ROLES } from '../user/user.constants';
+import { ROOM_MANAGE } from './room.constants';
 
 type RoomDocument = HydratedDocument<IRoom> | null;
 const populate = [
@@ -91,26 +92,34 @@ const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
     const result = await RoomModel.insertMany(newRooms, { ordered: false });
     return result;
 };
-const GET = async (id: string, ctx: RequestContext, options?: any): Promise<RoomDocument> => {
-    let query = null;
-    const user = ctx.user;
 
-    if (user?.role === USER_ROLES.LANDLORD) {
-        query = RoomModel.findOne({ _id: toObjectID(id), companyID: toObjectID(user?.companyID) });
+const GET = async (query: any, ctx: RequestContext, options?: any): Promise<RoomDocument> => {
+    //invalid query
+    if (!query) return null;
+
+    //already a document
+    if (query._doc) {
+        return query;
+    }
+
+    let entity = null;
+    const where: Object = ctx.where();
+
+    if (isObjectID(query)) {
+        entity = RoomModel.findOne({ _id: toObjectID(query), ...where });
     } else {
-        query = RoomModel.findOne({ _id: toObjectID(id) });
+        return throwAppError('Invalid room ID', 400);
     }
 
-    if (options?.populate) {
-        query = query.populate(populate);
+    if (entity) {
+        if (options?.populate) {
+            entity = entity.populate(populate);
+        }
     }
 
-    const room = await query;
-    if (!room) {
-        return throwAppError('Room not found', 404);
-    }
+    entity = await entity;
 
-    return room;
+    return entity;
 };
 const SEARCH = async (query: SearchRoomsQueryType, ctx: RequestContext, options?: any) => {
     //TODO: improve this api
@@ -118,17 +127,13 @@ const SEARCH = async (query: SearchRoomsQueryType, ctx: RequestContext, options?
     let sort: any = {
         timeStamp: -1,
     };
-    let where: any = {};
+    let where: any = ctx.where();
 
-    //scope in companyID for landlord only
-    if (user?.role === USER_ROLES.LANDLORD) {
-        where.companyID = user?.companyID;
-    }
-
-    if (query.companyID) {
-        //optional case for admin
+    if (query.companyID && ctx.hasAllPermissions([ROOM_MANAGE])) {
+        //optional case for admin override companyID
         where.companyID = toObjectID(query.companyID);
     }
+
     if (query.propertyID) {
         where.propertyID = toObjectID(query.propertyID);
     }
@@ -144,11 +149,7 @@ const SEARCH = async (query: SearchRoomsQueryType, ctx: RequestContext, options?
     if (query.occupancyCount) {
         where.occupancyCount = query.occupancyCount;
     }
-    // if (query.occupancyStatus) {
-    //     if (query.occupancyStatus == "occupied") {
-    //         // where.occupancyCount={$eq }
-    //     }
-    // }
+
     if (query.operationalStatus) {
         where.operationalStatus = query.operationalStatus;
     }

@@ -11,7 +11,7 @@ export const extractPermissionName = (rawPermissions: any[]): string[] => {
 
 export const objectIDRegex = /^[0-9a-fA-F]{24}$/;
 
-export const isObjectID = (id: string = '') => {
+export const isObjectID = (id: string) => {
     if (id.trim() == '') {
         return false;
     }
