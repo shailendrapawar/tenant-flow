@@ -4,6 +4,7 @@ import { TenantService } from './tenant.service';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
+import { isObjectID } from '../../shared/utils/strings';
 
 const create = async (req: any, res: any) => {
     try {
@@ -34,10 +35,14 @@ const get = async (req: any, res: any) => {
 
         const { id } = req.params;
 
-        if (id?.trim() == '') {
-            return throwAppError('Invalid company id', 400);
+        if (!isObjectID(id)) {
+            return throwAppError('Invalid tenant id', 400);
         }
-        const tenant = await TenantService.get(req.params.id, ctx);
+
+        const tenant = await TenantService.get(id, ctx, { populate: true });
+        if (!tenant) {
+            throwAppError('Tenant not found', 404);
+        }
         return ResponseHandler.appResponse(res, 200, true, 'Tenant retrieved successfully', tenant);
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
@@ -50,21 +55,19 @@ const search = async (req: any, res: any) => {
         const query = RequestHandler.parseQuery(req);
         const pagination = RequestHandler.getPagination(req);
 
-        const tenants = await TenantService.search(query, ctx, { pagination })
+        const tenants = await TenantService.search(query, ctx, { pagination });
         return ResponseHandler.appResponse(res, 200, true, 'Tenants retrieved successfully', tenants);
-
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }
 };
 const update = async (req: any, res: any) => {
     try {
-
         const ctx = req.context;
         const { id } = req.params;
 
-        if (id?.trim() == '') {
-            return throwAppError('Invalid property id', 400);
+        if (!isObjectID(id)) {
+            return throwAppError('Invalid tenant id', 400);
         }
 
         const { data, success, error } = UpdateTenantPayloadSchema.safeParse(req.body);
@@ -77,15 +80,8 @@ const update = async (req: any, res: any) => {
             });
         }
 
-        const tenant = await TenantService.update(id, data, ctx)
-        return ResponseHandler.appResponse(
-            res,
-            200,
-            true,
-            'Tenant updated successfully',
-            tenant
-        );
-
+        const tenant = await TenantService.update(id, data, ctx);
+        return ResponseHandler.appResponse(res, 200, true, 'Tenant updated successfully', tenant);
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
     }

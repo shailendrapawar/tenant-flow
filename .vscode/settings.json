@@ -7,5 +7,50 @@
 
   "eslint.validate": ["javascript", "typescript"],
 
-  "eslint.experimental.useFlatConfig": true
+  "eslint.experimental.useFlatConfig": true,
+
+  "todohighlight.keywords": [
+    {
+      "text": "ADDON:",
+      "color": "#ffffff",
+      "backgroundColor": "#8e44ad",
+      "overviewRulerColor": "#8e44ad",
+      "border": "1px solid #6c3483",
+      "borderRadius": "3px",
+      "isWholeLine": false,
+      "cursor": "pointer"
+    },
+    {
+      "text": "LATER:",
+      "color": "#ffffff",
+      "backgroundColor": "#fb812b",
+      "overviewRulerColor": "#8e44ad",
+      "border": "1px solid #fb812b",
+      "borderRadius": "3px",
+      "isWholeLine": false,
+      "cursor": "pointer"
+    }
+  ],
+  "todohighlight.include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.py",
+    "**/*.css",
+    "**/*.scss",
+    "**/*.html"
+  ],
+  "todohighlight.exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/out/**",
+    "**/.git/**",
+    "**/*.min.js",
+    "**/*.map",
+    "**/vendor/**",
+    "**/.next/**",
+    "**/coverage/**"
+  ]
 }

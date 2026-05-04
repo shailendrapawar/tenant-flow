@@ -12,6 +12,9 @@ export const extractPermissionName = (rawPermissions: any[]): string[] => {
 export const objectIDRegex = /^[0-9a-fA-F]{24}$/;
 
 export const isObjectID = (id: string = '') => {
+    if (id.trim() == '') {
+        return false;
+    }
     return objectIDRegex.test(id);
 };
 
@@ -28,4 +31,11 @@ export const toObjectID = (id: string = '') => {
 //dates
 export const datesHandler = {
     regex: /^\d{4}-\d{2}-\d{2}$/,
+};
+
+export const emailHandler = {
+    regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    isValid: (email: string) => {
+        return emailHandler.regex.test(email);
+    },
 };

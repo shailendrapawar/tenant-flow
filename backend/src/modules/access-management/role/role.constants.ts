@@ -8,6 +8,7 @@ import {
     PROPERTY_READ,
     PROPERTY_UPDATE,
 } from '../../property/property.constants';
+import { TENANT_CREATE, TENANT_LIST, TENANT_MANAGE, TENANT_READ, TENANT_UPDATE } from '../../tenant/tenant.constants';
 import { USER_MANAGE, USER_ROLES } from '../../user/user.constants';
 
 // =========================================
@@ -15,23 +16,32 @@ import { USER_MANAGE, USER_ROLES } from '../../user/user.constants';
 
 export const SYSTEM_ROLES = [
     {
+        //admin role
         name: USER_ROLES.ADMIN,
-        permissions: [USER_MANAGE, COMPANY_MANAGE, PROPERTY_MANAGE],
+        permissions: [USER_MANAGE, COMPANY_MANAGE, PROPERTY_MANAGE, TENANT_MANAGE],
         description: 'System administrator with full access',
         isSystem: true,
     },
 
     {
+        //landlord role
         name: USER_ROLES.LANDLORD,
         permissions: [
             //company permissions
             COMPANY_CREATE,
             COMPANY_READ,
             COMPANY_UPDATE,
+
             //property permissions
             PROPERTY_CREATE,
             PROPERTY_READ,
             PROPERTY_UPDATE,
+
+            //tenant_permissions
+            TENANT_CREATE,
+            TENANT_READ,
+            TENANT_LIST,
+            TENANT_UPDATE,
         ],
         description: 'Property landlord with limited access',
         isSystem: true,
