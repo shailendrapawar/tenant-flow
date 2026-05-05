@@ -8,7 +8,7 @@ import { RoomModel } from './room.model';
 import { PropertyService } from '../property/property.service';
 import { throwAppError } from '../../shared/utils/error';
 import { isObjectID, toObjectID } from '../../shared/utils/strings';
-import { USER_ROLES } from '../user/user.constants';
+
 import { ROOM_MANAGE } from './room.constants';
 
 type RoomDocument = HydratedDocument<IRoom> | null;
@@ -53,8 +53,8 @@ const set = async (
 };
 
 const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
-    // TODO: start from here
     const user = ctx.user;
+
     const property = await PropertyService.get(payload.propertyID, ctx);
     if (!property) {
         return throwAppError('Property not found');
@@ -88,7 +88,7 @@ const CREATE = async (payload: CreateRoomsPayloadType, ctx: RequestContext) => {
         newRooms.push(newRoom);
     }
 
-    // const result = await Promise.all(newRooms);
+    // insert many and return false if any one fails
     const result = await RoomModel.insertMany(newRooms, { ordered: false });
     return result;
 };
@@ -103,12 +103,11 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Room
     }
 
     let entity = null;
-    const where: Object = ctx.where();
+    const where: any = ctx.where();
 
     if (isObjectID(query)) {
-        entity = RoomModel.findOne({ _id: toObjectID(query), ...where });
-    } else {
-        return throwAppError('Invalid room ID', 400);
+        where._id = toObjectID(query);
+        entity = RoomModel.findOne(where);
     }
 
     if (entity) {
