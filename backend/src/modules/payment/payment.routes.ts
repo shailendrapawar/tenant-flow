@@ -11,7 +11,7 @@ export const PaymentRouter = express.Router();
 // =================================================
 // ============ register swagger config ============
 registry.registerPath({
-    //CREATE TENANT
+    //CREATE PAYMENT
     method: 'post',
     path: '/payments',
     tags: ['Payments'],
@@ -29,9 +29,31 @@ registry.registerPath({
     },
 });
 
+registry.registerPath({
+    //GET PAYMENT
+    method: 'get',
+    path: '/payments/{id}',
+    tags: ['Payments'],
+    summary: 'Get Payment by ID',
+
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+
+    responses: {
+        200: { description: 'Payment retrieved successfully' },
+        400: { description: 'Validation error' },
+    },
+});
 // =================================================
 // ============ register routes ====================
 PaymentRouter.use(AuthMiddleware);
 PaymentRouter.use(authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]));
 
 PaymentRouter.post('/', PaymentController.create);
+PaymentRouter.get('/:id', PaymentController.get);

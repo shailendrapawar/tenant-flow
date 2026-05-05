@@ -5,8 +5,18 @@ import { IPayment, PaymentModel } from './payment.model';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { CreatePaymentPayloadType } from './payment.validators';
 import { TenantService } from '../tenant/tenant.service';
+import { isObjectID } from '../../shared/utils/strings';
 type PaymentDocument = HydratedDocument<IPayment> | null;
-const populate = [];
+const populate = [
+    {
+        path: 'roomID',
+        select: 'roomNumber',
+    },
+    {
+        path: 'tenantID',
+        select: 'firstName lastName email phoneNumber',
+    },
+];
 
 const set = async (
     model: any,
@@ -55,7 +65,28 @@ const CREATE = async (payload: CreatePaymentPayloadType, ctx: RequestContext): P
 };
 
 const GET = async (query: any, ctx: RequestContext, options?: any): Promise<PaymentDocument> => {
-    return null;
+    //return invalid
+    if (!query) return null;
+
+    // if already a document, return as is
+    if (query?._doc) return query;
+
+    let entity = null;
+    const where: any = ctx.where();
+
+    if (isObjectID(query)) {
+        where._id = query;
+        entity = PaymentModel.findOne(where);
+    }
+
+    if (entity != null) {
+        if (options?.populate) {
+            entity = entity.populate(populate);
+        }
+    }
+
+    entity = await entity;
+    return entity;
 };
 
 const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {};

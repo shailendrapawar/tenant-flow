@@ -1,8 +1,9 @@
 // Payment Controller
 
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { formatZodError } from '../../shared/utils/error';
+import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
+import { isObjectID } from '../../shared/utils/strings';
 import { PaymentService } from './payment.service';
 import { CreatePaymentPayloadSchema } from './payment.validators';
 
@@ -25,6 +26,26 @@ const create = async (req: any, res: any) => {
     }
 };
 
+const get = async (req: any, res: any) => {
+    try {
+        const ctx: RequestContext = req.context;
+
+        const { id } = req.params;
+
+        if (!isObjectID(id)) {
+            return throwAppError('Invalid payment id', 400);
+        }
+        const payment = await PaymentService.get(id, ctx, { populate: true });
+        if (!payment) {
+            throwAppError('Payment not found', 404);
+        }
+        return ResponseHandler.appResponse(res, 200, true, 'Payment retrieved successfully', payment);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
+    }
+};
+
 export const PaymentController = {
     create,
+    get,
 };
