@@ -29,17 +29,7 @@ registry.registerPath({
         404: { description: 'Company not found' },
     },
 });
-registry.registerPath({
-    method: 'get',
-    path: '/companies/me',
-    tags: ['Company'],
-    summary: "Get Logged-in user's company",
 
-    responses: {
-        200: { description: 'Company retrieved successfully' },
-        404: { description: 'Company not found' },
-    },
-});
 registry.registerPath({
     method: 'get',
     path: '/companies',
@@ -80,32 +70,8 @@ registry.registerPath({
         404: { description: 'Company not found' },
     },
 });
-registry.registerPath({
-    method: 'put',
-    path: '/companies/me',
-    tags: ['Company'],
-    summary: 'Update company- loggedin user',
-    parameters: [
-        {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'string' },
-        },
-    ],
-    request: {
-        body: {
-            content: { 'application/json': { schema: UpdateCompanyPayloadSchema } },
-            required: true,
-        },
-    },
-    responses: {
-        200: { description: 'Company retrieved successfully' },
-        404: { description: 'Company not found' },
-    },
-});
-// =========================================
 
+// =========================================
 // ============ register routes ============
 CompanyRouter.use(AuthMiddleware); //group level auth middleware
 
