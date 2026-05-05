@@ -3,9 +3,10 @@
 import { HydratedDocument } from 'mongoose';
 import { IPayment, PaymentModel } from './payment.model';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { CreatePaymentPayloadType } from './payment.validators';
+import { CreatePaymentPayloadType, UpdatePaymentPayloadType } from './payment.validators';
 import { TenantService } from '../tenant/tenant.service';
 import { isObjectID } from '../../shared/utils/strings';
+import { throwAppError } from '../../shared/utils/error';
 type PaymentDocument = HydratedDocument<IPayment> | null;
 const populate = [
     {
@@ -91,7 +92,19 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Paym
 
 const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {};
 
-const UPDATE = async (id: string, model: any, ctx: RequestContext) => {};
+const UPDATE = async (id: string, model: UpdatePaymentPayloadType, ctx: RequestContext) => {
+    let entity = await GET(id, ctx, { populate: true });
+
+    if (!entity) {
+        return throwAppError('Payment not found', 404);
+    }
+
+    entity = await set(model, entity, ctx);
+
+    await entity.save();
+
+    return entity;
+};
 
 export const PaymentService = {
     create: CREATE,

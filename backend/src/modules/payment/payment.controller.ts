@@ -5,7 +5,7 @@ import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { isObjectID } from '../../shared/utils/strings';
 import { PaymentService } from './payment.service';
-import { CreatePaymentPayloadSchema } from './payment.validators';
+import { CreatePaymentPayloadSchema, UpdatePaymentPayloadSchema } from './payment.validators';
 
 const create = async (req: any, res: any) => {
     try {
@@ -45,7 +45,33 @@ const get = async (req: any, res: any) => {
     }
 };
 
+const update = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { id } = req.params;
+
+        if (!isObjectID(id)) {
+            return throwAppError('Invalid payment id', 400);
+        }
+
+        const { data, success, error } = UpdatePaymentPayloadSchema.safeParse(req.body);
+
+        if (!success) {
+            const validationErrors = formatZodError(error);
+
+            return ResponseHandler.appResponse(res, 400, false, 'Validation Error', {
+                fields: validationErrors,
+            });
+        }
+        const payment = await PaymentService.update(id, data, ctx);
+        return ResponseHandler.appResponse(res, 200, true, 'Payment updated successfully', payment);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
+    }
+};
+
 export const PaymentController = {
     create,
     get,
+    update,
 };

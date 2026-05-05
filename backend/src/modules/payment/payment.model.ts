@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PAYMENT_METHODS, PAYMENT_TYPE } from './payment.constants';
+import { PAYMENT_METHODS, PAYMENT_TYPES } from './payment.constants';
 
 // Payment Model
 const paymentSchema = new mongoose.Schema(
@@ -32,8 +32,8 @@ const paymentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: [PAYMENT_TYPE.CREDIT, PAYMENT_TYPE.DEBIT],
-            default: PAYMENT_TYPE.CREDIT,
+            enum: [PAYMENT_TYPES.CREDIT, PAYMENT_TYPES.DEBIT],
+            default: PAYMENT_TYPES.CREDIT,
             required: true,
         },
         method: {

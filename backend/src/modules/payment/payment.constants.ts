@@ -1,5 +1,5 @@
 // Payment Constants
-export const PAYMENT_TYPE = {
+export const PAYMENT_TYPES = {
     CREDIT: 'credit',
     DEBIT: 'debit',
 };
