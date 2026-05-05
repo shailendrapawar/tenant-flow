@@ -3,6 +3,7 @@
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
+import { isObjectID } from '../../shared/utils/strings';
 import { MapCompanyDTO } from './company.dto';
 import { CompanyService } from './company.service';
 import { UpdateCompanyPayloadSchema } from './company.validators';
@@ -12,11 +13,15 @@ const get = async (req: any, res: any) => {
         const ctx = req.context;
         const { id } = req.params;
 
-        if (id?.trim() == '') {
+        if (!isObjectID(id)) {
             return throwAppError('Invalid company id', 400);
         }
 
         const company = await CompanyService.get(id, ctx, { populate: true });
+
+        if (!company) {
+            return throwAppError('Company not found', 404);
+        }
 
         return ResponseHandler.appResponse(
             res,
@@ -36,7 +41,7 @@ const update = async (req: any, res: any) => {
         const ctx = req.context;
         const { id } = req.params;
 
-        if (id?.trim() == '') {
+        if (!isObjectID(id)) {
             return throwAppError('Invalid company id', 400);
         }
         const { data, success, error } = UpdateCompanyPayloadSchema.safeParse(req.body);
@@ -77,8 +82,36 @@ const search = async (req: any, res: any) => {
     }
 };
 
+const getCompanyMe = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const { companyID } = ctx.user;
+
+        if (!isObjectID(companyID)) {
+            return throwAppError('Invalid company id', 400);
+        }
+
+        const company = await CompanyService.get(companyID, ctx, { populate: true });
+
+        if (!company) {
+            return throwAppError('Company not found', 404);
+        }
+
+        return ResponseHandler.appResponse(
+            res,
+            200,
+            true,
+            'Company retrieved successfully',
+            MapCompanyDTO(company, ctx.user.role),
+        );
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode, false, error?.message, null);
+    }
+};
+
 export const CompanyControler = {
     get,
     update,
     search,
+    getCompanyMe,
 };
