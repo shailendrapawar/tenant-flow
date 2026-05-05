@@ -7,7 +7,6 @@ import { CreateTenantPayloadType, SearchTenantQueryType, UpdateTenantPayloadType
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { RoomService } from '../room/room.service';
 import { throwAppError } from '../../shared/utils/error';
-import { USER_ROLES } from '../user/user.constants';
 import { isObjectID } from '../../shared/utils/strings';
 import { TENANT_MANAGE } from './tenant.constants';
 
