@@ -1,5 +1,6 @@
 // Permission Constants
 import { COMPANY_PERMISSIONS } from '../../company/company.constants';
+import { PAYMENT_PERMISSIONS } from '../../payment/payment.constants';
 import { PROPERTY_PERMISSIONS } from '../../property/property.constants';
 import { ROOM_PERMISSIONS } from '../../room/room.constants';
 import { TENANT_PERMISSIONS } from '../../tenant/tenant.constants';
@@ -11,4 +12,5 @@ export const PERMISSIONS = [
     ...PROPERTY_PERMISSIONS,
     ...TENANT_PERMISSIONS,
     ...ROOM_PERMISSIONS,
+    ...PAYMENT_PERMISSIONS
 ];

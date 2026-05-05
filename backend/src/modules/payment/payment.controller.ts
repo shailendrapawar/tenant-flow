@@ -2,6 +2,7 @@
 
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
+import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
 import { isObjectID } from '../../shared/utils/strings';
 import { PaymentService } from './payment.service';
@@ -44,6 +45,18 @@ const get = async (req: any, res: any) => {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };
+const search = async (req: any, res: any) => {
+    try {
+        const ctx = req.context;
+        const query = RequestHandler.parseQuery(req);
+        const pagination = RequestHandler.getPagination(req);
+
+        const payments = await PaymentService.search(query, ctx, { pagination })
+        return ResponseHandler.appResponse(res, 200, true, 'Payments retrieved successfully', payments);
+    } catch (error: any) {
+        return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
+    }
+}
 
 const update = async (req: any, res: any) => {
     try {
@@ -70,8 +83,10 @@ const update = async (req: any, res: any) => {
     }
 };
 
+
 export const PaymentController = {
     create,
     get,
+    search,
     update,
 };

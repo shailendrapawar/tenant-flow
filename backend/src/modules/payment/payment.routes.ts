@@ -1,7 +1,7 @@
 // Payment Routes
 import express from 'express';
 import { registry } from '../../shared/configs/registry';
-import { CreatePaymentPayloadSchema, UpdatePaymentPayloadSchema } from './payment.validators';
+import { CreatePaymentPayloadSchema, SearchPaymentsQuerySchema, UpdatePaymentPayloadSchema } from './payment.validators';
 import { AuthMiddleware } from '../../shared/middlewares/authMiddleware';
 import { PaymentController } from './payment.controller';
 import { authorizedRoles } from '../../shared/middlewares/authorizeMiddleware';
@@ -50,7 +50,26 @@ registry.registerPath({
         400: { description: 'Validation error' },
     },
 });
+
 registry.registerPath({
+    //SEARCH 
+    method: 'get',
+    path: '/payments',
+    tags: ['Payments'],
+    summary: 'Search payments',
+
+    request: {
+        query: SearchPaymentsQuerySchema,
+    },
+
+    responses: {
+        200: { description: 'Payments retrieved successfully' },
+        404: { description: 'Payments not found' },
+    },
+});
+
+registry.registerPath({
+    //Update payments
     method: 'put',
     path: '/payments/{id}',
     tags: ['Payments'],
@@ -81,5 +100,6 @@ PaymentRouter.use(AuthMiddleware);
 PaymentRouter.use(authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]));
 
 PaymentRouter.get('/:id', PaymentController.get);
+PaymentRouter.get("/", PaymentController.search)
 PaymentRouter.post('/', PaymentController.create);
 PaymentRouter.put('/:id', PaymentController.update);

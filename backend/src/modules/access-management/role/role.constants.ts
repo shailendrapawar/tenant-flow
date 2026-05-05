@@ -1,9 +1,10 @@
 // Role Constants
 
 import { COMPANY_CREATE, COMPANY_MANAGE, COMPANY_READ, COMPANY_UPDATE } from '../../company/company.constants';
+import { PAYMENT_CREATE, PAYMENT_READ, PAYMENT_UPDATE, PAYMENT_MANAGE, PAYMENT_LIST, PAYMENT_DELETE } from '../../payment/payment.constants';
 import {
     PROPERTY_CREATE,
-    PROPERTY_DELETE,
+
     PROPERTY_MANAGE,
     PROPERTY_READ,
     PROPERTY_UPDATE,
@@ -19,7 +20,7 @@ export const SYSTEM_ROLES = [
     {
         //admin role
         name: USER_ROLES.ADMIN,
-        permissions: [USER_MANAGE, COMPANY_MANAGE, PROPERTY_MANAGE, TENANT_MANAGE, ROOM_MANAGE],
+        permissions: [USER_MANAGE, COMPANY_MANAGE, PROPERTY_MANAGE, TENANT_MANAGE, ROOM_MANAGE, PAYMENT_MANAGE],
         description: 'System administrator with full access',
         isSystem: true,
     },
@@ -49,6 +50,14 @@ export const SYSTEM_ROLES = [
             ROOM_READ,
             ROOM_UPDATE,
             ROOM_DELETE,
+
+            //payment_permission
+            PAYMENT_CREATE,
+            PAYMENT_READ,
+            PAYMENT_LIST,
+            PAYMENT_UPDATE,
+            PAYMENT_DELETE
+
         ],
         description: 'Property landlord with limited access',
         isSystem: true,

@@ -54,6 +54,7 @@ registry.registerPath({
 });
 
 registry.registerPath({
+    //SEARCH 
     method: 'get',
     path: '/tenants',
     tags: ['Tenants'],

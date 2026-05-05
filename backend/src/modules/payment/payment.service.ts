@@ -3,10 +3,12 @@
 import { HydratedDocument } from 'mongoose';
 import { IPayment, PaymentModel } from './payment.model';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { CreatePaymentPayloadType, UpdatePaymentPayloadType } from './payment.validators';
+import { CreatePaymentPayloadType, SearchPaymentsQueryType, UpdatePaymentPayloadType } from './payment.validators';
 import { TenantService } from '../tenant/tenant.service';
 import { isObjectID } from '../../shared/utils/strings';
 import { throwAppError } from '../../shared/utils/error';
+import { USER_ROLES } from '../user/user.constants';
+import { PAYMENT_MANAGE } from './payment.constants';
 type PaymentDocument = HydratedDocument<IPayment> | null;
 const populate = [
     {
@@ -90,7 +92,51 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Paym
     return entity;
 };
 
-const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {};
+const SEARCH = async (query: SearchPaymentsQueryType, ctx: RequestContext, options?: any) => {
+    let sort: any = {
+        timeStamp: -1,
+    };
+
+    let where: any = ctx.where();
+
+    if (query.companyID && ctx.hasAllPermissions([PAYMENT_MANAGE])) {
+        //only override if admin
+        where.companyID = query.companyID
+    }
+    if (query.tenantID) {
+        where.companyID = query.companyID
+    }
+    if (query.roomID) {
+        where.roomID = query.roomID
+    }
+
+    if (query.amount) {
+        where.amount = query.amount
+    }
+    if (query.type) {
+        where.type = query.type
+    }
+    if (query.method) {
+        where.method = query.method
+    }
+    if (query.fromDate) {
+        where.fromDate = query.fromDate
+    }
+    if (query.toDate) {
+        where.toDate = query.toDate
+    }
+
+    const countPromise = PaymentModel.countDocuments(where);
+    const itemsPromise = PaymentModel.find(where)
+        .populate(populate)
+        .limit(options?.pagination?.limit)
+        .skip(options?.pagination?.skip)
+        .sort(sort);
+
+    const [count, payments] = await Promise.all([countPromise, itemsPromise]);
+    return { count, payments };
+
+};
 
 const UPDATE = async (id: string, model: UpdatePaymentPayloadType, ctx: RequestContext) => {
     let entity = await GET(id, ctx, { populate: true });

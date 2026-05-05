@@ -31,3 +31,35 @@ export const UpdatePaymentPayloadSchema = z.object({
     notes: z.string().optional(),
 });
 export type UpdatePaymentPayloadType = z.infer<typeof UpdatePaymentPayloadSchema>;
+
+
+//SEARCH =========================================>
+export const SearchPaymentsQuerySchema = z.object({
+    //scope filters
+    companyID: z //admin
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+
+    tenantID: z
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+    roomID: z
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+
+    amount: z.number().min(0).optional(),
+    type: z.enum([PAYMENT_TYPES.CREDIT, PAYMENT_TYPES.DEBIT]).optional(),
+    method: z.enum([PAYMENT_METHODS.CASH, PAYMENT_METHODS.UPI, PAYMENT_METHODS.BANK]).optional(),
+
+    fromDate: z.coerce.date().optional(),
+    toDate: z.coerce.date().optional(),
+
+})
+
+export type SearchPaymentsQueryType = z.infer<typeof SearchPaymentsQuerySchema>

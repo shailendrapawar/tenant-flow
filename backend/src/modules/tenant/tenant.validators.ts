@@ -28,9 +28,22 @@ export type CreateTenantPayloadType = z.infer<typeof CreateTenantPayloadSchema>;
 // SEARCH ========================================>
 export const SearchTenantQuerySchema = z.object({
     //scope filters
-    companyID: z.string().optional(), //admin
-    propertyID: z.string().optional(),
-    roomID: z.string().optional(),
+    companyID: z //admin
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+
+    propertyID: z
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
+    roomID: z
+        .string()
+        .regex(objectIDRegex)
+        .optional()
+        .openapi({ description: 'UUID ,i.e: -123e4567-e89b-12d3-a456-426614174000' }),
 
     //tenant info filters
     name: z.string().optional(),
