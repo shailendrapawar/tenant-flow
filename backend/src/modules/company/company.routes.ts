@@ -80,15 +80,37 @@ registry.registerPath({
         404: { description: 'Company not found' },
     },
 });
-
+registry.registerPath({
+    method: 'put',
+    path: '/companies/me',
+    tags: ['Company'],
+    summary: 'Update company- loggedin user',
+    parameters: [
+        {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+        },
+    ],
+    request: {
+        body: {
+            content: { 'application/json': { schema: UpdateCompanyPayloadSchema } },
+            required: true,
+        },
+    },
+    responses: {
+        200: { description: 'Company retrieved successfully' },
+        404: { description: 'Company not found' },
+    },
+});
 // =========================================
 
 // ============ register routes ============
 CompanyRouter.use(AuthMiddleware); //group level auth middleware
 
-CompanyRouter.get('/me', authorizedRoles([USER_ROLES.LANDLORD]), CompanyControler.getCompanyMe);
-CompanyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN]), CompanyControler.get);
+CompanyRouter.get('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.get);
 
-CompanyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.search);
+CompanyRouter.get('/', authorizedRoles([USER_ROLES.ADMIN]), CompanyControler.search);
 
 CompanyRouter.put('/:id', authorizedRoles([USER_ROLES.ADMIN, USER_ROLES.LANDLORD]), CompanyControler.update);

@@ -77,11 +77,9 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Comp
     if (query?._doc) return query;
 
     let entity = null;
-    const where: any = {};
 
     if (isObjectID(query)) {
-        where._id = query;
-        entity = CompanyModel.findOne(where);
+        entity = CompanyModel.findById(query);
     }
 
     if (entity) {
