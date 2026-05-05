@@ -14,6 +14,7 @@ import { RoleRouter } from '../modules/access-management/role/role.routes';
 import { PropertyRouter } from '../modules/property/property.routes';
 import { RoomRouter } from '../modules/room/room.routes';
 import { TenantRouter } from '../modules/tenant/tenant.routes';
+import { PaymentRouter } from '../modules/payment/payment.routes';
 
 // src/bin/server.ts  ← top of file, before other imports
 
@@ -47,5 +48,6 @@ app.use('/roles', RoleRouter);
 app.use('/properties', PropertyRouter);
 app.use('/rooms', RoomRouter);
 app.use('/tenants', TenantRouter);
+app.use('/payments', PaymentRouter);
 
 export { app };

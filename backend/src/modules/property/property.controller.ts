@@ -4,6 +4,7 @@ import { RequestContext } from '../../shared/utils/contextBuilder';
 import { formatZodError, throwAppError } from '../../shared/utils/error';
 import { RequestHandler } from '../../shared/utils/requestHandler';
 import { ResponseHandler } from '../../shared/utils/responseHandler';
+import { isObjectID } from '../../shared/utils/strings';
 import { MapPropertyDTO } from './property.dto';
 import { PropertyService } from './property.service';
 import { CreatePropertyPayloadSchema, UpdatePropertyPayloadSchema } from './property.validators';
@@ -45,6 +46,9 @@ const get = async (req: any, res: any) => {
         }
 
         const property = await PropertyService.get(id, ctx, { populate: true });
+        if (!property) {
+            return throwAppError('Property not found', 404);
+        }
         return ResponseHandler.appResponse(
             res,
             200,
@@ -74,7 +78,7 @@ const update = async (req: any, res: any) => {
         const ctx = req.context;
         const { id } = req.params;
 
-        if (id?.trim() == '') {
+        if (!isObjectID(id)) {
             return throwAppError('Invalid property id', 400);
         }
 

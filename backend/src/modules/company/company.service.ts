@@ -8,6 +8,7 @@ import { throwAppError } from '../../shared/utils/error';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { COMPANY_MANAGE } from './company.constants';
 import { UpdateCompanyPayloadType } from './company.validators';
+import { isObjectID } from '../../shared/utils/strings';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
@@ -18,7 +19,7 @@ const set = async (
     model: UpdateCompanyPayloadType,
     entity: HydratedDocument<ICompany>,
     ctx: RequestContext,
-): Promise<CompanyDocument> => {
+): Promise<HydratedDocument<ICompany>> => {
     if (model.name) {
         entity.name = model.name;
     }
@@ -40,8 +41,8 @@ const set = async (
     if (model.status) {
         if (!ctx.hasAllPermissions([COMPANY_MANAGE])) {
             //throw error if not admin
-            // TODO: also add journal who dare to do this shit
-            return throwAppError('forbidden', 403);
+            // LATER: also add journal who dare to do this shit
+            return throwAppError('Forbidden: Cannot update status', 403);
         }
         entity.status = model.status;
     }
@@ -68,27 +69,28 @@ const CREATE = async (payload: CreateCompanyPayload, ctx: RequestContext): Promi
     return company;
 };
 
-const GET = async (id: string, ctx: RequestContext, options?: any): Promise<CompanyDocument> => {
-    let query = null;
-    const user = ctx.user;
+const GET = async (query: any, ctx: RequestContext, options?: any): Promise<CompanyDocument> => {
+    //return invalid
+    if (!query) return null;
 
-    if (user?.role == USER_ROLES.ADMIN) {
-        query = CompanyModel.findById({ _id: id });
-    } else {
-        //other user else than admin add ownership here
-        query = CompanyModel.findOne({ owner: user?._id, _id: id });
+    // if already a document, return as is
+    if (query?._doc) return query;
+
+    let entity = null;
+
+    if (isObjectID(query)) {
+        entity = CompanyModel.findById(query);
     }
 
-    if (options?.populate) {
-        query = query.populate(populate);
+    if (entity) {
+        if (options?.populate) {
+            entity = entity.populate(populate);
+        }
     }
 
-    const company = await query;
+    entity = await entity;
 
-    if (!company) {
-        return throwAppError('Company not found', 404);
-    }
-    return company;
+    return entity;
 };
 
 const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {

@@ -7,7 +7,6 @@ import { CreateTenantPayloadType, SearchTenantQueryType, UpdateTenantPayloadType
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { RoomService } from '../room/room.service';
 import { throwAppError } from '../../shared/utils/error';
-import { USER_ROLES } from '../user/user.constants';
 import { isObjectID } from '../../shared/utils/strings';
 import { TENANT_MANAGE } from './tenant.constants';
 
@@ -106,12 +105,11 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Tena
     if (query?._doc) return query;
 
     let entity = null;
-    const where: Object = ctx.where();
+    const where: any = ctx.where();
 
     if (isObjectID(query)) {
-        entity = TenantModel.findOne({ _id: query, ...where });
-    } else {
-        return throwAppError('Invalid tenant ID', 400);
+        where._id = query;
+        entity = TenantModel.findOne(where);
     }
 
     if (entity != null) {

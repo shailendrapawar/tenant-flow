@@ -1,4 +1,5 @@
 import { USER_ROLES } from '../../modules/user/user.constants';
+import { throwAppError } from './error';
 import logger from './logger';
 import { generateUUID } from './strings';
 
@@ -18,6 +19,7 @@ export type RequestContext = {
     setPermissions: (permissions: string[]) => void;
     hasAnyPermissions: (required: string[]) => boolean;
     hasAllPermissions: (required: string[]) => boolean;
+    requirePermissions: (permissions: string[]) => boolean;
     where: () => Object;
 };
 
@@ -62,6 +64,14 @@ export const buildContext = (req: any, res: any, next: any) => {
                 if (!req.context.permissions.includes(item)) {
                     return false;
                 }
+            }
+            return true;
+        },
+        // guard
+        requirePermissions(perms: string[]) {
+            if (!this.hasAllPermissions(perms)) {
+                throwAppError('Forbidden', 403);
+                return false;
             }
             return true;
         },

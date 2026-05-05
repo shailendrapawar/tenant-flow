@@ -7,6 +7,7 @@ import { CreatePropertyPayloadType, SearchPropertyQueryType, UpdatePropertyPaylo
 import { PROPERTY_ACQUISITION_TYPES, PROPERTY_MANAGE } from './property.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { USER_ROLES } from '../user/user.constants';
+import { isObjectID } from '../../shared/utils/strings';
 
 type PropertyDocument = HydratedDocument<IProperty> | null;
 const populate = [
@@ -17,7 +18,11 @@ const populate = [
     },
 ];
 
-const set = (model: UpdatePropertyPayloadType, entity: HydratedDocument<IProperty>, ctx: RequestContext) => {
+const set = (
+    model: UpdatePropertyPayloadType,
+    entity: HydratedDocument<IProperty>,
+    ctx: RequestContext,
+): HydratedDocument<IProperty> => {
     if (model.name) {
         entity.name = model.name;
     }
@@ -35,7 +40,7 @@ const set = (model: UpdatePropertyPayloadType, entity: HydratedDocument<IPropert
     }
     if (model.status) {
         if (!ctx.hasAllPermissions([PROPERTY_MANAGE])) {
-            return throwAppError('Forbidden', 400);
+            throwAppError('Forbidden: Cannot update status');
         }
         entity.status = model.status;
     }
@@ -74,27 +79,29 @@ const CREATE = async (payload: CreatePropertyPayloadType, ctx: RequestContext): 
     return property;
 };
 
-const GET = async (id: string, ctx: RequestContext, options?: any): Promise<PropertyDocument> => {
-    let query = null;
-    const user = ctx.user;
+const GET = async (query: any, ctx: RequestContext, options?: any): Promise<PropertyDocument> => {
+    //retunr invalid id/query
+    if (!query) return null;
 
-    if (user?.role === USER_ROLES.ADMIN) {
-        query = PropertyModel.findById(id);
-    } else {
-        query = PropertyModel.findOne({ _id: id, companyID: user?.companyID });
+    // if already a document, return as is
+    if (query?._doc) return query;
+
+    let entity = null;
+    const where: any = ctx.where();
+
+    if (isObjectID(query)) {
+        where._id = query;
+        entity = PropertyModel.findOne(where);
     }
 
-    if (options?.populate) {
-        query = query.populate(populate);
+    if (entity) {
+        if (options?.populate) {
+            entity = entity.populate(populate);
+        }
     }
 
-    const property = await query;
-
-    if (!property) {
-        return throwAppError('Property not found', 404);
-    }
-
-    return property;
+    entity = await entity;
+    return entity;
 };
 
 const SEARCH = async (query: SearchPropertyQueryType, ctx: RequestContext, options?: any) => {
