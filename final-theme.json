@@ -1,0 +1,161 @@
+{
+  "$schema": "propflow-design-tokens/v1",
+  "$version": "1.0.0",
+  "$description": "PropFlow finalized design tokens — Warm Terracotta, light + dark.",
+
+  "themes": {
+    "warm-terracotta-light": {
+      "$meta": {
+        "name": "Warm Terracotta — Light",
+        "mode": "light",
+        "brand": "terracotta"
+      },
+      "background": {
+        "page": "#FAFAF8",
+        "card": "#FFFFFF",
+        "surface": "#FDF8F4",
+        "inverse": "#1C1917",
+        "overlay": "rgba(28,25,23,0.45)"
+      },
+      "primary": {
+        "subtle": "#FDF0EB",
+        "border": "#F5C4A8",
+        "default": "#C2572B",
+        "hover": "#A8431F",
+        "text": "#7C2D12"
+      },
+      "secondary": {
+        "subtle": "#F1F5F9",
+        "border": "#CBD5E1",
+        "default": "#334155",
+        "hover": "#1E293B",
+        "text": "#0F172A"
+      },
+      "accent": {
+        "subtle": "#FFFBEB",
+        "border": "#FDE68A",
+        "default": "#D97706",
+        "hover": "#B45309",
+        "text": "#92400E"
+      },
+      "text": {
+        "primary": "#1C1917",
+        "secondary": "#78716C",
+        "muted": "#A8A29E",
+        "link": "#C2572B",
+        "inverse": "#FAFAF8",
+        "onPrimary": "#FFFFFF"
+      },
+      "border": {
+        "default": "#E8E2DA",
+        "strong": "#D4C9BC",
+        "focus": "#C2572B"
+      },
+      "sidebar": {
+        "bg": "#1C1917",
+        "text": "#D6D3D1",
+        "muted": "#78716C",
+        "active": "#C2572B"
+      },
+      "status": {
+        "success": {
+          "bg": "#F0FDF4",
+          "border": "#BBF7D0",
+          "default": "#166534"
+        },
+        "danger": {
+          "bg": "#FEF2F2",
+          "border": "#FECACA",
+          "default": "#991B1B"
+        },
+        "warning": {
+          "bg": "#FFFBEB",
+          "border": "#FDE68A",
+          "default": "#92400E"
+        },
+        "neutral": {
+          "bg": "#F5F4F1",
+          "border": "#D3D1C7",
+          "default": "#5F5E5A"
+        }
+      }
+    },
+
+    "warm-terracotta-dark": {
+      "$meta": {
+        "name": "Warm Terracotta — Dark",
+        "mode": "dark",
+        "brand": "terracotta"
+      },
+      "background": {
+        "page": "#000000",
+        "card": "#0A0A0A",
+        "surface": "#111111",
+        "inverse": "#EDEDED",
+        "overlay": "rgba(0,0,0,0.60)"
+      },
+      "primary": {
+        "subtle": "#2A1510",
+        "border": "#7C2D12",
+        "default": "#C2572B",
+        "hover": "#E8734A",
+        "text": "#FDBA9B"
+      },
+      "secondary": {
+        "subtle": "#1A1A1A",
+        "border": "#2A2A2A",
+        "default": "#888888",
+        "hover": "#AAAAAA",
+        "text": "#CCCCCC"
+      },
+      "accent": {
+        "subtle": "#1C1600",
+        "border": "#78580A",
+        "default": "#F59E0B",
+        "hover": "#FBB83A",
+        "text": "#FDE68A"
+      },
+      "text": {
+        "primary": "#EDEDED",
+        "secondary": "#999999",
+        "muted": "#555555",
+        "link": "#E8734A",
+        "inverse": "#0A0A0A",
+        "onPrimary": "#FFFFFF"
+      },
+      "border": {
+        "default": "#1A1A1A",
+        "strong": "#2A2A2A",
+        "focus": "#C2572B"
+      },
+      "sidebar": {
+        "bg": "#0A0A0A",
+        "text": "#D6D3D1",
+        "muted": "#555555",
+        "active": "#C2572B"
+      },
+      "status": {
+        "success": {
+          "bg": "#052E16",
+          "border": "#14532D",
+          "default": "#22C55E"
+        },
+        "danger": {
+          "bg": "#2D0707",
+          "border": "#7F1D1D",
+          "default": "#EF4444"
+        },
+        "warning": {
+          "bg": "#1C1000",
+          "border": "#78350F",
+          "default": "#F59E0B"
+        },
+        "neutral": {
+          "bg": "#111111",
+          "border": "#2A2A2A",
+          "default": "#888888"
+        }
+      }
+    }
+  }
+}

@@ -32,7 +32,6 @@ export const UpdatePaymentPayloadSchema = z.object({
 });
 export type UpdatePaymentPayloadType = z.infer<typeof UpdatePaymentPayloadSchema>;
 
-
 //SEARCH =========================================>
 export const SearchPaymentsQuerySchema = z.object({
     //scope filters
@@ -59,7 +58,6 @@ export const SearchPaymentsQuerySchema = z.object({
 
     fromDate: z.coerce.date().optional(),
     toDate: z.coerce.date().optional(),
+});
 
-})
-
-export type SearchPaymentsQueryType = z.infer<typeof SearchPaymentsQuerySchema>
+export type SearchPaymentsQueryType = z.infer<typeof SearchPaymentsQuerySchema>;
