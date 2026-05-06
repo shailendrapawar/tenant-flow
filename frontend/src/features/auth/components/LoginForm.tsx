@@ -11,8 +11,10 @@ import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
 import { loginFormSchema } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useNavigate } from "react-router-dom"
 
 const LoginForm = () => {
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -80,6 +82,9 @@ const LoginForm = () => {
           Login
         </Button>
       </form>
+      <p className="text-sm text-muted-foreground hover:text-primary text-center cursor-pointer"
+        onClick={() => navigate("/auth/register")}
+      >New user? Register here</p>
     </div>
   )
 }
