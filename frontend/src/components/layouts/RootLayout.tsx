@@ -5,6 +5,7 @@ const RootLayout = () => {
     <div
       className={`h-screen min-h-screen w-full min-w-full bg-background text-foreground`}
     >
+      {/* root layout */}
       <Outlet />
     </div>
   )
