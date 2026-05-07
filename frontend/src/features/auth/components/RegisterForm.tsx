@@ -16,9 +16,13 @@ import {
   RegisterPayloadSchema,
   type RegisterPayloadType,
 } from "../schemas/registerSchema"
+import useRegister from "../hooks/useRegister"
+import { notify } from "@/components/AppToaster"
 
 const RegisterForm = () => {
   const navigate = useNavigate()
+  const register = useRegister()
+
   const form = useForm<RegisterPayloadType>({
     resolver: zodResolver(RegisterPayloadSchema),
     defaultValues: {
@@ -30,7 +34,23 @@ const RegisterForm = () => {
   })
 
   const handleRegister = (data: RegisterPayloadType) => {
-    console.log(data)
+    if (register.isPending) {
+      return
+    }
+    //only go if not pending
+    register.mutate(data, {
+      onSuccess: (res: any) => {
+        notify.success(res?.message)
+
+        //navigate only when success
+        setTimeout(() => {
+          navigate(AUTH_ROUTES.LOGIN)
+        }, 2000)
+      },
+      onError: (res: any) => {
+        notify.error(res?.message)
+      },
+    })
   }
   return (
     <div className="border-bg-foreground flex w-full max-w-120 flex-col gap-5 rounded-lg border bg-card px-5 py-10">
