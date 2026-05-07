@@ -1,11 +1,11 @@
 import type { RouteObject } from "react-router-dom"
-import CompaniesPage from "./pages/CompaniesPage"
+import CompaniesListPage from "./pages/CompaniesListPage"
 import CompanyDetailsPage from "./pages/CompanyDetailsPage"
 
 export const companyRoutes: RouteObject[] = [
   {
     path: "/companies",
-    element: <CompaniesPage />,
+    element: <CompaniesListPage />,
   },
   {
     path: "/companies/:id",
