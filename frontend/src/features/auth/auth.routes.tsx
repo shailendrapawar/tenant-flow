@@ -2,6 +2,7 @@ import type { RouteObject } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ProfileMe from "./pages/ProfileMe"
+import ProtectedRoutes from "../../components/ProtectedRoutes"
 
 export const AUTH_ROUTES = {
   LOGIN: "/auth/login",
@@ -20,6 +21,12 @@ export const authRoutes: RouteObject[] = [
   },
   {
     path: AUTH_ROUTES.ME,
-    element: <ProfileMe />,
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        index: true,
+        element: <ProfileMe />,
+      },
+    ],
   },
 ]

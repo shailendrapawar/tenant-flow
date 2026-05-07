@@ -6,7 +6,12 @@ const useAuthUser = () => {
     queryKey: ["auth-user"],
     queryFn: async () => {
       const res = await AuthService.getAuthUser()
-      return res.data.user
+      const user = {
+        ...res?.data?.user,
+        permissions: res?.data?.permissions || [],
+        // permissionsSet: new Set(res?.data?.permissions || []),
+      }
+      return user
     },
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes

@@ -16,6 +16,8 @@ import { AUTH_TOKENS, USER_ROLES } from './user.constants';
 import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { RequestHandler } from '../../shared/utils/requestHandler';
+import { extractPermissionName } from '../../shared/utils/strings';
+import { RoleService } from '../access-management/role/role.service';
 
 const initializeAdmin = async (req: any, res: any) => {
     try {
@@ -112,12 +114,13 @@ const register = async (req: any, res: any) => {
 
 const getUserProfile = async (req: any, res: any) => {
     try {
-        const ctx: RequestContext = req.ctx;
+        const ctx: RequestContext = req.context;
         const user = req.context.user;
         const userProfile = await UserService.get(user._id, ctx);
 
         return ResponseHandler.appResponse(res, 200, true, 'User profile fetched successfully', {
             user: MapUserDTO(userProfile, user.role), // send user data based on role
+            permissions: ctx.permissions,
         });
     } catch (error: any) {
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
