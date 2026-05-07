@@ -15,6 +15,7 @@ import { CreateCompanyPayload } from '../company/company.types';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { USER_MANAGE, USER_ROLES } from './user.constants';
 import ENV from '../../shared/configs/app.config';
+import { date } from 'zod';
 
 type UserDocument = HydratedDocument<IUser> | null;
 
@@ -155,6 +156,17 @@ const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<User
     if (!user) {
         return throwAppError('User does not exist', 400);
     }
+    if (user.lockUntil && user.lockUntil > new Date()) {
+        const remainingMs = user.lockUntil.getTime() - Date.now();
+        const remainingMins = Math.ceil(remainingMs / 1000 / 60);
+
+        const message =
+            remainingMins >= 1
+                ? `Account is locked. Try again in ${remainingMins} minute${remainingMins > 1 ? 's' : ''}.`
+                : `Account is locked. Try again in a few seconds.`;
+
+        return throwAppError(message, 403);
+    }
 
     // check password
     const isMatch = await bcrypt.compare(model.password, user.password);
@@ -164,6 +176,11 @@ const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<User
         user.lastLoginAt = new Date();
         user.loginAttempts = (user.loginAttempts || 0) + 1;
         // TODO:lock account if attempts crosses 3
+        if (user.loginAttempts > 3) {
+            const now = new Date();
+            const after5Minutes = new Date(now.getTime() + 5 * 60 * 1000);
+            user.lockUntil = after5Minutes;
+        }
         await user.save();
         return throwAppError('Invalid credentials', 401);
     }
@@ -171,6 +188,7 @@ const LOGIN = async (model: LoginPayloadType, ctx: RequestContext): Promise<User
     // update lastLoginAt
     user.lastLoginAt = new Date();
     user.loginAttempts = 0; // reset login attempts on successful login
+    user.lockUntil = null;
     await user.save();
 
     return user;
