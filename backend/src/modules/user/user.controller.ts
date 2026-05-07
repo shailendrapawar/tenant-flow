@@ -83,7 +83,6 @@ const login = async (req: any, res: any) => {
         //5: map response according to role/action-key
         return ResponseHandler.appResponse(res, 200, true, 'Login successful', MapUserDTO(user, 'auth'));
     } catch (error: any) {
-        console.log(error);
         return ResponseHandler.appResponse(res, error?.statusCode || 500, false, error?.message, null);
     }
 };

@@ -1,36 +1,54 @@
 import { Button } from "@/components/ui/button"
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Controller, useForm } from "react-hook-form"
-import * as z from "zod"
-import { loginFormSchema } from "../schemas/loginSchema"
+
+import { LoginPaylodSchema, type LoginPaylodType } from "../schemas/loginSchema"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "react-router-dom"
+import { AUTH_ROUTES } from "../auth.routes"
+import { useLogin } from "../hooks/useLogin"
+import { notify } from "@/components/AppToaster"
 
 const LoginForm = () => {
   const navigate = useNavigate()
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
+  const login = useLogin()
+
+  //form
+  const form = useForm<LoginPaylodType>({
+    resolver: zodResolver(LoginPaylodSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   })
 
-  const handleLogin = (data: z.infer<typeof loginFormSchema>) => {
-    console.log(data)
+  const handleLogin = (data: LoginPaylodType) => {
+    // e.preventDefault()
+    if (login.isPending) {
+      return
+    }
+    //only go if not pending
+    login.mutate(data, {
+      onSuccess: (res: any) => {
+        notify.success(res?.message)
+      },
+      onError: (res: any) => {
+        notify.error(res?.message)
+      },
+    })
   }
 
   return (
     <div className="border-bg-foreground flex w-full max-w-120 flex-col gap-5 rounded-lg border bg-card px-5 py-10">
       <h1 className="text-center text-2xl font-bold">Tenant Flow</h1>
-      <h3 className="text-center text-lg">Sing-In</h3>
+      <h3 className="text-center text-lg">Sign-In</h3>
 
       <form
         className="mt-5 flex h-auto w-full flex-col gap-8"
@@ -82,9 +100,12 @@ const LoginForm = () => {
           Login
         </Button>
       </form>
-      <p className="text-sm text-muted-foreground hover:text-primary text-center cursor-pointer"
-        onClick={() => navigate("/auth/register")}
-      >New user? Register here</p>
+      <p
+        className="cursor-pointer text-center text-sm text-muted-foreground hover:text-primary"
+        onClick={() => navigate(AUTH_ROUTES.REGISTER)}
+      >
+        New user? Register here
+      </p>
     </div>
   )
 }
