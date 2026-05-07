@@ -5,5 +5,6 @@ import type { LoginPaylodType } from "../schemas/loginSchema"
 export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginPaylodType) => AuthService.login(data),
+    retry: false,
   })
 }

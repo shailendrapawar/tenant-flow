@@ -38,6 +38,10 @@ const LoginForm = () => {
     login.mutate(data, {
       onSuccess: (res: any) => {
         notify.success(res?.message)
+        //navigate only when success
+        setTimeout(() => {
+          navigate(AUTH_ROUTES.ME)
+        }, 2000)
       },
       onError: (res: any) => {
         notify.error(res?.message)
