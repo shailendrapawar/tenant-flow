@@ -7,6 +7,8 @@ import { companyRoutes } from "@/features/company/company.routes"
 import RootRedirect from "@/components/RootRedirect"
 import ProtectedRoutes from "@/components/ProtectedRoutes"
 import PublicRoute from "@/components/PublicRoute"
+import UserLayout from "@/components/layouts/UserLayout"
+import { userRoutes } from "@/features/user/user.routes"
 
 const appRouter = createBrowserRouter([
   {
@@ -40,6 +42,12 @@ const appRouter = createBrowserRouter([
             path: "/companies",
             element: <CompanyLayout />,
             children: companyRoutes,
+          },
+          {
+            // user routes
+            path: "/users",
+            element: <UserLayout />,
+            children: userRoutes,
           },
         ],
       },

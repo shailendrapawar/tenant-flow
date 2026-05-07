@@ -19,14 +19,4 @@ export const authRoutes: RouteObject[] = [
     path: AUTH_ROUTES.REGISTER,
     element: <RegisterPage />,
   },
-  {
-    path: AUTH_ROUTES.ME,
-    element: <ProtectedRoutes />,
-    children: [
-      {
-        index: true,
-        element: <ProfileMe />,
-      },
-    ],
-  },
 ]
