@@ -1,5 +1,5 @@
 import type { RouteObject } from "react-router-dom"
-import ProfileMe from "../auth/pages/ProfileMe"
+import ProfileMe from "./pages/ProfileMe"
 
 export const USER_ROUTES = {
   ME: "/users/me",

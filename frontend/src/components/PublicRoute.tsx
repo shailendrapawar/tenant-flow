@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom"
-import useAuthUser from "../features/auth/hooks/useAuthUser"
+import useAuthUser from "../features/user/hooks/useAuthUser"
 import { AUTH_ROUTES } from "@/features/auth/auth.routes"
 
 const PublicRoute = () => {

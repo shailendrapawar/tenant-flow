@@ -1,4 +1,3 @@
-import React from "react"
 import useAuthUser from "../hooks/useAuthUser"
 
 const ProfileMe = () => {

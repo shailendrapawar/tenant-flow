@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { AuthService } from "../auth.service"
+import { AuthService } from "../../auth/auth.service"
 
 const useAuthUser = () => {
   return useQuery({

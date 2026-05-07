@@ -1,7 +1,7 @@
 import type { RouteObject } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
-import ProfileMe from "./pages/ProfileMe"
+import ProfileMe from "../user/pages/ProfileMe"
 import ProtectedRoutes from "../../components/ProtectedRoutes"
 
 export const AUTH_ROUTES = {
