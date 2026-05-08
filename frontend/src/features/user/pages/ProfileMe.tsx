@@ -1,8 +1,7 @@
 import useAuthUser from "../hooks/useAuthUser"
 
 const ProfileMe = () => {
-  const { data, isError, isPending } = useAuthUser()
-  console.log(data)
+  // console.log("renderd")
   return <div>ProfileMe</div>
 }
 

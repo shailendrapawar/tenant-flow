@@ -9,6 +9,12 @@ import ProtectedRoutes from "@/components/ProtectedRoutes"
 import PublicRoute from "@/components/PublicRoute"
 import UserLayout from "@/components/layouts/UserLayout"
 import { userRoutes } from "@/features/user/user.routes"
+import AppLayout from "@/components/layouts/AppLayout"
+import Unauthorized from "@/components/Unauthorized"
+import PropertyLayout from "@/components/layouts/PropertyLayout"
+import { propertyRoutes } from "@/features/property/property.routes"
+import DashboardLayout from "@/components/layouts/DashboardLayout"
+import { dashboardRoutes } from "@/features/dashboard/dashboard.routes"
 
 const appRouter = createBrowserRouter([
   {
@@ -21,7 +27,7 @@ const appRouter = createBrowserRouter([
         element: <RootRedirect />,
       },
 
-      // ============PUBLIC ROUTES
+      // ============PUBLIC ROUTES=======================>
       {
         element: <PublicRoute />,
         children: [
@@ -33,21 +39,42 @@ const appRouter = createBrowserRouter([
         ],
       },
 
-      //============= PROTECTED ROUTES==================
+      //============= PROTECTED ROUTES==================>
       {
         element: <ProtectedRoutes />,
         children: [
           {
-            //company routes
-            path: "/companies",
-            element: <CompanyLayout />,
-            children: companyRoutes,
-          },
-          {
-            // user routes
-            path: "/users",
-            element: <UserLayout />,
-            children: userRoutes,
+            element: <AppLayout />,
+            children: [
+              {
+                path: "/unauthorized",
+                element: <Unauthorized />,
+              },
+              {
+                //dashboard routes
+                path: "/dashboard",
+                element: <DashboardLayout />,
+                children: dashboardRoutes,
+              },
+              {
+                //company routes
+                path: "companies",
+                element: <CompanyLayout />,
+                children: companyRoutes,
+              },
+              {
+                // user routes
+                path: "users",
+                element: <UserLayout />,
+                children: userRoutes,
+              },
+              {
+                //properties routes
+                path: "properties",
+                element: <PropertyLayout />,
+                children: propertyRoutes,
+              },
+            ],
           },
         ],
       },
