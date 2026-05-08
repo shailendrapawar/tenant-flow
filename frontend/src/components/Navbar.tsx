@@ -7,83 +7,115 @@ import { FaUserLarge } from "react-icons/fa6"
 import { RxCross2 } from "react-icons/rx"
 import { CgMenuRight } from "react-icons/cg"
 
+import { motion, AnimatePresence } from "framer-motion"
+
 const Navbar = () => {
   const { authUser } = useAuthUser()
   const role = authUser?.role || ""
 
   const [navToggle, setNavToggle] = useState(false)
 
-  return (
-    <main className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border bg-card">
-      <h3 className="ml-5 font-bold text-primary">Tenant flow</h3>
+  const filteredNav = navItems?.filter((item) =>
+    item?.rolesAllowed?.includes(role)
+  )
 
-      {/* web nav */}
+  return (
+    <motion.main
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border bg-card backdrop-blur"
+    >
+      {/* Logo */}
+      <motion.h3
+        whileHover={{ scale: 1.05 }}
+        className="ml-5 font-bold text-primary"
+      >
+        Tenant flow
+      </motion.h3>
+
+      {/* Desktop Nav */}
       <nav className="hidden items-center justify-evenly gap-4 px-5 md:flex">
         <section className="flex h-full items-center gap-2">
-          {navItems
-            ?.filter((item) => item?.rolesAllowed?.includes(role))
-            .map((v, i) => {
-              return (
+          {filteredNav.map((v, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <NavLink
+                to={v.path}
+                className={({ isActive }) =>
+                  `flex h-10 w-30 items-center justify-center gap-2 rounded-md text-sm transition-colors hover:bg-primary/20 hover:text-primary ${isActive ? "bg-primary/20 text-primary" : ""}`
+                }
+              >
+                <motion.span whileHover={{ rotate: 10 }}>{v.icon}</motion.span>
+                <span>{v.label}</span>
+              </NavLink>
+            </motion.div>
+          ))}
+        </section>
+      </nav>
+
+      {/* Desktop Profile */}
+      <motion.div
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="hidden md:block"
+      >
+        <FaUserLarge className="mr-5 size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/80" />
+      </motion.div>
+
+      {/* Mobile Menu Button */}
+      <motion.span
+        whileTap={{ scale: 0.85 }}
+        animate={{ rotate: navToggle ? 90 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="mr-5 md:hidden"
+        onClick={() => setNavToggle(!navToggle)}
+      >
+        {navToggle ? (
+          <RxCross2 className="size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground" />
+        ) : (
+          <CgMenuRight className="size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground" />
+        )}
+      </motion.span>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {navToggle && (
+          <motion.nav
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="absolute top-20 flex h-[calc(100vh-85px)] w-full flex-col items-center justify-center gap-4 bg-card/95 backdrop-blur md:hidden"
+          >
+            {filteredNav.map((v, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full px-5"
+              >
                 <NavLink
                   to={v.path}
+                  onClick={() => setNavToggle(false)}
                   className={({ isActive }) =>
-                    `flex h-10 w-30 cursor-pointer items-center justify-center gap-2 rounded-md text-sm hover:bg-primary/20 hover:text-primary ${isActive ? "bg-primary/20 text-primary" : ""}`
+                    `flex h-12 w-full items-center justify-center gap-4 rounded-md text-sm transition-colors hover:bg-primary/20 hover:text-primary ${isActive ? "bg-primary/20 text-primary" : ""}`
                   }
-                  key={i}
                 >
                   <span>{v.icon}</span>
                   <span>{v.label}</span>
                 </NavLink>
-              )
-            })}
-        </section>
-      </nav>
-
-      <nav
-        className="absolute top-20 flex h-[calc(100vh-85px)] w-full flex-col items-center justify-center gap-3 bg-card/95 px-5 md:hidden"
-        style={navToggle ? {} : { display: "none" }}
-      >
-        {navItems
-          ?.filter((item) => item?.rolesAllowed?.includes(role))
-          .map((v, i) => {
-            return (
-              <NavLink
-                to={v.path}
-                className={({ isActive }) =>
-                  `flex h-10 w-full cursor-pointer items-center justify-center gap-4 rounded-md text-sm hover:bg-primary/20 hover:text-primary ${isActive ? "bg-primary/20 text-primary" : ""}`
-                }
-                key={i}
-                onClick={() => setNavToggle(!navToggle)}
-              >
-                <span>{v.icon}</span>
-                <span>{v.label}</span>
-              </NavLink>
-            )
-          })}
-      </nav>
-
-      <FaUserLarge
-        className={`mr-5 hidden size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/80 md:block`}
-        title="logout"
-      />
-
-      <span
-        className="transition-all ease-in-out active:scale-95 md:hidden"
-        onClick={() => setNavToggle(!navToggle)}
-      >
-        {navToggle ? (
-          <RxCross2
-            className={`mr-5 size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/80 md:hidden`}
-            title="logout"
-          />
-        ) : (
-          <CgMenuRight
-            className={`mr-5 size-10 cursor-pointer rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/80 md:hidden`}
-            title="logout"
-          />
+              </motion.div>
+            ))}
+          </motion.nav>
         )}
-      </span>
-    </main>
+      </AnimatePresence>
+    </motion.main>
   )
 }
 
