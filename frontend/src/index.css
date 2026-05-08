@@ -213,6 +213,9 @@
   --chart-4: #a3a3a3;
   --chart-5: #525252;
 }
+:root::-webkit-scrollbar {
+  display: none;
+}
 
 @layer base {
   * {

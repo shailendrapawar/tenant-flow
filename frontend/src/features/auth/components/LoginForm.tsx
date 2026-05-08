@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom"
 import { AUTH_ROUTES } from "../auth.routes"
 import { useLogin } from "../hooks/useLogin"
 import { notify } from "@/components/AppToaster"
+import { USER_ROUTES } from "@/features/user/user.routes"
 
 const LoginForm = () => {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ const LoginForm = () => {
         notify.success(res?.message)
         //navigate only when success
         setTimeout(() => {
-          navigate(AUTH_ROUTES.ME)
+          navigate(USER_ROUTES.ME)
         }, 2000)
       },
       onError: (res: any) => {

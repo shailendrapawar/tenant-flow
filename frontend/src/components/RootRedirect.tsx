@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom"
-import { AUTH_ROUTES } from "@/features/auth/auth.routes"
+
 import { USER_ROUTES } from "@/features/user/user.routes"
 
 const RootRedirect = () => {
