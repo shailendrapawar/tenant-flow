@@ -3,7 +3,7 @@ import PropertiesListPage from "./pages/PropertiesListPage"
 import PropertyDetailsPage from "./pages/PropertyDetailsPage"
 
 export const PROPERTY_ROUTES = {
-  PROPERTIES: "/properties/",
+  PROPERTIES: "/properties",
   PROPERTY_DETAILS: "/properties/:id",
 }
 export const propertyRoutes: RouteObject[] = [
