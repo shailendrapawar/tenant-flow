@@ -18,26 +18,23 @@ const useAuthUser = () => {
       return user
     },
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes,
+    staleTime: 3 * 60 * 1000, // 3 minutes
   })
 
   //aggregate related functions
-  const authUser = useMemo(
-    () => ({
-      user: data,
-      isLoggedIn: !!data,
-      role: data?.role,
-      isAdmin: data?.role === "admin",
-      isLandlord: data?.role === "landlord",
+  const authUser = {
+    user: data,
+    isLoggedIn: !!data,
+    role: data?.role,
+    isAdmin: data?.role === "admin",
+    isLandlord: data?.role === "landlord",
 
-      hasAnyPermissions: (required: string[]) =>
-        required.some((p) => data?.permissions?.includes(p) ?? false),
+    hasAnyPermissions: (required: string[]) =>
+      required.some((p) => data?.permissions?.includes(p) ?? false),
 
-      hasAllPermissions: (required: string[]) =>
-        required.every((p) => data?.permissions?.includes(p) ?? false),
-    }),
-    [data]
-  )
+    hasAllPermissions: (required: string[]) =>
+      required.every((p) => data?.permissions?.includes(p) ?? false),
+  }
 
   return {
     isLoading,

@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
                 default: '',
             },
         },
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other'],
+        },
 
         // Account Management
         role: {
