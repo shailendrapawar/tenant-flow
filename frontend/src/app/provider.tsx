@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import { QueryClientProvider } from "@tanstack/react-query"
 import React from "react"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // all providers here
@@ -14,7 +15,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       <ReactQueryDevtools initialIsOpen={false} />
       <AppToaster />
 
-      {children}
+      <TooltipProvider>{children}</TooltipProvider>
     </QueryClientProvider>
   )
 }
