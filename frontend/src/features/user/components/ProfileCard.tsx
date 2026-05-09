@@ -10,6 +10,7 @@ const ProfileCard = ({ user }: { user: AuthUser }) => {
         src={user?.avatar?.url || ""}
         alt=""
       />
+
       <div className="flex gap-4">
         <Button className="">Remove Photo</Button>
         <Button>Change Photo</Button>

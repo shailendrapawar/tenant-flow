@@ -32,6 +32,7 @@ export const UpdateUserPayloadSchema = z.object({
     firstName: z.string().min(1).optional().openapi({ example: 'john' }),
     lastName: z.string().optional().openapi({ example: 'doe' }),
     status: z.string().optional().openapi({ example: 'inactive' }),
+    gender: z.enum(['male', 'female', 'other']).optional().openapi({ example: 'male' }),
 });
 export type UpdateUserPayloadType = z.infer<typeof UpdateUserPayloadSchema>;
 

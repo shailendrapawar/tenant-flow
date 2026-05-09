@@ -13,8 +13,13 @@ import { Input } from "@/components/ui/input"
 import AppSelectMenu from "@/components/shad/AppSelectMenu"
 import { GenderOptions } from "../user.constants"
 import { Button } from "@/components/ui/button"
+import useEditProfile from "../hooks/useEditProfile"
+import { useModal } from "@/contexts/ModalContext"
 
 const EditUserInfoCard = ({ user }: { user: AuthUser }) => {
+  const { editUser, isPending } = useEditProfile()
+  const { onClose } = useModal()
+
   const form = useForm<IEditUserSchema>({
     resolver: zodResolver(EditUserSchema),
     defaultValues: {
@@ -23,8 +28,20 @@ const EditUserInfoCard = ({ user }: { user: AuthUser }) => {
       gender: user.gender,
     },
   })
+  const handleEditUser = async (data: IEditUserSchema) => {
+    if (isPending) {
+      return
+    }
+
+    editUser(user._id, data)
+    onClose()
+  }
+
   return (
-    <form className="h-auto w-full">
+    <form
+      className="mt-5 h-auto w-full"
+      onSubmit={form.handleSubmit(handleEditUser)}
+    >
       <FieldGroup>
         <Controller
           name="firstName"
@@ -82,8 +99,8 @@ const EditUserInfoCard = ({ user }: { user: AuthUser }) => {
         />
       </FieldGroup>
 
-      <Button type="submit" className="mt-8 h-10 w-full">
-        Save
+      <Button type="submit" className="mt-8 h-10 w-full" disabled={isPending}>
+        {isPending ? "Saving..." : "Save"}
       </Button>
     </form>
   )

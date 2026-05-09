@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ModalContext } from "@/contexts/ModalContext"
 
 interface ModalProps {
   open: boolean
@@ -22,19 +23,23 @@ export function AppModal({
   className,
 }: ModalProps) {
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent
-        className={className}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
-        {title && (
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-          </DialogHeader>
-        )}
-        {children}
-        <DialogDescription aria-description="" className="hidden" />
-      </DialogContent>
-    </Dialog>
+    <ModalContext.Provider value={{ onClose }}>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent
+          className={className}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          {title && (
+            <DialogHeader>
+              <DialogTitle className="text-lg text-primary sm:text-center sm:text-xl">
+                {title}
+              </DialogTitle>
+            </DialogHeader>
+          )}
+          {children}
+          <DialogDescription aria-description="" className="hidden" />
+        </DialogContent>
+      </Dialog>
+    </ModalContext.Provider>
   )
 }

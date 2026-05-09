@@ -8,7 +8,7 @@ import { DataField } from "@/components/DataFIeld"
 
 const UserInfoCard = ({ user }: { user: AuthUser }) => {
   const [toggleModal, setToggleModal] = useState(false)
-  const [DataFieldItems] = useState([
+  const DataFieldItems = [
     {
       title: "First Name",
       value: user?.firstName,
@@ -29,7 +29,7 @@ const UserInfoCard = ({ user }: { user: AuthUser }) => {
       title: "Role",
       value: user?.role?.toUpperCase(),
     },
-  ])
+  ]
   return (
     <main className="relative flex h-auto w-full max-w-200 flex-col rounded-lg border bg-card px-5 py-5">
       <AppModal

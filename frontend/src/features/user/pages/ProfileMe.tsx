@@ -3,10 +3,10 @@ import ProfileCard from "../components/ProfileCard"
 import UserInfoCard from "../components/UserInfoCard"
 
 import { motion } from "framer-motion"
+import { useState } from "react"
 
 const ProfileMe = () => {
   const { authUser } = useAuthUser()
-  const user = authUser.user
 
   return (
     <motion.main
@@ -17,7 +17,7 @@ const ProfileMe = () => {
     >
       {/* Profile */}
       <div className="flex w-full justify-center">
-        <ProfileCard user={user!} />
+        <ProfileCard user={authUser.user!} />
       </div>
 
       {/* Divider */}
@@ -30,7 +30,7 @@ const ProfileMe = () => {
         </h2>
 
         <div className="flex w-full justify-center">
-          <UserInfoCard user={user!} />
+          <UserInfoCard user={authUser.user!} />
         </div>
       </section>
     </motion.main>

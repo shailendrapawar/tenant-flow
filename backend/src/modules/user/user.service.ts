@@ -15,7 +15,6 @@ import { CreateCompanyPayload } from '../company/company.types';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { USER_MANAGE, USER_ROLES } from './user.constants';
 import ENV from '../../shared/configs/app.config';
-import { date } from 'zod';
 
 type UserDocument = HydratedDocument<IUser> | null;
 
@@ -38,6 +37,9 @@ const set = async (model: any, entity: HydratedDocument<IUser>, ctx: RequestCont
             return throwAppError('forbidden:status_update', 403);
         }
         entity.status = model.status;
+    }
+    if (model.gender) {
+        entity.gender = model.gender;
     }
 
     return entity;
