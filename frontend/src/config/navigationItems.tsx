@@ -6,6 +6,7 @@ import { COMPANY_ROUTES } from "@/features/company/company.routes"
 import { USER_ROUTES } from "@/features/user/user.routes"
 import { PROPERTY_ROUTES } from "@/features/property/property.routes"
 import { DASHBOARD_ROUTES } from "@/features/dashboard/dashboard.routes"
+
 export const navItems = [
   // dashboard
   {
@@ -15,16 +16,16 @@ export const navItems = [
     rolesAllowed: ["admin", "landlord"],
   },
   {
-    label: "Properties",
-    path: PROPERTY_ROUTES.PROPERTIES,
-    icon: <LuBuilding2 />,
-    rolesAllowed: ["admin", "landlord"],
-  },
-  {
     label: "Companies",
     path: COMPANY_ROUTES.COMPANIES,
     icon: <LuBuilding2 />,
     rolesAllowed: ["admin"],
+  },
+  {
+    label: "Properties",
+    path: PROPERTY_ROUTES.PROPERTIES,
+    icon: <LuBuilding2 />,
+    rolesAllowed: ["admin", "landlord"],
   },
   {
     label: "Users",
