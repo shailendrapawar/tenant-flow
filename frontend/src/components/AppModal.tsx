@@ -23,14 +23,17 @@ export function AppModal({
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className={className}>
+      <DialogContent
+        className={className}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {title && (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
         )}
         {children}
-        <DialogDescription aria-description="" />
+        <DialogDescription aria-description="" className="hidden" />
       </DialogContent>
     </Dialog>
   )
