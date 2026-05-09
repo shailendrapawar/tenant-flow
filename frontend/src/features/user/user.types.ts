@@ -10,6 +10,7 @@ export type AuthUser = {
   email: string
   role: string
   status: string
+  gender?:string
   lastLoginAt: string
   lockUntil: string | null
   createdAt: string
