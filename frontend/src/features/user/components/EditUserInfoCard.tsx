@@ -1,4 +1,3 @@
-import React from "react"
 import type { AuthUser } from "../user.types"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,6 +27,7 @@ const EditUserInfoCard = ({ user }: { user: AuthUser }) => {
       gender: user.gender,
     },
   })
+
   const handleEditUser = async (data: IEditUserSchema) => {
     if (isPending) {
       return

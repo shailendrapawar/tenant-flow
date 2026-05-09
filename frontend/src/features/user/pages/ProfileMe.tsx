@@ -3,7 +3,6 @@ import ProfileCard from "../components/ProfileCard"
 import UserInfoCard from "../components/UserInfoCard"
 
 import { motion } from "framer-motion"
-import { useState } from "react"
 
 const ProfileMe = () => {
   const { authUser } = useAuthUser()
