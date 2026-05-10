@@ -6,9 +6,10 @@ import { CreateCompanyPayload } from './company.types';
 import { USER_ROLES } from '../user/user.constants';
 import { throwAppError } from '../../shared/utils/error';
 import { RequestContext } from '../../shared/utils/contextBuilder';
-import { COMPANY_MANAGE } from './company.constants';
+import { COMPANY_MANAGE, COMPANY_STATUS_TRANSITION_MAP } from './company.constants';
 import { UpdateCompanyPayloadType } from './company.validators';
 import { isObjectID } from '../../shared/utils/strings';
+import { canTransition } from '../../shared/helpers/transitionMap';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email' }];
@@ -38,7 +39,7 @@ const set = async (
         entity.location = model.location;
     }
 
-    if (model.status) {
+    if (model.status && canTransition(COMPANY_STATUS_TRANSITION_MAP, entity.status, model.status)) {
         if (!ctx.hasAllPermissions([COMPANY_MANAGE])) {
             //throw error if not admin
             // LATER: also add journal who dare to do this shit

@@ -54,7 +54,7 @@ const UserInfoCard = ({ user }: { user: AuthUser }) => {
           />
         ))}
       </section>
-      <Button className="w-20 self-end" onClick={() => setToggleModal(true)}>
+      <Button className="w-20 self-end bg-card border-primary border-3 text-primary hover:bg-primary hover:text-primary-foreground" onClick={() => setToggleModal(true)}>
         Edit
       </Button>
     </main>

@@ -16,8 +16,6 @@ import { AUTH_TOKENS, USER_ROLES } from './user.constants';
 import { clearAppCookie, setAppCookie } from '../../shared/utils/cookies';
 import { RequestContext } from '../../shared/utils/contextBuilder';
 import { RequestHandler } from '../../shared/utils/requestHandler';
-import { extractPermissionName } from '../../shared/utils/strings';
-import { RoleService } from '../access-management/role/role.service';
 
 const initializeAdmin = async (req: any, res: any) => {
     try {

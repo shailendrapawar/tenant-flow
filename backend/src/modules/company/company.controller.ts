@@ -9,6 +9,7 @@ import { MapCompanyDTO } from './company.dto';
 import { CompanyService } from './company.service';
 import { UpdateCompanyPayloadSchema } from './company.validators';
 
+
 const get = async (req: any, res: any) => {
     try {
         const ctx = req.context;

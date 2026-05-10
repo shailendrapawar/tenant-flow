@@ -31,7 +31,7 @@ export function AppModal({
         >
           {title && (
             <DialogHeader>
-              <DialogTitle className="text-lg text-primary sm:text-center sm:text-xl">
+              <DialogTitle className="sm:text-lg text-primary text-center ">
                 {title}
               </DialogTitle>
             </DialogHeader>

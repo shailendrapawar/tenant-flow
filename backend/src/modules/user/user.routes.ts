@@ -156,6 +156,7 @@ UserRouter.post('/auth/register', UserController.register);
 UserRouter.post('/auth/login', UserController.login);
 UserRouter.post('/auth/logout', AuthMiddleware, UserController.logout);
 
+
 //user routes
 UserRouter.get('/me', AuthMiddleware, UserController.getUserProfile);
 UserRouter.get('/:id', AuthMiddleware, authorizedRoles([USER_ROLES.ADMIN]), UserController.get);
