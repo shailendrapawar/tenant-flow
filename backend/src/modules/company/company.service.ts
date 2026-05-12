@@ -12,7 +12,7 @@ import { isObjectID } from '../../shared/utils/strings';
 import { canTransition } from '../../shared/helpers/transitionMap';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
-const populate = [{ path: 'owner', select: 'email' }];
+const populate = [{ path: 'owner', select: 'email firstName lastName' }];
 // ====================================
 // ============ export methods ============
 
