@@ -4,7 +4,7 @@ import CompanyTable from "../components/table/CompanyTable"
 import useGetAllCompanies from "../hooks/useSearchCompanies"
 import AppLoader from "@/components/AppLoader"
 import { AppPagination } from "@/components/shad/AppPagination"
-import CompanySearchFilterMenu from "../components/CompanySearchFIlterMenu"
+import CompanySearchFilterMenu from "../components/CompanySearchFilterMenu"
 
 const CompaniesListPage = () => {
   const [page, setPage] = useState(1)

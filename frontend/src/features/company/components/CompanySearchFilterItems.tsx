@@ -1,5 +1,6 @@
 const CompanySearchFilterItems = () => {
-  return <div className="h-auto w-full bg-yellow-500 py-10"></div>
+    return (
+        <div className="h-10 w-full bg-yellow-500">CompanySearchFilterItems</div>
+    )
 }
-
 export default CompanySearchFilterItems
