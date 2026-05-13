@@ -40,8 +40,8 @@ export default function AppSelectMenu({
         <SelectGroup>
           {label && <SelectLabel>{label}</SelectLabel>}
           {items.map((item) => (
-            <SelectItem key={item.value} value={item.value}>
-              {item.label}
+            <SelectItem key={item?.value} value={item?.value}>
+              {item?.label}
             </SelectItem>
           ))}
         </SelectGroup>

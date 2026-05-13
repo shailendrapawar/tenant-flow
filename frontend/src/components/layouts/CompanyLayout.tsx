@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom"
 
 const CompanyLayout = () => {
   return (
-    <section className="h-full w-full">
+    <section className="h-auto min-h-full w-full">
       <Outlet />
     </section>
   )

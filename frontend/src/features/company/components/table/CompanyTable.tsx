@@ -7,8 +7,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { companyTableColumns } from "./table/CompanyTableColunms"
-import { AppPagination } from "@/components/shad/AppPagination"
+import { companyTableColumns } from "./CompanyTableColunms"
 
 const CompanyTable = ({ data }: { data: [] }) => {
   const table = useReactTable({
