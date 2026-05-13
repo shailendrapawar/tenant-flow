@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { companyTableColumns } from "./table/CompanyTableColunms"
-import { Button } from "@/components/ui/button"
+import { AppPagination } from "@/components/shad/AppPagination"
 
 const CompanyTable = ({ data }: { data: [] }) => {
   const table = useReactTable({
@@ -17,8 +17,9 @@ const CompanyTable = ({ data }: { data: [] }) => {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   })
+
   return (
-    <div className="hide-scrollbar flex h-auto w-full flex-col gap-5 overflow-x-scroll rounded-xl bg-card p-4">
+    <div className="hide-scrollbar flex h-auto w-full flex-col gap-5 overflow-x-scroll rounded-xl border bg-card p-4">
       <table className="w-full min-w-150">
         <thead className="bg-muted">
           {table.getHeaderGroups().map((headerGroup: any) => (
@@ -47,16 +48,6 @@ const CompanyTable = ({ data }: { data: [] }) => {
           ))}
         </tbody>
       </table>
-
-      {/* Pagination */}
-      <div className="mb-2 flex items-center justify-between px-2">
-        <Button className="h-10 w-15" onClick={() => table.previousPage()}>
-          Prev
-        </Button>
-        <Button className="h-10 w-15" onClick={() => table.nextPage()}>
-          Next
-        </Button>
-      </div>
     </div>
   )
 }

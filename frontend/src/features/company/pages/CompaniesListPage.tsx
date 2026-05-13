@@ -1,10 +1,15 @@
+import { useState } from "react"
 import CompaniesStats from "../components/CompaniesStats"
 import CompanyTable from "../components/CompanyTable"
 import useGetAllCompanies from "../hooks/useSearchCompanies"
 import AppLoader from "@/components/AppLoader"
+import { AppPagination } from "@/components/shad/AppPagination"
 
 const CompaniesListPage = () => {
-  const { data, isLoading } = useGetAllCompanies()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(5)
+
+  const { data, isLoading } = useGetAllCompanies({ page, limit })
 
   if (isLoading) return <AppLoader message="Retrieving companies..." />
   return (
@@ -14,7 +19,22 @@ const CompaniesListPage = () => {
         <p className="mt-2 text-sm sm:text-lg">Manage all companies </p>
       </div>
       <CompaniesStats />
+
+      {/* LATER: here can toggle between cards and tables view */}
       <CompanyTable data={data?.companies || []} />
+
+      <AppPagination
+        paginationState={{
+          currentPage: page,
+          totalPages: Math.ceil(data?.count / limit) || 1,
+          changePage: (page: number) => {
+            console.log("page:", page)
+            if (page > 0 && page <= Math.ceil(data?.count / limit)) {
+              setPage(page)
+            }
+          },
+        }}
+      />
     </main>
   )
 }
