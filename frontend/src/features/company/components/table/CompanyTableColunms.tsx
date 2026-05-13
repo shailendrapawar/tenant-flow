@@ -3,8 +3,6 @@ import { AppBadge } from "@/components/shad/AppBadge"
 import { formatDate } from "@/utils/date-handler"
 import { createColumnHelper } from "@tanstack/react-table"
 
-import { IoCopy } from "react-icons/io5"
-
 const columnHelper = createColumnHelper()
 
 export const companyTableColumns: any = [
@@ -25,6 +23,7 @@ export const companyTableColumns: any = [
       )
     },
   }),
+
   columnHelper.accessor("name", {
     header: () => (
       <div className="flex items-center justify-start gap-1">
@@ -34,6 +33,7 @@ export const companyTableColumns: any = [
     cell: (info) => info.getValue(),
     sortingFn: "alphanumeric",
   }),
+
   columnHelper.accessor("owner.firstName", {
     header: () => (
       <div className="flex items-center justify-start gap-1">
@@ -63,5 +63,3 @@ export const companyTableColumns: any = [
     cell: (info) => <AppBadge status={info.getValue()} />,
   }),
 ]
-
-// export const

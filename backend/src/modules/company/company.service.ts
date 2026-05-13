@@ -10,6 +10,7 @@ import { COMPANY_MANAGE, COMPANY_STATUS_TRANSITION_MAP } from './company.constan
 import { UpdateCompanyPayloadType } from './company.validators';
 import { isObjectID } from '../../shared/utils/strings';
 import { canTransition } from '../../shared/helpers/transitionMap';
+import { ResponseHandler } from '../../shared/utils/responseHandler';
 
 type CompanyDocument = HydratedDocument<ICompany> | null;
 const populate = [{ path: 'owner', select: 'email firstName lastName' }];
@@ -96,7 +97,7 @@ const GET = async (query: any, ctx: RequestContext, options?: any): Promise<Comp
 
 const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
     let sort: any = {
-        timeStamp: -1,
+        createdAt: -1,
     };
     let where: any = {};
 
@@ -119,7 +120,8 @@ const SEARCH = async (query: any, ctx: RequestContext, options?: any) => {
         .skip(options?.pagination?.skip)
         .sort(sort);
     const [count, companies] = await Promise.all([countPromise, itemsPromise]);
-    return { count, companies };
+    const pagination = ResponseHandler.paginationResponseData(companies, count, options?.pagination);
+    return { count, companies, pagination };
 };
 
 const UPDATE = async (id: string, model: UpdateCompanyPayloadType, ctx: RequestContext): Promise<CompanyDocument> => {

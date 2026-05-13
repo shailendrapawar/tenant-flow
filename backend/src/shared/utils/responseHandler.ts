@@ -6,6 +6,8 @@
 //     });
 // };
 
+import { object } from 'zod';
+
 // const error = (res: any, status: number, message: string, err: any) => {
 //     const msg = message || err?.message || 'Internal server error';
 //     const statusCode = status || err?.statusCode || 500;
@@ -26,8 +28,18 @@ const appResponse = (res: any, status: number, success: boolean, message: string
     });
 };
 
+const paginationResponseData = (data: object[], count: number, pagination: any) => {
+    const hasNext = count > (Number.parseInt(pagination?.limit) || 10) + (pagination?.skip || 0);
+    const hasPrevious = (Number.parseInt(pagination?.skip) || 0) > 0;
+    const totalPages = Math.ceil(count / (Number.parseInt(pagination?.limit) || 10));
+    return {
+        hasNext,
+        hasPrevious,
+        totalPages,
+    };
+};
+
 export const ResponseHandler = {
-    // success,
-    // error,
+    paginationResponseData,
     appResponse,
 };

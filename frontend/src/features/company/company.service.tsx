@@ -11,8 +11,16 @@ export const CompanyService: ICompanyService = {
     return res
   },
 
-  search: async (query: string) => {
-    const res = await API.get(`/companies${query}`)
+  search: async (params: any) => {
+    // 1: build query
+    const query = new URLSearchParams()
+
+    query.append("page", params?.page || 1)
+    query.append("limit", params?.limit || 10)
+
+    const res = await API.get(`/companies`, {
+      params: params,
+    })
     return res
   },
 }

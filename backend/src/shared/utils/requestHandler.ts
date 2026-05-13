@@ -10,9 +10,9 @@ const parseQuery = (req: any) => {
 
 const getPagination = (req: any) => {
     return {
-        page: req.query.page || 1,
-        limit: req.query.limit || 10,
-        skip: ((req.query.page || 1) - 1) * (req.query.limit || 10),
+        page: Number.parseInt(req.query.page || '1'),
+        limit: Number.parseInt(req.query.limit || '10'),
+        skip: (Number.parseInt(req.query.page || '1') - 1) * Number.parseInt(req.query.limit || '10'),
     };
 };
 
