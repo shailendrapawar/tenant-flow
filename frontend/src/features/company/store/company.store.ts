@@ -19,7 +19,7 @@ type IuseSearchCompanyFilters = {
 export const useSearchCompanyFiltersStore = create<IuseSearchCompanyFilters>(
   (set, get) => ({
     page: 1,
-    limit: 10,
+    limit: 5,
     applyFilters: false,
     selectedfilters: {
       name: "",

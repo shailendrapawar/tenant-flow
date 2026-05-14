@@ -26,7 +26,7 @@ export const CompanyService: ICompanyService = {
       query.append("status", payload.selectedfilters.status)
     }
 
-    console.log(payload)
+    // console.log(payload)
     const res = await API.get(`/companies`, {
       params: query,
     })

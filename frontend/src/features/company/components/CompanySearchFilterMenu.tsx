@@ -31,17 +31,14 @@ const CompanySearchFilterMenu = () => {
           }, 2000)
         }}
       />
-      {/* <IoFilter
-        className={`h-10 w-10 cursor-pointer rounded-full border ${applyFilters ? "bg-primary text-primary-foreground" : "border-2 border-primary bg-muted text-primary"} p-2 transition active:scale-95`}
-        onClick={() => setToggleFilter(true)}
-      /> */}
+
       <div className="relative">
         <IoFilter
           className={`h-10 w-10 cursor-pointer rounded-full border ${applyFilters ? "bg-primary text-primary-foreground" : "border-2 border-primary bg-muted text-primary"} p-2 transition active:scale-95`}
           onClick={() => setToggleFilter(true)}
         />
         {applyFilters && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary-foreground text-xs text-primary">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary bg-primary-foreground text-xs text-primary">
             {getAppliedFiltersLength()}
           </span>
         )}
