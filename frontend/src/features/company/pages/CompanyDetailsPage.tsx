@@ -1,7 +1,7 @@
 import React from "react"
 
 const CompanyDetailsPage = () => {
-  return <div>CompanyDetailsPage</div>
+  return <main>CompanyDetailsPage</main>
 }
 
 export default CompanyDetailsPage

@@ -5,6 +5,8 @@ import AppLoader from "@/components/AppLoader"
 import { AppPagination } from "@/components/shad/AppPagination"
 import CompanySearchFilterMenu from "../components/CompanySearchFilterMenu"
 import { useSearchCompanyFiltersStore } from "../store/company.store"
+import AppTable from "@/components/table/AppTable"
+import { companyTableColumns } from "../components/table/CompanyTableColunms"
 
 const CompaniesListPage = () => {
   const { page, limit, setPage } = useSearchCompanyFiltersStore()
@@ -16,8 +18,12 @@ const CompaniesListPage = () => {
   return (
     <main className="flex h-full w-full flex-col gap-5 p-5">
       <div className="">
-        <h1 className="text-lg sm:text-2xl">Companies</h1>
-        <p className="mt-2 text-sm sm:text-lg">Manage all companies </p>
+        <h1 className="text-lg text-primary-foreground sm:text-2xl">
+          Companies
+        </h1>
+        <p className="mt-2 text-sm text-secondary-foreground sm:text-lg">
+          Manage all companies{" "}
+        </p>
       </div>
 
       <CompaniesStats />
@@ -26,7 +32,7 @@ const CompaniesListPage = () => {
       {/* LATER: here can toggle between cards and tables view */}
       <CompanySearchFilterMenu />
 
-      <CompanyTable data={data?.companies || []} />
+      <AppTable data={data?.companies || []} columns={companyTableColumns} />
 
       <AppPagination
         paginationState={{

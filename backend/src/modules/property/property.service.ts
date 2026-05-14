@@ -14,7 +14,7 @@ const populate = [
     {
         path: 'companyID',
         select: 'owner',
-        populate: { path: 'owner', select: 'name email' },
+        populate: { path: 'owner', select: 'name email firstName' },
     },
 ];
 
