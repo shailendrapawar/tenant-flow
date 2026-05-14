@@ -26,12 +26,12 @@ export function AppModal({
     <ModalContext.Provider value={{ onClose }}>
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent
-          className={className}
+          className={className + "select-none"}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           {title && (
             <DialogHeader>
-              <DialogTitle className="sm:text-lg text-primary text-center ">
+              <DialogTitle className="text-center text-primary sm:text-lg">
                 {title}
               </DialogTitle>
             </DialogHeader>

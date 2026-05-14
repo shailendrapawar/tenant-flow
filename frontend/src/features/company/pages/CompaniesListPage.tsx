@@ -1,18 +1,18 @@
-import { useState } from "react"
 import CompaniesStats from "../components/CompaniesStats"
 import CompanyTable from "../components/table/CompanyTable"
 import useGetAllCompanies from "../hooks/useSearchCompanies"
 import AppLoader from "@/components/AppLoader"
 import { AppPagination } from "@/components/shad/AppPagination"
 import CompanySearchFilterMenu from "../components/CompanySearchFilterMenu"
+import { useSearchCompanyFiltersStore } from "../store/company.store"
 
 const CompaniesListPage = () => {
-  const [page, setPage] = useState(1)
-  const [limit] = useState(5)
+  const { page, limit, setPage } = useSearchCompanyFiltersStore()
 
-  const { data, isLoading } = useGetAllCompanies({ page, limit })
+  const { data, isLoading } = useGetAllCompanies()
 
   if (isLoading) return <AppLoader message="Retrieving companies..." />
+
   return (
     <main className="flex h-full w-full flex-col gap-5 p-5">
       <div className="">

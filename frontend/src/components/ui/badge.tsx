@@ -25,6 +25,12 @@ const badgeVariants = cva(
         inactive: "bg-neutral text-neutral-foreground",
         suspended: "bg-warning text-warning-foreground",
         banned: "text-destructive-foreground bg-destructive",
+
+        //selection
+        selectedFilter:
+          "cursor-pointer border-2 border-primary bg-primary/20 text-primary",
+        unSelectedFilter:
+          "cursor-pointer border-2 border-secondary text-primary text-secondary-foreground hover:border-primary hover:bg-primary/20 hover:text-primary",
       },
     },
     defaultVariants: {
