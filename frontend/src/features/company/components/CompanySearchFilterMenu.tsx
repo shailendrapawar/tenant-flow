@@ -1,49 +1,62 @@
 import { Input } from "@/components/ui/input"
-import React, { useState } from "react"
+import { useState, type ChangeEvent } from "react"
 
 import { IoFilter } from "react-icons/io5"
 
 import { AppModal } from "@/components/AppModal"
 import CompanySearchFilterItems from "./CompanySearchFilterItems"
-import AppSelectMenu from "@/components/shad/AppSelectMenu"
-
-import { RxCross2 } from "react-icons/rx";
+import { useSearchCompanyFiltersStore } from "../store/company.store"
+import { RxCross2 } from "react-icons/rx"
+import { Button } from "@/components/ui/button"
 
 const CompanySearchFilterMenu = () => {
-  const [status, setStatus] = useState("")
   const [toggleFilter, setToggleFilter] = useState(false)
+  const {
+    setSelectedFilters,
+    applyFilters,
+    clearAllFilters,
+    getAppliedFiltersLength,
+  } = useSearchCompanyFiltersStore()
+
   return (
     <div className="relative flex h-10 w-full gap-5">
       <Input
         className="h-full w-[80%] max-w-60 bg-card"
         placeholder="Search by name"
-      />
-      <IoFilter
-        className="absolute right-0 h-10 w-10 cursor-pointer rounded-full border bg-primary p-2 text-primary-foreground transition active:scale-95 sm:hidden"
-        onClick={() => setToggleFilter(true)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          let timer
+          clearTimeout(timer)
+          timer = setTimeout(() => {
+            setSelectedFilters("name", e.target.value)
+          }, 2000)
+        }}
       />
 
-      <section className="hidden h-full w-full sm:flex gap-2  items-center">
-        <AppSelectMenu
-          className="h-full w-22 bg-card text-xs"
-          items={[
-            { label: "Active", value: "active" },
-            { label: "Inactive", value: "inactive" },
-            { label: "Suspended", value: "suspended" },
-            { label: "Banned", value: "banned" },
-          ]}
-          placeholder="Status"
-          value={status}
-          onValueChange={setStatus}
+      <div className="relative">
+        <IoFilter
+          className={`h-10 w-10 cursor-pointer rounded-full border ${applyFilters ? "bg-primary text-primary-foreground" : "border-2 border-primary bg-muted text-primary"} p-2 transition active:scale-95`}
+          onClick={() => setToggleFilter(true)}
         />
+        {applyFilters && (
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary bg-primary-foreground text-xs text-primary">
+            {getAppliedFiltersLength()}
+          </span>
+        )}
+      </div>
 
-        <RxCross2 className=" p-1.5 h-8 w-8 bg-primary active:scale-95 transition cursor-pointer text-primary-foreground rounded-full" />
+      {applyFilters && (
+        <Button
+          className="hidden h-10 text-xs sm:flex"
+          onClick={() => clearAllFilters()}
+        >
+          {" "}
+          <RxCross2 />
+          Clear filters
+        </Button>
+      )}
 
-      </section>
-
-      {/* this is for mobile view */}
       <AppModal
-        title="Select filters+"
+        title="Select filters"
         className=""
         open={toggleFilter}
         onClose={() => setToggleFilter(false)}

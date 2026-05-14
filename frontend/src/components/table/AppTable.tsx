@@ -1,22 +1,21 @@
+import React from "react"
+
 import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { companyTableColumns } from "./CompanyTableColunms"
-
-const CompanyTable = ({ data }: { data: [] }) => {
+const AppTable = ({ data, columns }: { data: any[]; columns: any[] }) => {
   const table = useReactTable({
     data,
-    columns: companyTableColumns,
+    columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   })
-
   return (
     <div className="hide-scrollbar flex h-auto w-full flex-col gap-5 overflow-x-scroll rounded-xl border bg-card p-4">
-      <table className="w-full min-w-150">
+      <table className="w-full min-w-200">
         <thead className="bg-muted">
           {table.getHeaderGroups().map((headerGroup: any) => (
             <tr key={headerGroup.id} className="">
@@ -48,4 +47,4 @@ const CompanyTable = ({ data }: { data: [] }) => {
   )
 }
 
-export default CompanyTable
+export default AppTable
