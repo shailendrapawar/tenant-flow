@@ -6,6 +6,7 @@ import useSearchProperties from "../hooks/useSearchProperties"
 import AppTable from "@/components/table/AppTable"
 import PropertyTableColumns from "../components/table/PropertyTableColumns"
 import AppLoader from "@/components/AppLoader"
+import PropertySearchFilterMenu from "../components/PropertySearchFilterMenu"
 
 const PropertiesListPage = () => {
   const { data, isLoading } = useSearchProperties()
@@ -26,6 +27,8 @@ const PropertiesListPage = () => {
 
       <PropertiesStats />
       <hr className="w-full max-w-100 border" />
+
+      <PropertySearchFilterMenu />
 
       <AppTable
         data={data?.properties || []}
