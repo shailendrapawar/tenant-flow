@@ -91,7 +91,7 @@ const CompanySearchFilterItems = () => {
       </section> */}
 
       <hr className="m-0" />
-      <section className="flex justify-between gap-2">
+      <footer className="flex justify-between gap-2">
         <Button
           variant="outline"
           onClick={clearAllFilters}
@@ -108,7 +108,7 @@ const CompanySearchFilterItems = () => {
         >
           Apply filters
         </Button>
-      </section>
+      </footer>
     </main>
   )
 }

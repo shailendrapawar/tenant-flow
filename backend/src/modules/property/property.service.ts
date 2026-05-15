@@ -112,6 +112,7 @@ const SEARCH = async (query: SearchPropertyQueryType, ctx: RequestContext, optio
     let where: any = {};
 
     //scope in companyID for landlord only
+    // FIXME: here context.where already contain the scope use that
     if (user?.role === USER_ROLES.LANDLORD) {
         where.companyID = user?.companyID;
     }
