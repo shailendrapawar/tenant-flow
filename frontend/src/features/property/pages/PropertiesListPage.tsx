@@ -1,15 +1,15 @@
-import React from "react"
-import { PropertyService } from "../property.service"
 import PropertiesStats from "../components/PropertiesStats"
-import { Button } from "@/components/ui/button"
 import useSearchProperties from "../hooks/useSearchProperties"
 import AppTable from "@/components/table/AppTable"
 import PropertyTableColumns from "../components/table/PropertyTableColumns"
-import AppLoader from "@/components/AppLoader"
+import AppLoader from "@/components/shad/AppLoader"
 import PropertySearchFilterMenu from "../components/PropertySearchFilterMenu"
+import { AppPagination } from "@/components/shad/AppPagination"
+import { useSearchPropertyFilterStore } from "../store/property.store"
 
 const PropertiesListPage = () => {
   const { data, isLoading } = useSearchProperties()
+  const { page, limit, setPage } = useSearchPropertyFilterStore()
 
   if (isLoading) return <AppLoader message="Retrieving properties..." />
 
@@ -33,6 +33,17 @@ const PropertiesListPage = () => {
       <AppTable
         data={data?.properties || []}
         columns={PropertyTableColumns || []}
+      />
+      <AppPagination
+        paginationState={{
+          currentPage: page,
+          totalPages: Math.ceil(data?.count / limit) || 1,
+          changePage: (page: number) => {
+            if (page > 0 && page <= Math.ceil(data?.count / limit)) {
+              setPage(page)
+            }
+          },
+        }}
       />
     </main>
   )

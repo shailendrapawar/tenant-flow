@@ -3,7 +3,7 @@ import { useState, type ChangeEvent } from "react"
 
 import { IoFilter } from "react-icons/io5"
 
-import { AppModal } from "@/components/AppModal"
+import { AppModal } from "@/components/shad/AppModal"
 import CompanySearchFilterItems from "./CompanySearchFilterItems"
 import { useSearchCompanyFiltersStore } from "../store/company.store"
 import { RxCross2 } from "react-icons/rx"

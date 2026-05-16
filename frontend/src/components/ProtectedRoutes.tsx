@@ -1,8 +1,8 @@
 import useAuthUser from "../features/user/hooks/useAuthUser"
 import { Navigate, Outlet } from "react-router-dom"
 import { AUTH_ROUTES } from "../features/auth/auth.routes"
-import { notify } from "./AppToaster"
-import AppLoader from "./AppLoader"
+import { notify } from "./shad/AppToaster"
+import AppLoader from "./shad/AppLoader"
 
 const ProtectedRoutes = () => {
   const { data: user, isLoading, isError } = useAuthUser()

@@ -1,4 +1,4 @@
-import { AppModal } from "@/components/AppModal"
+import { AppModal } from "@/components/shad/AppModal"
 import type { AuthUser } from "../user.types"
 import { useState } from "react"
 import EditUserInfoCard from "./EditUserInfoCard"
@@ -54,7 +54,10 @@ const UserInfoCard = ({ user }: { user: AuthUser }) => {
           />
         ))}
       </section>
-      <Button className="w-20 self-end bg-card border-primary border-3 text-primary hover:bg-primary hover:text-primary-foreground" onClick={() => setToggleModal(true)}>
+      <Button
+        className="w-20 self-end border-3 border-primary bg-card text-primary hover:bg-primary hover:text-primary-foreground"
+        onClick={() => setToggleModal(true)}
+      >
         Edit
       </Button>
     </main>

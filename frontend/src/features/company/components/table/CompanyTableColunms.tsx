@@ -1,4 +1,4 @@
-import AppCopyIcon from "@/components/AppCopyIcon"
+import AppCopyIcon from "@/components/shad/AppCopyIcon"
 import { AppBadge } from "@/components/shad/AppBadge"
 import { formatDate } from "@/utils/date-handler"
 import { createColumnHelper } from "@tanstack/react-table"

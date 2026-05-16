@@ -1,7 +1,7 @@
 import type { IEditUserSchema } from "../schemas/editUserSchema"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { UserService } from "../user.service"
-import { notify } from "@/components/AppToaster"
+import { notify } from "@/components/shad/AppToaster"
 
 const useEditProfile = () => {
   const queryClient = useQueryClient()

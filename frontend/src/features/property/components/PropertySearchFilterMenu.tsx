@@ -4,7 +4,7 @@ import { useSearchPropertyFilterStore } from "../store/property.store"
 import { IoFilter } from "react-icons/io5"
 import { Button } from "@/components/ui/button"
 import { RxCross2 } from "react-icons/rx"
-import { AppModal } from "@/components/AppModal"
+import { AppModal } from "@/components/shad/AppModal"
 import PropertySeachFilterItems from "./PropertySeachFilterItems"
 import AppSelectMenu from "@/components/shad/AppSelectMenu"
 

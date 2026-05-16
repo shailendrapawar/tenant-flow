@@ -1,5 +1,5 @@
 import React from "react"
-import { Toaster } from "./ui/sonner"
+import { Toaster } from "../ui/sonner"
 import { toast } from "sonner"
 
 const AppToaster = () => {
