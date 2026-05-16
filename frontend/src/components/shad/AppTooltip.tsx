@@ -1,5 +1,5 @@
 import React from "react"
-import { TooltipContent, TooltipTrigger, Tooltip } from "./ui/tooltip"
+import { TooltipContent, TooltipTrigger, Tooltip } from "../ui/tooltip"
 
 const AppTooltip = ({
   children,
