@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "react-router-dom"
 import { AUTH_ROUTES } from "../auth.routes"
 import { useLogin } from "../hooks/useLogin"
-import { notify } from "@/components/AppToaster"
+import { notify } from "@/components/shad/AppToaster"
 import { USER_ROUTES } from "@/features/user/user.routes"
 
 const LoginForm = () => {

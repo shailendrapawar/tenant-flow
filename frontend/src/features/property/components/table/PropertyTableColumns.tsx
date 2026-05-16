@@ -1,8 +1,9 @@
-import AppCopyIcon from "@/components/AppCopyIcon"
+import AppCopyIcon from "@/components/shad/AppCopyIcon"
 import { AppBadge } from "@/components/shad/AppBadge"
 import { formatDate } from "@/utils/date-handler"
+import { FaExternalLinkAlt } from "react-icons/fa"
+
 import { createColumnHelper } from "@tanstack/react-table"
-import React from "react"
 
 const columnHelper = createColumnHelper()
 export const PropertyTableColumns: any = [
@@ -12,6 +13,7 @@ export const PropertyTableColumns: any = [
         <span className="text-secondary">ID</span>
       </div>
     ),
+
     cell: ({ row }: any) => {
       const id = row?.original?._id
 
@@ -30,8 +32,11 @@ export const PropertyTableColumns: any = [
         <span className="text-secondary">Name</span>
       </div>
     ),
-    cell: (info) => info.getValue(),
-    sortingFn: "alphanumeric",
+    cell: (info) => (
+      <div className="flex items-center gap-2">
+        <span className="hover:text-primary">{info.getValue()}</span>
+      </div>
+    ),
   }),
 
   columnHelper.accessor("companyID.owner.firstName", {

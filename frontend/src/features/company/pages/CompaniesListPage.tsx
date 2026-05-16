@@ -1,7 +1,7 @@
 import CompaniesStats from "../components/CompaniesStats"
 import CompanyTable from "../components/table/CompanyTable"
 import useGetAllCompanies from "../hooks/useSearchCompanies"
-import AppLoader from "@/components/AppLoader"
+import AppLoader from "@/components/shad/AppLoader"
 import { AppPagination } from "@/components/shad/AppPagination"
 import CompanySearchFilterMenu from "../components/CompanySearchFilterMenu"
 import { useSearchCompanyFiltersStore } from "../store/company.store"

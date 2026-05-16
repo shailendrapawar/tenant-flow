@@ -17,7 +17,7 @@ import {
   type RegisterPayloadType,
 } from "../schemas/registerSchema"
 import useRegister from "../hooks/useRegister"
-import { notify } from "@/components/AppToaster"
+import { notify } from "@/components/shad/AppToaster"
 
 const RegisterForm = () => {
   const navigate = useNavigate()

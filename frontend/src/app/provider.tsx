@@ -1,4 +1,4 @@
-import AppToaster from "@/components/AppToaster"
+import AppToaster from "@/components/shad/AppToaster"
 import { Toaster } from "@/components/ui/sonner"
 import { queryClient } from "@/lib/api/query-client"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
